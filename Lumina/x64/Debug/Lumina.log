@@ -1,0 +1,5 @@
+﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(510,5): warning MSB8028: 中间目录(x64\Debug\)包含从另一个项目(Lumina_01.vcxproj)共享的文件。   这会导致错误的清除和重新生成行为。
+  Rander3.cpp
+C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina\Lumina\Shader.hpp(3,10): warning C4067: 预处理器指令后有意外标记 - 应输入换行符
+LINK : warning LNK4098: 默认库“MSVCRT”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
+  Lumina.vcxproj -> C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina\x64\Debug\Lumina.exe

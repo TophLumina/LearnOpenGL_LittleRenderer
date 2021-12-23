@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{bed30a2f-6119-4501-b974-6f8041682f35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Programs">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Programs\Deactive">
+      <UniqueIdentifier>{092e5667-0b37-45cd-b243-1effa607362a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{824c1538-3898-47a2-9811-1871bd0e37e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lazy">
+      <UniqueIdentifier>{1d394d89-2a04-40ad-b62b-5cbe4d7723bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Shaders_Str">
+      <UniqueIdentifier>{ad0a3a35-b0e6-4710-a2aa-57d81e85831f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\RealShaders">
+      <UniqueIdentifier>{bbceed67-a7a2-4d10-823e-179d42fda0df}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="glad.c">
+      <Filter>资源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Rander1.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Rander1.1.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Rnader1.2.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Rander2.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Rander2.1.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Rander2.2.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Rander2.3.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Rander3.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Rectangle.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Triangle.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>资源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="twoTriangle.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="lazy.hpp">
+      <Filter>Lazy</Filter>
+    </ClInclude>
+    <ClInclude Include="ColoredTriangle.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\uniformShader.hpp">
+      <Filter>Shaders\Shaders_Str</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\ChainShader.hpp">
+      <Filter>Shaders\Shaders_Str</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\Shader.hpp">
+      <Filter>Shaders\Shaders_Str</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\SimpleShader1.1.hpp">
+      <Filter>Shaders\Shaders_Str</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\SimpleShader1.hpp">
+      <Filter>Shaders\Shaders_Str</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>资源文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Lumina.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader.hpp">
+      <Filter>Lazy</Filter>
+    </None>
+    <None Include="Shaders\testvertex.shader">
+      <Filter>Shaders\RealShaders</Filter>
+    </None>
+    <None Include="Shaders\testfrag.shader">
+      <Filter>Shaders\RealShaders</Filter>
+    </None>
+    <None Include="Shaders\texVertex.shader">
+      <Filter>Shaders\RealShaders</Filter>
+    </None>
+    <None Include="Shaders\texFrag.shader">
+      <Filter>Shaders\RealShaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>
