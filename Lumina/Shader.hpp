@@ -1,7 +1,6 @@
 #pragma once
 
-#include <glad/glad.h>;
-
+#include <glad/glad.h>
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -12,9 +11,9 @@ public:
 	unsigned int ID;
 	Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
 	void Use();
-	void setBool(std::string& name, bool value);
-	void setInt(std::string& name, int value);
-	void setFloat(std::string& name, float value);
+	void setBool(std::string name, bool value);
+	void setInt(std::string name, int value);
+	void setFloat(std::string name, float value);
 };
 
 Shader::Shader(const GLchar* vertexpath,const GLchar* fragmentpath) {
@@ -96,14 +95,14 @@ void Shader::Use() {
 	glUseProgram(this->ID);
 }
 
-void Shader::setBool(std::string& name, bool value) {
+void Shader::setBool(std::string name, bool value) {
 	glUniform1i(glGetUniformLocation(this->ID, name.c_str()), (int)value);
 }
 
-void Shader::setInt(std::string& name, int value) {
+void Shader::setInt(std::string name, int value) {
 	glUniform1i(glGetUniformLocation(this->ID, name.c_str()), value);
 }
 
-void Shader::setFloat(std::string& name, float value) {
+void Shader::setFloat(std::string name, float value) {
 	glUniform1f(glGetUniformLocation(this->ID, name.c_str()), value);
 }

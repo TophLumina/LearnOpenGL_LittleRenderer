@@ -3,13 +3,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "stb_image.h"
-
 class lazy {
 public:
 	static void glfwCoreEnv(int min_version, int max_version);
 	static unsigned int ShaderBulider(unsigned vertexShader, const GLchar* vertexshadersource, unsigned int fragShader, const GLchar* fragshadersource);
-	static void TextureEnv();
 };
 
 void lazy::glfwCoreEnv(int min_version, int max_version) {
@@ -59,12 +56,4 @@ unsigned int lazy::ShaderBulider(unsigned vertexShader, const GLchar* vertexshad
 	glDeleteShader(fragShader);
 
 	return program;
-}
-
-
-void lazy::TextureEnv() {
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 }

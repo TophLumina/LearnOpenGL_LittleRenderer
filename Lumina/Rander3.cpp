@@ -1,4 +1,5 @@
 #define STB_IMAGE_IMPLEMENTATION
+
 #include "stb_image.h"
 
 #include <glad/glad.h>
@@ -39,52 +40,6 @@ int main() {
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-	Shader aShader("./Shaders/texVertex.shader", "./Shaders/texFrag.shader");
-
-	int width1 = 800;
-	int height1 = 800;
-	int colChannel1 = 24;
-
-	int width2 = 512;
-	int height2 = 512;
-	int colChannel2 = 32;
-
-	const char* loaderror = "Failed to load texture";
-
-	//Flip the Picture
-	stbi_set_flip_vertically_on_load(true);
-
-	unsigned char* textureData1 = stbi_load("./Texture/Arknights.png", &width1, &height1, &colChannel1, 0);
-	if (!textureData1)
-		std::cout << loaderror << std::endl;
-
-	unsigned char* textureData2 = stbi_load("./Texture/awesomeface.png", &width2, &height2, &colChannel2, 0);
-	if (!textureData2)
-		std::cout << loaderror << std::endl;
-
-
-	unsigned int texture;
-	glGenTextures(1, &texture);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
-
-	glActiveTexture(GL_TEXTURE1);
-
-	//Set the repeat mode and filter mode
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width1, height1, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData1);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	stbi_image_free(textureData1);
-
-
-
 	unsigned int VAO;
 	glGenVertexArrays(1, &VAO);
 	unsigned int VBO;
@@ -112,19 +67,91 @@ int main() {
 	glBindVertexArray(0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+	Shader aShader("./Shaders/texVertex.shader", "./Shaders/texFrag.shader");
+
+	int width1 = 800;
+	int height1 = 800;
+	int colChannel1 = 24;
+
+	int width2 = 512;
+	int height2 = 512;
+	int colChannel2 = 32;
+
+	const char* loaderror = "Failed to load texture";
+
+	//Flip the Picture
+	stbi_set_flip_vertically_on_load(true);
+
+	unsigned char* textureData1 = stbi_load("./Texture/Arknights.png", &width1, &height1, &colChannel1, 0);
+	if (!textureData1)
+		std::cout << loaderror << std::endl;
+
+	unsigned char* textureData2 = stbi_load("./Texture/awesomeface.png", &width2, &height2, &colChannel2, 0);
+	if (!textureData2)
+		std::cout << loaderror << std::endl;
+
+	//Texture1:
+	unsigned int texture1;
+	glGenTextures(1, &texture1);
+	glBindTexture(GL_TEXTURE_2D, texture1);
+
+	//Set the repeat mode and filter mode
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width1, height1, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData1);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	stbi_image_free(textureData1);
+
+	//Texture2:
+	unsigned int texture2;
+	glGenTextures(1, &texture2);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width2, height2, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData2);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	stbi_image_free(textureData2);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	aShader.Use();
+	aShader.setInt("Texture1", 0);
+	aShader.setInt("Texture2", 1);
+
+
+
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
 
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 		glBindVertexArray(VAO);
-		glBindTexture(GL_TEXTURE_2D, texture);
+		
+		//when activate texture cells, the following binding func will bind texture to the cell selected
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
+
 		aShader.Use();
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		glfwPollEvents();
 		glfwSwapBuffers(window);
 	}
+
+	glDeleteBuffers(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
 
 	glfwTerminate();
 }
