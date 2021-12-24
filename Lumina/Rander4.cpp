@@ -145,6 +145,7 @@ int main() {
 		processInput(window);
 
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
 
 		glBindVertexArray(VAO);
 
@@ -154,18 +155,28 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, texture2);
 
 		//rotate and translate
-		glm::mat4 trans(1.0f);
-
+		glm::mat4 trans1(1.0f);
+		trans1 = glm::translate(trans1, glm::vec3(0.5f, -0.5f, 0.0f));
+		trans1 = glm::rotate(trans1, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+		glUniformMatrix4fv(glGetUniformLocation(aShader.ID, "transform"), 1, GL_FALSE, glm::value_ptr(trans1));
 
 		aShader.Use();
 
 		aShader.setFloat("par", par);
+
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		glm::mat4 trans2(1.0f);
+		trans2 = glm::translate(trans2, glm::vec3(-0.5f, 0.5f, 0.0f));
+		trans2 = glm::scale(trans2, (sinf((float)glfwGetTime())+1.0f) * glm::vec3(1.0f));
+		glUniformMatrix4fv(glGetUniformLocation(aShader.ID, "transform"), 1, GL_FALSE, glm::value_ptr(trans2));
+
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		
 		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 			par = par + 0.002f > 1.0f ? 1.0f : par + 0.002f;
 		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 			par = par - 0.002f < 0.0f ? 0.0f : par - 0.002f;
-
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		glfwPollEvents();
 		glfwSwapBuffers(window);
