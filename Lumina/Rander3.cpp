@@ -41,22 +41,35 @@ int main() {
 
 	Shader aShader("./Shaders/texVertex.shader", "./Shaders/texFrag.shader");
 
-	int width = 800;
-	int height = 800;
-	int colChannel = 24;
+	int width1 = 800;
+	int height1 = 800;
+	int colChannel1 = 24;
+
+	int width2 = 512;
+	int height2 = 512;
+	int colChannel2 = 32;
+
+	const char* loaderror = "Failed to load texture";
 
 	//Flip the Picture
 	stbi_set_flip_vertically_on_load(true);
 
-	unsigned char* textureData = stbi_load("./Texture/Arknights.png", &width, &height, &colChannel, 0);
-	if (!textureData) {
-		std::cout << "Failed to load texture" << std::endl;
-	}
+	unsigned char* textureData1 = stbi_load("./Texture/Arknights.png", &width1, &height1, &colChannel1, 0);
+	if (!textureData1)
+		std::cout << loaderror << std::endl;
+
+	unsigned char* textureData2 = stbi_load("./Texture/awesomeface.png", &width2, &height2, &colChannel2, 0);
+	if (!textureData2)
+		std::cout << loaderror << std::endl;
+
 
 	unsigned int texture;
 	glGenTextures(1, &texture);
 
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glActiveTexture(GL_TEXTURE1);
 
 	//Set the repeat mode and filter mode
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -64,11 +77,11 @@ int main() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width1, height1, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData1);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	stbi_image_free(textureData);
+	stbi_image_free(textureData1);
 
 
 
