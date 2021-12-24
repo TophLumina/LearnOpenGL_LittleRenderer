@@ -111,9 +111,9 @@ int main() {
 	glGenTextures(1, &texture2);
 	glBindTexture(GL_TEXTURE_2D, texture2);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width2, height2, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData2);
@@ -127,7 +127,7 @@ int main() {
 	aShader.setInt("Texture1", 0);
 	aShader.setInt("Texture2", 1);
 
-
+	float par = 0.0f;
 
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
@@ -143,6 +143,13 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, texture2);
 
 		aShader.Use();
+
+		aShader.setFloat("par", par);
+		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+			par = par + 0.002f > 1.0f ? 1.0f : par + 0.002f;
+		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+			par = par - 0.002f < 0.0f ? 0.0f : par - 0.002f;
+
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		glfwPollEvents();
