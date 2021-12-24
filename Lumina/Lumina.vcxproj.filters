@@ -56,6 +56,9 @@
     <ClCompile Include="Rander3.cpp">
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
+    <ClCompile Include="Rander4.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rectangle.hpp">
@@ -114,6 +117,9 @@
       <Filter>Shaders\RealShaders</Filter>
     </None>
     <None Include="Shaders\texFrag.shader">
+      <Filter>Shaders\RealShaders</Filter>
+    </None>
+    <None Include="Shaders\transformVertex.shader">
       <Filter>Shaders\RealShaders</Filter>
     </None>
   </ItemGroup>
