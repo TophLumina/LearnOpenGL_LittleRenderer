@@ -31,7 +31,7 @@ int main() {
 	int Screen_Width = 800;
 	int Screen_Height = 600;
 
-	GLFWwindow* window = glfwCreateWindow(Screen_Width, Screen_Height, "LearnOpenGL", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(Screen_Width, Screen_Height, "Cubes", NULL, NULL);
 	if (window == NULL) {
 		std::cout << "Fail to Create GLFW Windwow" << std::endl;
 		glfwTerminate();
@@ -128,6 +128,20 @@ int main() {
 	//enable z_buffer test
 	glEnable(GL_DEPTH_TEST);
 
+	//poses of the cubes
+	glm::vec3 cubePositions[] = {
+  glm::vec3(0.0f,  0.0f,  0.0f),
+  glm::vec3(2.0f,  5.0f, -15.0f),
+  glm::vec3(-1.5f, -2.2f, -2.5f),
+  glm::vec3(-3.8f, -2.0f, -12.3f),
+  glm::vec3(2.4f, -0.4f, -3.5f),
+  glm::vec3(-1.7f,  3.0f, -7.5f),
+  glm::vec3(1.3f, -2.0f, -2.5f),
+  glm::vec3(1.5f,  2.0f, -2.5f),
+  glm::vec3(1.5f,  0.2f, -1.5f),
+  glm::vec3(-1.3f,  1.0f, -1.5f)
+	};
+
 	float par = 0.0f;
 
 	while (!glfwWindowShouldClose(window)) {
@@ -146,28 +160,28 @@ int main() {
 
 		aShader.Use();
 
+		//now draw 10 cubes in different poses
+		for (glm::vec3 v : cubePositions) {
+			glm::mat4 model(1.0f);
+			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+			glm::mat4 view(1.0f);
+			view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+			view = glm::translate(view, v);
+			glm::mat4 projection(1.0f);
+			projection = glm::perspective(glm::radians(45.0f), (float)(Screen_Width / Screen_Height), 0.1f, 100.0f);
 
-		//MVP transformation
-		glm::mat4 model(1.0f);
-		model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-		glm::mat4 view(1.0f);
-		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-		glm::mat4 projection(1.0f);
-		projection = glm::perspective(glm::radians(45.0f), (float)(Screen_Width / Screen_Height), 0.1f, 100.0f);
+			glUniformMatrix4fv(glGetUniformLocation(aShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+			glUniformMatrix4fv(glGetUniformLocation(aShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+			glUniformMatrix4fv(glGetUniformLocation(aShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
+			aShader.setFloat("par", par);
+			if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+				par = par + 0.002f > 1.0f ? 1.0f : par + 0.002f;
+			if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+				par = par - 0.002f < 0.0f ? 0.0f : par - 0.002f;
 
-		//pass the matrix to shader
-		glUniformMatrix4fv(glGetUniformLocation(aShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
-		glUniformMatrix4fv(glGetUniformLocation(aShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
-		glUniformMatrix4fv(glGetUniformLocation(aShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-
-		aShader.setFloat("par", par);
-		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-			par = par + 0.002f > 1.0f ? 1.0f : par + 0.002f;
-		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-			par = par - 0.002f < 0.0f ? 0.0f : par - 0.002f;
-
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 
 		glfwPollEvents();
 		glfwSwapBuffers(window);
