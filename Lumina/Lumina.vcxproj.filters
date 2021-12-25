@@ -59,6 +59,12 @@
     <ClCompile Include="Rander4.cpp">
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
+    <ClCompile Include="Rander5.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Rander5.1.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rectangle.hpp">
@@ -97,6 +103,9 @@
     <ClInclude Include="stb_image.h">
       <Filter>资源文件</Filter>
     </ClInclude>
+    <ClInclude Include="Cube.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Lumina.rc">
@@ -120,6 +129,15 @@
       <Filter>Shaders\RealShaders</Filter>
     </None>
     <None Include="Shaders\transformVertex.shader">
+      <Filter>Shaders\RealShaders</Filter>
+    </None>
+    <None Include="Shaders\transformMVP.shader">
+      <Filter>Shaders\RealShaders</Filter>
+    </None>
+    <None Include="Shaders\cubeMVP.shader">
+      <Filter>Shaders\RealShaders</Filter>
+    </None>
+    <None Include="Shaders\cubeFrag.shader">
       <Filter>Shaders\RealShaders</Filter>
     </None>
   </ItemGroup>
