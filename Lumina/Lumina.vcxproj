@@ -73,16 +73,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina\Lumina\Shaders;C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina\OPENGLPACKAGE\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina\OPENGLPACKAGE\lib-vc2022;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina\Lumina\Shaders;C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina\OPENGLPACKAGE\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\lib-vc2022;C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina\OPENGLPACKAGE\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina\Lumina\Shaders;C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina\OPENGLPACKAGE\include;C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina\OPENGLPACKAGE\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\lib-vc2022;C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina\OPENGLPACKAGE\lib-vc2022;C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina\OPENGLPACKAGE\lib-vc2022;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina\Lumina\Shaders;C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina\OPENGLPACKAGE\include;C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina\OPENGLPACKAGE\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\lib-vc2022;C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\lib-vc2022;C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina\OPENGLPACKAGE\lib-vc2022;C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina\OPENGLPACKAGE\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

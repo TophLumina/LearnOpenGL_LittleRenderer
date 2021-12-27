@@ -34,6 +34,8 @@ void processInput(GLFWwindow* window) {
 	float camspeed = 2.5f * deltatime;
 
 	//WASD! FPS
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		camspeed *= 1.5f;
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		campos += camfront * camspeed;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
