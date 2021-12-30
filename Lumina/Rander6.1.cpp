@@ -18,6 +18,7 @@
 glm::vec3 campos(0.0f, 0.0f, 3.0f);
 glm::vec3 camfront(0.0f, 0.0f, -1.0f);
 glm::vec3 camup(0.0f, 1.0f, 0.0f);
+float fov = 45.0f;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
@@ -55,8 +56,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	static float lastx = 400.0f;
 	static float lasty = 300.0f;
 
-	//pitch	¸©Ñö½Ç
-	//yaw	Æ«×ª½Ç
+	//pitch up/dowm
+	//yaw	left/right
 	static float pitch = 0.0f;
 	static float yaw = 0.0f;
 
@@ -95,6 +96,13 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	//todo:if to use matrix to routate the camfront...
 }
 
+//zoom func
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+	fov -= yoffset;
+	fov = fov < 1.0f ? 1.0f : fov;
+	fov = fov > 45.0f ? 45.0f : fov;
+}
+
 int main() {
 	lazy::glfwCoreEnv(3, 3);
 
@@ -119,6 +127,9 @@ int main() {
 	//mouse input
 	glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window,mouse_callback);
+
+	//scroll input
+	glfwSetScrollCallback(window, scroll_callback);
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
@@ -243,7 +254,7 @@ int main() {
 
 			view = glm::translate(view, v);
 			glm::mat4 projection(1.0f);
-			projection = glm::perspective(glm::radians(45.0f), (float)(Screen_Width / Screen_Height), 0.1f, 100.0f);
+			projection = glm::perspective(glm::radians(fov), (float)(Screen_Width / Screen_Height), 0.1f, 100.0f);
 
 			glUniformMatrix4fv(glGetUniformLocation(aShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 			glUniformMatrix4fv(glGetUniformLocation(aShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
