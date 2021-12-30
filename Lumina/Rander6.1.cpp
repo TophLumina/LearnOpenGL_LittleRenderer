@@ -14,10 +14,6 @@
 #include "lazy.hpp"
 #include "Cube.hpp"
 
-//traking time cost eachframe
-float lasttime = 0.0f;
-float deltatime = 0.0f;
-
 //access through input
 glm::vec3 campos(0.0f, 0.0f, 3.0f);
 glm::vec3 camfront(0.0f, 0.0f, -1.0f);
@@ -28,6 +24,10 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 void processInput(GLFWwindow* window) {
+	//traking time cost eachframe
+	static float lasttime = 0.0f;
+	static float deltatime = 0.0f;
+
 	float currenttime = glfwGetTime();
 	deltatime = currenttime - lasttime;
 	lasttime = currenttime;
@@ -47,6 +47,52 @@ void processInput(GLFWwindow* window) {
 
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+}
+
+//mouse callback func
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+	//center of the screen space
+	static float lastx = 400.0f;
+	static float lasty = 300.0f;
+
+	//pitch	¸©Ñö½Ç
+	//yaw	Æ«×ª½Ç
+	static float pitch = 0.0f;
+	static float yaw = 0.0f;
+
+	static bool enter = true;
+
+	float sensitivity = 0.05f;
+
+	if (enter) {
+		lastx = xpos;
+		lasty = ypos;
+		enter = false;
+	}
+
+	//offsets
+	float xoffset = xpos - lastx;
+	float yoffset = -(ypos - lasty);//be ware
+
+	lastx = xpos;
+	lasty = ypos;
+
+	yaw += sensitivity * xoffset;
+	pitch += sensitivity * yoffset;
+
+	//limits on angle
+	pitch = pitch > 98.0f ? 98.0f : pitch;
+	pitch = pitch < -98.0f ? -98.0f : pitch;
+
+	//camera
+	glm::vec3 front;
+	front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
+	front.y = sin(glm::radians(pitch));
+	front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+
+	camfront = glm::normalize(front);
+
+	//todo:if to use matrix to routate the camfront...
 }
 
 int main() {
@@ -69,6 +115,10 @@ int main() {
 	}
 
 	glViewport(0, 0, Screen_Width, Screen_Height);
+
+	//mouse input
+	glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window,mouse_callback);
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
