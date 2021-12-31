@@ -115,6 +115,9 @@
     <ClInclude Include="Cube.hpp">
       <Filter>Data</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.hpp">
+      <Filter>Lazy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Lumina.rc">

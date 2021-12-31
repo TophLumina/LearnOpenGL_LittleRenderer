@@ -45,6 +45,10 @@ void processInput(GLFWwindow* window) {
 		campos += glm::cross(camfront, camup) * camspeed;
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		campos -= glm::cross(camfront, camup) * camspeed;
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		campos += camup * camspeed;
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+		campos -= camup * camspeed;
 
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
@@ -59,7 +63,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	//pitch up/dowm
 	//yaw	left/right
 	static float pitch = 0.0f;
-	static float yaw = 0.0f;
+	static float yaw = -90.0f;
 
 	static bool enter = true;
 

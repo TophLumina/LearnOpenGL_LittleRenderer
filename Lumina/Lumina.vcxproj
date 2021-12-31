@@ -205,6 +205,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.hpp" />
     <ClInclude Include="Cube.hpp" />
     <ClInclude Include="Rectangle.hpp" />
     <ClInclude Include="resource.h" />
