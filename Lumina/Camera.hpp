@@ -59,7 +59,7 @@ class Camera {
     }
 
     glm::mat4 GetViewMatrix() {
-        glm::lookAt(Position, Position + Front, Up);
+        return glm::lookAt(Position, Position + Front, Up);
     }
 
     //process keyboard input and unify with framerate
@@ -74,6 +74,9 @@ class Camera {
             Position += Right * velocity;
         if(dir == LEFT)
             Position -= Right * velocity;
+
+        //locked on xoz
+        Position.y = 0.0f;
     }
 
     void Mouse(float xoffset, float yoffset, GLboolean limitation = true) {
