@@ -63,18 +63,24 @@ class Camera {
     }
 
     //process keyboard input and unify with framerate
-    void KeyBoard(CameraDir dir, float deltatime) {
+    void KeyBoard(CameraDir direction, float deltatime) {
         float velocity = MovementSpeed * deltatime;
 
-        if(dir == FORWARD)
-            Position += Front * velocity;
-        if(dir == BACKWARD)
-            Position -= Front * velocity;
-        if(dir == RIGHT)
-            Position += Right * velocity;
-        if(dir == LEFT)
-            Position -= Right * velocity;
-
+        switch(direction) {
+            case FORWARD:
+                Position += Front * velocity;
+                break;
+            case BACKWARD:
+                Position -= Front * velocity;
+                break;
+            case RIGHT:
+                Position += Right * velocity;
+                break;
+            case LEFT:
+                Position -= Right * velocity;
+                break;
+            default:;
+        }
         //locked on xoz
         Position.y = 0.0f;
     }

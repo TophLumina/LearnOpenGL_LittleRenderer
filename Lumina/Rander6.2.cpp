@@ -36,8 +36,6 @@ void processInput(GLFWwindow* window) {
 	float camspeed = 2.5f * deltatime;
 
 	//FPS like camera
-	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-		camera.MovementSpeed *= 1.5f;
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camera.KeyBoard(FORWARD, deltatime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -218,21 +216,22 @@ int main() {
 		glm::mat4 projection(1.0f);
 		projection = glm::perspective(glm::radians(camera.Fov), (float)Screen_Width/(float)Screen_Height, 0.1f, 100.0f);
 
-		//pass the matrix to the fragshader
 		glUniformMatrix4fv(glGetUniformLocation(aShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(glGetUniformLocation(aShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		//pass the matrix to the fragshader
 
 		for (glm::vec3 v : cubePositions) {
 			glm::mat4 model(1.0f);
+			model = glm::translate(model, v);
 			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
 
 			glUniformMatrix4fv(glGetUniformLocation(aShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
 			aShader.setFloat("par", par);
 			if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-				par = par + 0.002f > 1.0f ? 1.0f : par + 0.002f;
+				par = par + 0.0002f > 1.0f ? 1.0f : par + 0.0002f;
 			if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-				par = par - 0.002f < 0.0f ? 0.0f : par - 0.002f;
+				par = par - 0.0002f < 0.0f ? 0.0f : par - 0.0002f;
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}

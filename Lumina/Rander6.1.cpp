@@ -247,22 +247,25 @@ int main() {
 
 		aShader.Use();
 
+		//simulate camera around
+		//create the view and projection matrix 
+		glm::mat4 view(1.0f);
+		view = glm::lookAt(campos, campos + camfront, camup);
+
+		glm::mat4 projection(1.0f);
+		projection = glm::perspective(glm::radians(fov), (float)(Screen_Width / Screen_Height), 0.1f, 100.0f);
+
+		glUniformMatrix4fv(glGetUniformLocation(aShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(glGetUniformLocation(aShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+
 		for (glm::vec3 v : cubePositions) {
+			//move model to its own positions
 			glm::mat4 model(1.0f);
+			model = glm::translate(model, v);
 			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-			glm::mat4 view(1.0f);
 
-			//simulate camera around
-			view = glm::lookAt(campos, campos + camfront, camup);
-
-
-			view = glm::translate(view, v);
-			glm::mat4 projection(1.0f);
-			projection = glm::perspective(glm::radians(fov), (float)(Screen_Width / Screen_Height), 0.1f, 100.0f);
-
+			//pass the updated model matrix to shader
 			glUniformMatrix4fv(glGetUniformLocation(aShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
-			glUniformMatrix4fv(glGetUniformLocation(aShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
-			glUniformMatrix4fv(glGetUniformLocation(aShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
 			aShader.setFloat("par", par);
 			if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
