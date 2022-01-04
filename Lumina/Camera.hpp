@@ -30,7 +30,7 @@ class Camera {
     glm::vec3 Right;
     glm::vec3 AbsoluteUp;
 
-    //angle
+    //eular angles
     float Pitch;
     float Yaw;
 
@@ -48,8 +48,53 @@ class Camera {
         updateCameraVectors();
     }
 
+    //by transfering metas
+    Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) {
+        Position = glm::vec3(posX, posY, posZ);
+        AbsoluteUp = glm::vec3(upX, upY, upZ);
+        Pitch = pitch;
+        Yaw = yaw;
+
+        updateCameraVectors();
+    }
+
     glm::mat4 GetViewMatrix() {
         glm::lookAt(Position, Position + Front, Up);
+    }
+
+    //process keyboard input and unify with framerate
+    void KeyBoard(CameraDir dir, float deltatime) {
+        float velocity = MovementSpeed * deltatime;
+
+        if(dir == FORWARD)
+            Position += Front * velocity;
+        if(dir == BACKWARD)
+            Position -= Front * velocity;
+        if(dir == RIGHT)
+            Position += Right * velocity;
+        if(dir == LEFT)
+            Position -= Right * velocity;
+    }
+
+    void Mouse(float xoffset, float yoffset, GLboolean limitation = true) {
+        xoffset *= TurningSensity;
+        yoffset *= TurningSensity;
+
+        Yaw += xoffset;
+        Pitch += yoffset;
+
+        if(limitation) {
+            Pitch = Pitch > 89.0f ? 89.0f : Pitch;
+            Pitch = Pitch < -89.0f ? -89.0f : Pitch; 
+        }
+
+        updateCameraVectors();
+    }
+
+    void MouseScroll(float yoffset) {
+        Fov -= yoffset;
+        Fov = Fov > 45.0f ? 45.0f : Fov;
+        Fov = Fov < 1.0f ? 1.0f : Fov;
     }
 
     private:

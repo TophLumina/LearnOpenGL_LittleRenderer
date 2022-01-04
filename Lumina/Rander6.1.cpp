@@ -97,7 +97,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 
 	camfront = glm::normalize(front);
 
-	//todo:if to use matrix to routate the camfront...
+	//todo: if using matrix to routate the camfront...
 }
 
 //zoom func
