@@ -195,6 +195,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Rander7.cpp" />
     <ClCompile Include="Rnader1.2.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -232,7 +233,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader.hpp" />
+    <None Include="Shaders\lightFag.shader" />
+    <None Include="Shaders\7Fag.shader" />
     <None Include="Shaders\cubeFrag.shader" />
+    <None Include="Shaders\7Vex.shader" />
     <None Include="Shaders\cubeMVP.shader" />
     <None Include="Shaders\testfrag.shader" />
     <None Include="Shaders\testvertex.shader" />
