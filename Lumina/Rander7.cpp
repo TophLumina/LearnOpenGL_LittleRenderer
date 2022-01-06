@@ -123,7 +123,7 @@ int main() {
 	//the model matrix and colors will not change during the rander loop
 	lightShader.Use();
 	lightShader.setVec3("lightColor", lightcolor);
-	lightShader.setMat4("medel", lightmodel);
+	lightShader.setMat4("model", lightmodel);
 
 	objectShader.Use();
 	objectShader.setVec3("lightColor", lightcolor);
@@ -138,21 +138,18 @@ int main() {
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::perspective(camera.Fov, (float)ScreenWidth / (float)ScreenHeight, 0.1f, 100.0f);
 
-		glBindVertexArray(objectVAO);
-
 		objectShader.Use();
 		objectShader.setMat4("view", view);
 		objectShader.setMat4("projection", projection);
 
+		glBindVertexArray(objectVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		//light do not function well
-		//need debug
-		glBindVertexArray(lightVAO);
 
 		lightShader.Use();
 		lightShader.setMat4("view", view);
 		lightShader.setMat4("projection", projection);
+
+		glBindVertexArray(objectVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		glfwPollEvents();

@@ -101,7 +101,7 @@ class Camera {
     }
 
     void MouseScroll(float yoffset) {
-        Fov -= yoffset;
+        Fov -= yoffset * 0.05f;
         Fov = Fov > 45.0f ? 45.0f : Fov;
         Fov = Fov < 1.0f ? 1.0f : Fov;
     }
