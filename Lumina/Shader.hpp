@@ -10,10 +10,12 @@ class Shader {
 public:
 	unsigned int ID;
 	Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
-	void Use();
-	void setBool(std::string name, bool value);
-	void setInt(std::string name, int value);
-	void setFloat(std::string name, float value);
+	void Use() const;
+	void setBool(std::string name, bool value) const;
+	void setInt(std::string name, int value) const;
+	void setFloat(std::string name, float value) const;
+	void setVec3(std::string name, glm::vec3 value) const;
+	void setMat4(std::string name, glm::mat4 value) const;
 };
 
 Shader::Shader(const GLchar* vertexpath,const GLchar* fragmentpath) {
@@ -56,6 +58,7 @@ Shader::Shader(const GLchar* vertexpath,const GLchar* fragmentpath) {
 	int success;
 	char infoLog[512];
 
+	//check complie errors
 	glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(vertex, 512, NULL, infoLog);
@@ -91,18 +94,26 @@ Shader::Shader(const GLchar* vertexpath,const GLchar* fragmentpath) {
 	this->ID = program;
 }
 
-void Shader::Use() {
+void Shader::Use() const {
 	glUseProgram(this->ID);
 }
 
-void Shader::setBool(std::string name, bool value) {
+void Shader::setBool(std::string name, bool value) const {
 	glUniform1i(glGetUniformLocation(this->ID, name.c_str()), (int)value);
 }
 
-void Shader::setInt(std::string name, int value) {
+void Shader::setInt(std::string name, int value) const {
 	glUniform1i(glGetUniformLocation(this->ID, name.c_str()), value);
 }
 
-void Shader::setFloat(std::string name, float value) {
+void Shader::setFloat(std::string name, float value) const {
 	glUniform1f(glGetUniformLocation(this->ID, name.c_str()), value);
+}
+
+void Shader::setVec3(std::string name, glm::vec3 value) const {
+	glUniform3fv(glGetUniformLocation(this->ID, name.c_str()), 1, glm::value_ptr(value));
+}
+
+void Shader::setMat4(std::string name, glm::mat4 value) const {
+	glUniformMatrix4fv(glGetUniformLocation(this->ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
 }

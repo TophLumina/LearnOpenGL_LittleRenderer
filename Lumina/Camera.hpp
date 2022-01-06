@@ -63,7 +63,7 @@ class Camera {
     }
 
     //process keyboard input and unify with framerate
-    void KeyBoard(CameraDir direction, float deltatime) {
+    void Move(CameraDir direction, float deltatime) {
         float velocity = MovementSpeed * deltatime;
 
         switch(direction) {
