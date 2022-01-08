@@ -11,6 +11,9 @@ class lazy {
 public:
 	static void glfwCoreEnv(int min_version, int max_version);
 	static unsigned int ShaderBulider(unsigned vertexShader, const GLchar* vertexshadersource, unsigned int fragShader, const GLchar* fragshadersource);
+	static void standardimput(GLFWwindow* window);
+	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+	static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 };
 
 void lazy::glfwCoreEnv(int min_version, int max_version) {

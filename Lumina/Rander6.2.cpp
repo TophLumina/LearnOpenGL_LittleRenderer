@@ -33,17 +33,18 @@ void processInput(GLFWwindow* window) {
 	float currenttime = glfwGetTime();
 	deltatime = currenttime - lasttime;
 	lasttime = currenttime;
-	float camspeed = 2.5f * deltatime;
+	
+	float camspeed = camera.MovementSpeed * deltatime;
 
 	//FPS like camera
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.KeyBoard(FORWARD, deltatime);
+		camera.Move(FORWARD, deltatime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.KeyBoard(BACKWARD, deltatime);
+		camera.Move(BACKWARD, deltatime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.KeyBoard(RIGHT, deltatime);
+		camera.Move(RIGHT, deltatime);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.KeyBoard(LEFT, deltatime);
+		camera.Move(LEFT, deltatime);
 
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
@@ -196,6 +197,12 @@ int main() {
 
 	float par = 0.0f;
 
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture1);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+
+
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -203,10 +210,6 @@ int main() {
 
 		glBindVertexArray(VAO);
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture1);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture2);
 
 		aShader.Use();
 
