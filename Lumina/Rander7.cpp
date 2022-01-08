@@ -148,7 +148,7 @@ int main() {
 	glm::vec3 lightcolor(1.0f, 1.0f, 1.0f);
 	glm::vec3 objectcolor(1.0f, 0.5f, 0.31f);
 
-	//the model matrix and colors will not change during the rander loop
+	//the model matrix and colors will not change during the render loop
 	lightShader.Use();
 	lightShader.setVec3("lightColor", lightcolor);
 	lightShader.setMat4("model", lightmodel);
@@ -168,20 +168,19 @@ int main() {
 		ImGui::NewFrame();
 
 		//a imgui deemo window
-		if(deemo_window)
-			// Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!
-			// ImGui::ShowDemoWindow();
-		{
-			ImGui::Begin("Hello ImGui!");
+		if(deemo_window) {
+			// Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui
+			ImGui::ShowDemoWindow();
+		// 	ImGui::Begin("Hello ImGui!");
 
-			ImGui::Text("Some Test, 中文测试");
-			//Pass the pointer of the var to link the checkbox and var
-			ImGui::Checkbox("Main Page", &deemo_window);
-			ImGui::Checkbox("Another Page", &another_window);
+		// 	ImGui::Text("Some Test, 中文测试");
+		// 	//Pass the pointer of the var to link the checkbox and var
+		// 	ImGui::Checkbox("Main Page", &deemo_window);
+		// 	ImGui::Checkbox("Another Page", &another_window);
 
-			ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+		// 	ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
 
-			ImGui::End();
+		// 	ImGui::End();
 		}
 
 		if(another_window) {
