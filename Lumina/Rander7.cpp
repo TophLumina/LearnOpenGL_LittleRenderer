@@ -6,6 +6,11 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
+//imgui headers
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+
 #include "Camera.hpp"
 #include "Shader.hpp"
 #include "lazy.hpp"
@@ -56,6 +61,8 @@ void input(GLFWwindow* window) {
 		camera.Move(LEFT, deltatime);
 	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+	if(glfwGetKey(window,GLFW_KEY_TAB) == GLFW_PRESS)
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 int main() {
@@ -74,6 +81,27 @@ int main() {
 		std::cout << "Failed to init GLAD" << std::endl;
 		return -1;
 	}
+
+	//GLSL version
+	const char *glsl_version = "#version 330 core";
+
+	//setup imgui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO &io = ImGui::GetIO();
+	(void)io;
+
+	//setup imgui style
+	ImGui::StyleColorsLight();
+
+	//setup imgui Platform/Randerer backends
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init(glsl_version);
+
+	//state for debug
+	bool deemo_window = true;
+	bool another_window = false;
+
 	glViewport(0, 0, 800, 600);
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -132,6 +160,48 @@ int main() {
 
 	while(!glfwWindowShouldClose(window)) {
 		input(window);
+		glfwPollEvents();
+
+		//start the imgui frame
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		//a imgui deemo window
+		if(deemo_window)
+			// Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!
+			// ImGui::ShowDemoWindow();
+		{
+			ImGui::Begin("Hello ImGui!");
+
+			ImGui::Text("Some Test, 中文测试");
+			//Pass the pointer of the var to link the checkbox and var
+			ImGui::Checkbox("Main Page", &deemo_window);
+			ImGui::Checkbox("Another Page", &another_window);
+
+			ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+
+			ImGui::End();
+		}
+
+		if(another_window) {
+			//A window begins with a Begin() and ends with a End()
+			ImGui::Begin("Another Window", &another_window);	
+			// Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+
+			ImGui::Text("aother window here!");
+			//Text use to show any kind of string text;
+
+			if(ImGui::Button("Close"))
+				another_window = false;
+			//Button use to create a button
+
+			ImGui::End();
+		}
+
+		//all element need to be render after crafted
+		ImGui::Render();
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -152,9 +222,15 @@ int main() {
 		glBindVertexArray(objectVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		glfwPollEvents();
+		//Draw(I don't know how it works out)
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 		glfwSwapBuffers(window);
 	}
+	//clean up
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
 	glDeleteBuffers(1, &lightVAO);
 	glDeleteBuffers(1, &objectVAO);
