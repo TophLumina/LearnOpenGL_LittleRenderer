@@ -3,6 +3,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+static void glfw_error_callback(int error, const char* description) {
+	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+}
+
 class lazy {
 public:
 	static void glfwCoreEnv(int min_version, int max_version);
@@ -10,6 +14,7 @@ public:
 };
 
 void lazy::glfwCoreEnv(int min_version, int max_version) {
+	glfwSetErrorCallback(glfw_error_callback);
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, min_version);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, max_version);
