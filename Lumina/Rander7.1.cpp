@@ -185,6 +185,7 @@ int main() {
 			ImGui::Begin("Debug Page");
 
 			//Pass the pointer of the var to link the checkbox and var
+			ImGui::Text("Page Selector");
 			ImGui::Checkbox("Main Page", &deemo_window);
 			ImGui::Checkbox("Another Page", &another_window);
 
@@ -203,7 +204,7 @@ int main() {
 			ImGui::Begin("Another Window", &another_window);
 			// Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
 
-			ImGui::Text("aother window here!");
+			ImGui::Text("I haven't descide what to put on yet.");
 			//Text use to show any kind of string text;
 
 			if (ImGui::Button("Close"))
