@@ -104,6 +104,9 @@
     <ClCompile Include="imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
+    <ClCompile Include="Rander7.1.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rectangle.hpp">
@@ -175,6 +178,9 @@
     <ClInclude Include="imgui\imstb_truetype.h">
       <Filter>imgui</Filter>
     </ClInclude>
+    <ClInclude Include="CubewithNormal.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Lumina.rc">
@@ -216,6 +222,12 @@
       <Filter>Shaders\RealShaders</Filter>
     </None>
     <None Include="Shaders\lightFag.shader">
+      <Filter>Shaders\RealShaders</Filter>
+    </None>
+    <None Include="Shaders\PhongFag.shader">
+      <Filter>Shaders\RealShaders</Filter>
+    </None>
+    <None Include="Shaders\PhongVex.shader">
       <Filter>Shaders\RealShaders</Filter>
     </None>
   </ItemGroup>

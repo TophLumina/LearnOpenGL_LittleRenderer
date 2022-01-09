@@ -82,7 +82,7 @@ class Camera {
             default:;
         }
         //locked on xoz
-        Position.y = 0.0f;
+        // Position.y = 0.0f;
     }
 
     void Mouse(float xoffset, float yoffset, GLboolean limitation = true) {
