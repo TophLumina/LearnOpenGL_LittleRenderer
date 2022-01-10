@@ -35,54 +35,6 @@
     <ClCompile Include="glad.c">
       <Filter>资源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Rander1.cpp">
-      <Filter>Programs\Deactive</Filter>
-    </ClCompile>
-    <ClCompile Include="Rander1.1.cpp">
-      <Filter>Programs\Deactive</Filter>
-    </ClCompile>
-    <ClCompile Include="Rnader1.2.cpp">
-      <Filter>Programs\Deactive</Filter>
-    </ClCompile>
-    <ClCompile Include="Rander2.cpp">
-      <Filter>Programs\Deactive</Filter>
-    </ClCompile>
-    <ClCompile Include="Rander2.1.cpp">
-      <Filter>Programs\Deactive</Filter>
-    </ClCompile>
-    <ClCompile Include="Rander2.2.cpp">
-      <Filter>Programs\Deactive</Filter>
-    </ClCompile>
-    <ClCompile Include="Rander2.3.cpp">
-      <Filter>Programs\Deactive</Filter>
-    </ClCompile>
-    <ClCompile Include="Rander3.cpp">
-      <Filter>Programs\Deactive</Filter>
-    </ClCompile>
-    <ClCompile Include="Rander4.cpp">
-      <Filter>Programs\Deactive</Filter>
-    </ClCompile>
-    <ClCompile Include="Rander5.cpp">
-      <Filter>Programs\Deactive</Filter>
-    </ClCompile>
-    <ClCompile Include="Rander5.1.cpp">
-      <Filter>Programs\Deactive</Filter>
-    </ClCompile>
-    <ClCompile Include="Rnader5.2.cpp">
-      <Filter>Programs\Deactive</Filter>
-    </ClCompile>
-    <ClCompile Include="Rnader6.cpp">
-      <Filter>Programs\Deactive</Filter>
-    </ClCompile>
-    <ClCompile Include="Rander6.1.cpp">
-      <Filter>Programs\Deactive</Filter>
-    </ClCompile>
-    <ClCompile Include="Rander6.2.cpp">
-      <Filter>Programs\Deactive</Filter>
-    </ClCompile>
-    <ClCompile Include="Rander7.cpp">
-      <Filter>Programs\Deactive</Filter>
-    </ClCompile>
     <ClCompile Include="imgui\imgui.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
@@ -104,7 +56,58 @@
     <ClCompile Include="imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="Rander7.1.cpp">
+    <ClCompile Include="Render1.1.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Render1.2.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Render1.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Render2.1.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Render2.2.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Render2.3.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Render2.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Render3.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Render4.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Render5.1.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Render5.2.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Render5.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Render6.1.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Render6.2.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Render6.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Render7.1.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Render7.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Render7.2.cpp">
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
   </ItemGroup>
@@ -228,6 +231,12 @@
       <Filter>Shaders\RealShaders</Filter>
     </None>
     <None Include="Shaders\PhongVex.shader">
+      <Filter>Shaders\RealShaders</Filter>
+    </None>
+    <None Include="Shaders\materialFag.shader">
+      <Filter>Shaders\RealShaders</Filter>
+    </None>
+    <None Include="Shaders\materialVex.shader">
       <Filter>Shaders\RealShaders</Filter>
     </None>
   </ItemGroup>

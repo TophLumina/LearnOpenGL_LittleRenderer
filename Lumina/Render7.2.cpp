@@ -61,7 +61,7 @@ void input(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 	if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
-		if(glfwGetInputMode(window,GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
+		if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		else
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -97,8 +97,7 @@ int main() {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init(glsl_version);
 
-	bool deemo_window = true;
-	bool another_window = false;
+	bool main_window = true;
 
 	glViewport(0, 0, 800, 600);
 
@@ -119,10 +118,9 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	//pointer to vertex pos and vertex normal
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -132,13 +130,13 @@ int main() {
 	glGenVertexArrays(1, &lightVAO);
 	glBindVertexArray(lightVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	Shader objectShader("./Shaders/PhongVex.shader", "./Shaders/PhongFag.shader");
+	Shader objectShader("./Shaders/materialVex.shader", "./Shaders/materialFag.shader");
 	Shader lightShader("./Shaders/7Vex.shader", "./Shaders/lightFag.shader");
 
 	glm::vec3 lightpos(1.2f, 1.0f, 2.0f);
@@ -147,68 +145,53 @@ int main() {
 	lightmodel = glm::translate(lightmodel, lightpos);
 	lightmodel = glm::scale(lightmodel, glm::vec3(0.2f));
 
-	glm::vec3 lightcolor(1.0f, 1.0f, 1.0f);
-	glm::vec3 objectcolor(1.0f, 0.5f, 0.31f);
+	//light and material
+	glm::vec3 light_source(1.0f);
+	glm::vec3 light_ambient(0.2f);
+	glm::vec3 light_diffuse(0.5f);
+	glm::vec3 light_specular(1.0f);
 
-	//the model matrix and colors will not change during the render loop
+	glm::vec3 material_ambient(1.0f, 0.5f, 0.31f);
+	glm::vec3 material_diffuse(1.0f, 0.5f, 0.31f);
+	glm::vec3 material_specular(0.5f);
+	float material_shininess = 32.0f;
+
+	//the model matrix will not change during the render loop
 	lightShader.Use();
-	lightShader.setVec3("lightColor", lightcolor);
 	lightShader.setMat4("model", lightmodel);
+	lightShader.setVec3("light.ambient", light_source);	//here use the original color which is (1.0, 1.0, 1.0)
 
 	objectShader.Use();
-	objectShader.setVec3("lightColor", lightcolor);
-	objectShader.setVec3("objectColor", objectcolor);
 	objectShader.setMat4("model", glm::mat4(1.0f));
+	objectShader.setVec3("light.ambient", light_ambient);
+	objectShader.setVec3("light.diffuse", light_diffuse);
+	objectShader.setVec3("light.specular", light_specular);
 
-	float ambient = 0.1;
-	float specular = 0.7;
+	objectShader.setVec3("material.ambient", material_ambient);
+	objectShader.setVec3("material.diffuse", material_diffuse);
+	objectShader.setVec3("material.specular", material_specular);
+	objectShader.setFloat("material.shininess", material_shininess);
 
 	while (!glfwWindowShouldClose(window)) {
 		input(window);
 		glfwPollEvents();
 
-		//start the imgui frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		//a imgui deemo window
-		if (deemo_window) {
+		if (main_window) {
 			// Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui
 			// ImGui::ShowDemoWindow();
-			ImGui::Begin("Debug Page");
-
-			//Pass the pointer of the var to link the checkbox and var
-			ImGui::Text("Page Selector");
-			ImGui::Checkbox("Main Page", &deemo_window);
-			ImGui::Checkbox("Another Page", &another_window);
+			ImGui::Begin("Debug Page", &main_window);
 
 			ImGui::Text("Press TAB to switch Cursor capture mode.");
-
-			ImGui::SliderFloat("Ambient", &ambient, 0.0f, 1.0f);
-			ImGui::SliderFloat("Speclar", &specular, 0.0f, 1.0f);
 
 			ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
 
 			ImGui::End();
 		}
 
-		if (another_window) {
-			//A window begins with a Begin() and ends with a End()
-			ImGui::Begin("Another Window", &another_window);
-			// Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-
-			ImGui::Text("I haven't descide what to put on yet.");
-			//Text use to show any kind of string text;
-
-			if (ImGui::Button("Close"))
-				another_window = false;
-			//Button use to create a button
-
-			ImGui::End();
-		}
-
-		//all element need to be render after crafted
 		ImGui::Render();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -218,14 +201,11 @@ int main() {
 		glm::mat4 projection = glm::perspective(camera.Fov, (float)ScreenWidth / (float)ScreenHeight, 0.1f, 100.0f);
 
 		objectShader.Use();
-		//pass the ambientFactor and the speclarFactor to the shader
-		objectShader.setFloat("ambientFactor", ambient);
-		objectShader.setFloat("specularFactor", specular);
 
 		//pass lightPos to the frag shader
 		//and if we use view space coords the light pos must be updated while we moving the camera
 		//and maybe it is more efficient if we put matrix transforms in cpu (in most cases)
-		objectShader.setVec3("lightPos", glm::mat3(view) * lightpos);
+		objectShader.setVec3("light.position", glm::mat3(view) * lightpos);
 		objectShader.setMat4("view", view);
 		objectShader.setMat4("projection", projection);
 
@@ -239,12 +219,10 @@ int main() {
 		glBindVertexArray(objectVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		//Draw(I don't know how it works out)
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		glfwSwapBuffers(window);
 	}
-	//clean up
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
