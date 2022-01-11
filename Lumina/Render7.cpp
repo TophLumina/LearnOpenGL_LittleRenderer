@@ -205,7 +205,7 @@ int main() {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 		glm::mat4 view = camera.GetViewMatrix();
-		glm::mat4 projection = glm::perspective(camera.Fov, (float)ScreenWidth / (float)ScreenHeight, 0.1f, 100.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)ScreenWidth / (float)ScreenHeight, 0.1f, 100.0f);
 
 		objectShader.Use();
 		objectShader.setMat4("view", view);

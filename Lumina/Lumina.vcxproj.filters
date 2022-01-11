@@ -107,9 +107,6 @@
     <ClCompile Include="Render7.cpp">
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
-    <ClCompile Include="Render7.2.cpp">
-      <Filter>Programs\Deactive</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rectangle.hpp">

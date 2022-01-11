@@ -160,8 +160,8 @@ int main() {
 	objectShader.setVec3("objectColor", objectcolor);
 	objectShader.setMat4("model", glm::mat4(1.0f));
 
-	float ambient = 0.1;
-	float specular = 0.7;
+	float ambient = 0.0f;
+	float specular = 0.0f;
 
 	while (!glfwWindowShouldClose(window)) {
 		input(window);
@@ -187,6 +187,8 @@ int main() {
 
 			ImGui::SliderFloat("Ambient", &ambient, 0.0f, 1.0f);
 			ImGui::SliderFloat("Speclar", &specular, 0.0f, 1.0f);
+
+			ImGui::Text("LightPos: %.1f,%.1f,%.1f", lightpos.x, lightpos.y, lightpos.z);
 
 			ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
 
@@ -215,7 +217,7 @@ int main() {
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 		glm::mat4 view = camera.GetViewMatrix();
-		glm::mat4 projection = glm::perspective(camera.Fov, (float)ScreenWidth / (float)ScreenHeight, 0.1f, 100.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)ScreenWidth / (float)ScreenHeight, 0.1f, 100.0f);
 
 		objectShader.Use();
 		//pass the ambientFactor and the speclarFactor to the shader
@@ -225,9 +227,9 @@ int main() {
 		//pass lightPos to the frag shader
 		//and if we use view space coords the light pos must be updated while we moving the camera
 		//and maybe it is more efficient if we put matrix transforms in cpu (in most cases)
-		objectShader.setVec3("lightPos", glm::mat3(view) * lightpos);
 		objectShader.setMat4("view", view);
 		objectShader.setMat4("projection", projection);
+		objectShader.setVec3("lightPos", glm::mat3(view) * lightpos);
 
 		glBindVertexArray(objectVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -257,4 +259,3 @@ int main() {
 
 // TODO:
 // - findout why the lighting looks strange in range
-// - compelete the new shader and put it into use in Render7.2
