@@ -160,8 +160,8 @@ int main() {
 	objectShader.setVec3("objectColor", objectcolor);
 	objectShader.setMat4("model", glm::mat4(1.0f));
 
-	float ambient = 0.0f;
-	float specular = 0.0f;
+	float ambient = 0.1f;
+	float specular = 0.4f;
 
 	while (!glfwWindowShouldClose(window)) {
 		input(window);
