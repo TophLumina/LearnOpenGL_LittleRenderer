@@ -229,7 +229,7 @@ int main() {
 		//and maybe it is more efficient if we put matrix transforms in cpu (in most cases)
 		objectShader.setMat4("view", view);
 		objectShader.setMat4("projection", projection);
-		objectShader.setVec3("lightPos", glm::mat3(view) * lightpos);
+		objectShader.setVec3("lightPos", glm::vec3(view * glm::vec4(lightpos, 1.0)));
 
 		glBindVertexArray(objectVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
