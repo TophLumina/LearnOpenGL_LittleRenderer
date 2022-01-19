@@ -256,6 +256,3 @@ int main() {
 	glDeleteBuffers(1, &VBO);
 	glfwTerminate();
 }
-
-// TODO:
-// - findout why the lighting looks strange in range
