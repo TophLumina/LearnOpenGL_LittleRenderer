@@ -19,6 +19,9 @@ glm::vec3 campos(0.0, 0.0, 3.0);
 glm::vec3 up(0.0, 1.0, 0.0);
 Camera camera(campos, up);
 
+//cursor break sign
+bool enter = true;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
@@ -26,7 +29,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	static float lastxpos = 400.0f;
 	static float lastypos = 300.0f;
-	static bool enter = true;
 	if (enter) {
 		enter = false;
 		lastxpos = xpos;
@@ -49,7 +51,6 @@ void input(GLFWwindow* window) {
 	float currenttime = glfwGetTime();
 	deltatime = currenttime - lasttime;
 	lasttime = currenttime;
-	float camspeed = camera.MovementSpeed * deltatime;
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camera.Move(FORWARD, deltatime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -60,11 +61,14 @@ void input(GLFWwindow* window) {
 		camera.Move(LEFT, deltatime);
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-	if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
-		if(glfwGetInputMode(window,GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		else
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		glfwSetCursorPosCallback(window, NULL);
+		enter = true;
+	}
+	else {
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwSetCursorPosCallback(window, mouse_callback);
 	}
 }
 
@@ -89,7 +93,7 @@ int main() {
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO();
+	ImGuiIO &io = ImGui::GetIO();
 	(void)io;
 
 	ImGui::StyleColorsLight();
@@ -110,10 +114,10 @@ int main() {
 
 	glEnable(GL_DEPTH_TEST);
 
-	unsigned int objectVAO;
 	unsigned int VBO;
-	glGenVertexArrays(1, &objectVAO);
+	unsigned int objectVAO;
 	glGenBuffers(1, &VBO);
+	glGenVertexArrays(1, &objectVAO);
 
 	glBindVertexArray(objectVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -183,7 +187,7 @@ int main() {
 			ImGui::Checkbox("Main Page", &deemo_window);
 			ImGui::Checkbox("Another Page", &another_window);
 
-			ImGui::Text("Press TAB to switch Cursor capture mode.");
+			ImGui::Text("Keep Pressing LEFT_CTRL to switch Cursor capture mode.");
 
 			ImGui::SliderFloat("Ambient", &ambient, 0.0f, 1.0f);
 			ImGui::SliderFloat("Speclar", &specular, 0.0f, 1.0f);
@@ -214,7 +218,7 @@ int main() {
 		ImGui::Render();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)ScreenWidth / (float)ScreenHeight, 0.1f, 100.0f);

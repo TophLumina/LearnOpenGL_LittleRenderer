@@ -223,7 +223,12 @@
     </ClCompile>
     <ClCompile Include="Render7.1.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render7.2.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Render7.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -246,7 +251,6 @@
     <ClInclude Include="Rectangle.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Shaders\ChainShader.hpp" />
-    <ClInclude Include="Shaders\Shader.hpp" />
     <ClInclude Include="Shaders\SimpleShader1.1.hpp" />
     <ClInclude Include="Shaders\SimpleShader1.hpp" />
     <ClInclude Include="Shaders\uniformShader.hpp" />
@@ -261,8 +265,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader.hpp" />
-    <None Include="Shaders\materialFag.shader" />
-    <None Include="Shaders\materialVex.shader" />
+    <None Include="Shaders\materializedFag.shader" />
+    <None Include="Shaders\materializedVex.shader" />
     <None Include="Shaders\PhongFag.shader" />
     <None Include="Shaders\PhongVex.shader" />
     <None Include="Shaders\lightFag.shader" />

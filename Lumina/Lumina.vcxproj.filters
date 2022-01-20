@@ -107,6 +107,9 @@
     <ClCompile Include="Render7.cpp">
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
+    <ClCompile Include="Render7.2.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rectangle.hpp">
@@ -131,9 +134,6 @@
       <Filter>Shaders\Shaders_Str</Filter>
     </ClInclude>
     <ClInclude Include="Shaders\ChainShader.hpp">
-      <Filter>Shaders\Shaders_Str</Filter>
-    </ClInclude>
-    <ClInclude Include="Shaders\Shader.hpp">
       <Filter>Shaders\Shaders_Str</Filter>
     </ClInclude>
     <ClInclude Include="Shaders\SimpleShader1.1.hpp">
@@ -230,10 +230,10 @@
     <None Include="Shaders\PhongVex.shader">
       <Filter>Shaders\RealShaders</Filter>
     </None>
-    <None Include="Shaders\materialFag.shader">
+    <None Include="Shaders\materializedFag.shader">
       <Filter>Shaders\RealShaders</Filter>
     </None>
-    <None Include="Shaders\materialVex.shader">
+    <None Include="Shaders\materializedVex.shader">
       <Filter>Shaders\RealShaders</Filter>
     </None>
   </ItemGroup>
