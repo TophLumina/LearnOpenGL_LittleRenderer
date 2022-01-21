@@ -79,7 +79,7 @@ int main() {
     int ScreenWidth = 800;
     int ScreenHeight = 600;
 
-    GLFWwindow *window = glfwCreateWindow(ScreenWidth, ScreenHeight, "Material", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(ScreenWidth, ScreenHeight, "MaterialandTexture", NULL, NULL);
     if(window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -233,11 +233,6 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texturediff);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texturespec);
-
         glm::vec3 lightcolor(lightcol[0], lightcol[1], lightcol[2]);
         //changing color
         if(dynamiclightsign) {
@@ -262,6 +257,12 @@ int main() {
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)ScreenWidth / (float)ScreenHeight, 0.1f, 100.0f);
 
+        //need to activate texture unit every time before the Draw func is being called
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texturediff);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texturespec);
+
         lightShader.Use();
         lightShader.setMat4("view", view);
         lightShader.setMat4("projection", projection);
@@ -284,6 +285,8 @@ int main() {
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
+    glDeleteTextures(1, &texturediff);
+    glDeleteTextures(1, &texturespec);
     glDeleteBuffers(1, &lightVAO);
     glDeleteBuffers(1, &objectVAO);
     glDeleteBuffers(1, &VBO);
