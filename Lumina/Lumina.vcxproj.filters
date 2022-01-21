@@ -113,6 +113,9 @@
     <ClCompile Include="Render7.3.cpp">
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
+    <ClCompile Include="Render7.4.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rectangle.hpp">
@@ -237,6 +240,12 @@
       <Filter>Shaders\RealShaders</Filter>
     </None>
     <None Include="Shaders\materializedVex.shader">
+      <Filter>Shaders\RealShaders</Filter>
+    </None>
+    <None Include="Shaders\materializedtexturedFrag.shader">
+      <Filter>Shaders\RealShaders</Filter>
+    </None>
+    <None Include="Shaders\materializedtexturedVex.shader">
       <Filter>Shaders\RealShaders</Filter>
     </None>
   </ItemGroup>

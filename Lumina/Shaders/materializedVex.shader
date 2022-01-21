@@ -13,6 +13,6 @@ void main() {
 	mat4 MVP = projection * view * model;
 
 	normal = mat3(transpose(inverse(model * view))) * aNormal;
-	fragPos = vec3(model * view * vec4(aPos, 1.0));
+	fragPos = vec3(view * model * vec4(aPos, 1.0));
 	gl_Position = MVP * vec4(aPos, 1.0);
 }
