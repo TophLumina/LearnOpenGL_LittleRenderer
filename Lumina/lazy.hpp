@@ -13,6 +13,7 @@ public:
 	static void glfwCoreEnv(int min_version, int max_version);
 	static unsigned int ShaderBulider(unsigned vertexShader, const GLchar* vertexshadersource, unsigned int fragShader, const GLchar* fragshadersource);
 	static void standardimput(GLFWwindow* window);
+	static void settextureformula();
 	//lazy guy :)
 };
 
@@ -64,4 +65,11 @@ unsigned int lazy::ShaderBulider(unsigned vertexShader, const GLchar* vertexshad
 	glDeleteShader(fragShader);
 
 	return program;
+}
+
+void lazy::settextureformula() {
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 }

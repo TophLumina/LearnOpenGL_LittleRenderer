@@ -170,10 +170,8 @@ int main() {
     glGenTextures(1, &texturediff);
     glBindTexture(GL_TEXTURE_2D, texturediff);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    //i'm lazy :)
+    lazy::settextureformula();
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureDatadiff);
     glGenerateMipmap(GL_TEXTURE_2D);
@@ -187,10 +185,7 @@ int main() {
     glGenTextures(1, &texturespec);
     glBindTexture(GL_TEXTURE_2D, texturespec);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    lazy::settextureformula();
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureDataspec);
     glGenerateMipmap(GL_TEXTURE_2D);
@@ -237,7 +232,7 @@ int main() {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        
+
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texturediff);
         glActiveTexture(GL_TEXTURE1);
@@ -294,5 +289,3 @@ int main() {
     glDeleteBuffers(1, &VBO);
     glfwTerminate();
 }
-
-//todo: compelete the UI and make the material adjustable in real-time
