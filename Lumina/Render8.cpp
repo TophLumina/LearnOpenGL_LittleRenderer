@@ -79,7 +79,7 @@ int main() {
     int ScreenWidth = 800;
     int ScreenHeight = 600;
 
-    GLFWwindow *window = glfwCreateWindow(ScreenWidth, ScreenHeight, "MaterialandTexture", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(ScreenWidth, ScreenHeight, "Advanced Light", NULL, NULL);
     if(window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -291,3 +291,5 @@ int main() {
     glDeleteBuffers(1, &VBO);
     glfwTerminate();
 }
+
+//todo: Compelete different kinds of lights
