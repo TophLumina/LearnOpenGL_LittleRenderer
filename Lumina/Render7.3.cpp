@@ -149,24 +149,12 @@ int main() {
     lightmodel = glm::translate(lightmodel, lightpos);
     lightmodel = glm::scale(lightmodel, glm::vec3(0.2f));
 
-    glm::vec3 lightcolor(1.0f, 1.0f, 1.0f);
-    glm::vec3 objectsurfacecolor(1.0f, 0.5f, 0.31f);
+    //params used in UI
+    bool dynamiclightsign = false;
 
-    lightShader.Use();
-    lightShader.setVec3("lightColor", lightcolor);
-    lightShader.setMat4("model", lightmodel);
-
-    // and don't forget that the address of the shader was exposed only after the shader is used --<important>--
-    objectShader.Use();
-    objectShader.setMat4("model", glm::mat4(1.0f));
-    objectShader.setVec3("material.ambient", objectsurfacecolor);
-    objectShader.setVec3("material.diffuse", objectsurfacecolor);
-    objectShader.setVec3("material.specular", 0.5f * lightcolor);
-    objectShader.setFloat("material.shininess", 32.0f);
-
-    objectShader.setVec3("light.ambient", 0.1f * lightcolor);
-    objectShader.setVec3("light.diffuse", 0.5f * lightcolor);
-    objectShader.setVec3("light.specular", 1.0f * lightcolor);
+    float lightcol[3] = {1.0f, 1.0f, 1.0f};
+    float objsurfacecol[3] = {1.0f, 0.5f, 0.31f};
+    float shinefactor = 32.0f;
 
     while (!glfwWindowShouldClose(window)) {
         input(window);
@@ -179,8 +167,17 @@ int main() {
         if(debug_page) {
             ImGui::Begin("Debug Page");
             //stuff use to dynamicly debug
-            ImGui::Text("camera:(%.1f, %.1f, %.1f)", camera.Position.x, camera.Position.y, camera.Position.z);
-            ImGui::Text("FPS:%.1f", ImGui::GetIO().Framerate);
+            ImGui::Checkbox("DynamicLightColor", &dynamiclightsign);
+            ImGui::ColorEdit3("LightColor", lightcol);
+            ImGui::NewLine();
+
+            ImGui::ColorEdit3("ObjectSurfaceColor", objsurfacecol);
+            ImGui::SliderFloat("Shininess", &shinefactor, 32.0f, 512.0f, "%.0f");
+            ImGui::NewLine();
+
+            ImGui::BulletText("Camera Pos:(%.1f, %.1f, %.1f)", camera.Position.x, camera.Position.y, camera.Position.z);
+            ImGui::BulletText("Current Time: %.1fs", (float)glfwGetTime());
+            ImGui::BulletText("FPS: %.1f", ImGui::GetIO().Framerate);
             ImGui::End();
         }
 
@@ -188,6 +185,31 @@ int main() {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+        glm::vec3 lightcolor(lightcol[0], lightcol[1], lightcol[2]);
+        //changing color
+        if(dynamiclightsign) {
+            lightcolor.x = sin(glfwGetTime() * 2.0f);
+            lightcolor.y = sin(glfwGetTime() * 0.7f);
+            lightcolor.z = sin(glfwGetTime() * 1.3f);
+        }
+        glm::vec3 objectsurfacecolor(objsurfacecol[0], objsurfacecol[1], objsurfacecol[2]);
+
+        lightShader.Use();
+        lightShader.setVec3("lightColor", lightcolor);
+        lightShader.setMat4("model", lightmodel);
+
+        // and don't forget that the address of the shader was exposed only after the shader is used --<important>--
+        objectShader.Use();
+        objectShader.setMat4("model", glm::mat4(1.0f));
+        objectShader.setVec3("material.ambient", objectsurfacecolor);
+        objectShader.setVec3("material.diffuse", objectsurfacecolor);
+        objectShader.setVec3("material.specular", 0.5f * lightcolor);
+        objectShader.setFloat("material.shininess", shinefactor);
+
+        objectShader.setVec3("light.ambient", 0.1f * lightcolor);
+        objectShader.setVec3("light.diffuse", 0.5f * lightcolor);
+        objectShader.setVec3("light.specular", 1.0f * lightcolor);
 
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)ScreenWidth / (float)ScreenHeight, 0.1f, 100.0f);
