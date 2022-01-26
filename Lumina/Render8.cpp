@@ -147,7 +147,7 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     Shader lightShader("./Shaders/7Vex.shader", "./Shaders/lightFag.shader");
-    Shader objectShader("./Shaders/materializedtexturedVex.shader", "./Shaders/materializedtexturedFrag.shader");
+    Shader objectShader("./Shaders/materializedtexturedVex.shader", "./Shaders/advancedLightingFrag.shader");
 
     glm::vec3 lightpos(1.2f, 1.0f, 2.0f);
     glm::mat4 lightmodel(1.0f);
@@ -198,6 +198,19 @@ int main() {
     objectShader.setInt("material.diffuse", 0);
     objectShader.setInt("material.specular", 1);
 
+    //pos for the cubes
+    glm::vec3 cubePositions[] = {
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(2.0f, 5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3(2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f, 3.0f, -7.5f),
+        glm::vec3(1.3f, -2.0f, -2.5f),
+        glm::vec3(1.5f, 2.0f, -2.5f),
+        glm::vec3(1.5f, 0.2f, -1.5f),
+        glm::vec3(-1.3f, 1.0f, -1.5f)};
+
     // params used for UI
     bool dynamiclightsign = false;
 
@@ -247,17 +260,20 @@ int main() {
 
         // and don't forget that the address of the shader was exposed only after the shader is used --<important>--
         objectShader.Use();
-        objectShader.setMat4("model", glm::mat4(1.0f));
         objectShader.setFloat("material.shininess", shinefactor);
 
         objectShader.setVec3("light.ambient", 0.1f * lightcolor);
         objectShader.setVec3("light.diffuse", 0.5f * lightcolor);
         objectShader.setVec3("light.specular", 1.0f * lightcolor);
+        objectShader.setFloat("light.constant", 1.0f);
+        objectShader.setFloat("light.linear", 0.09f);
+        objectShader.setFloat("light.quadratic", 0.032f);
 
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)ScreenWidth / (float)ScreenHeight, 0.1f, 100.0f);
 
         //need to activate texture unit every time before the Draw func is being called --<important>--
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texturediff);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texturespec);
@@ -272,10 +288,22 @@ int main() {
         objectShader.setMat4("view",view);
         objectShader.setMat4("projection",projection);
         //the lightpos should be in view coords for we caculate lighting in the view space
-        objectShader.setVec3("light.position", glm::vec3(view * glm::vec4(lightpos, 1.0)));
+        //for we are using the view-based lighting so the flashlight starts from the position of our camera whitch is (0, 0, 0) and towards (0, 0, -1)
+        objectShader.setVec3("light.position", glm::vec3(0.0f, 0.0f, 0.0f));
+        objectShader.setVec3("light.direction", glm::vec3(0.0f, 0.0f, -1.0f));
+        //use glm::radians() to get the angle by 12.5 degree
+        objectShader.setFloat("light.cutoff", glm::cos(glm::radians(12.5f)));
+        objectShader.setFloat("light.outercutoff", glm::cos(glm::radians(17.5f)));
 
         glBindVertexArray(objectVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        //10 cubes in different positions
+        for(glm::vec3 pos : cubePositions) {
+            glm::mat4 model(1.0f);
+            model = glm::translate(model, pos);
+            model = glm::rotate(model, (float)glm::radians(5.0f * glfwGetTime()), glm::vec3(1.0f, 0.5f, 0.3f));
+            objectShader.setMat4("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
