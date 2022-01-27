@@ -349,5 +349,3 @@ int main() {
     glDeleteBuffers(1, &VBO);
     glfwTerminate();
 }
-
-//todo: Compelete different kinds of lights
