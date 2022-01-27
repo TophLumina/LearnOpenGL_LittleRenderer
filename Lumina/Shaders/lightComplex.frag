@@ -3,6 +3,7 @@
 struct Material {
     sampler2D diffuse;
     sampler2D specular;
+    sampler2D spotonly;
     float shininess;
 };
 
@@ -128,8 +129,8 @@ vec3 CalculateSpotlight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 
     vec3 ambient = light.ambient * vec3(texture(material.diffuse, texCoords));
-    vec3 diffuse = diff * light.diffuse * vec3(texture(material.diffuse, texCoords));
-    vec3 specular = spec * light.specular * vec3(texture(material.specular, texCoords));
+    vec3 diffuse = diff * light.diffuse * vec3(mix(texture(material.diffuse, texCoords), texture(material.spotonly, texCoords), 1.0));
+    vec3 specular = spec * light.specular * vec3(mix(texture(material.diffuse, texCoords), texture(material.spotonly, texCoords), 1.0));
 
     return intensity * attenuation * ((theta > light.outercutoff) ? ambient + diffuse + specular : ambient);
 }

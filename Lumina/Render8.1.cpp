@@ -188,12 +188,31 @@ int main() {
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(textureDataspec);
 
+    int VRCHAT_width = 1920;
+    int VRCHAT_height = 1080;
+    int VRCHAT_colChannel = 24;
+
+    unsigned char *textureDtaspot = stbi_load("./Texture/VRChat.png", &VRCHAT_width, &VRCHAT_height, &VRCHAT_colChannel, 0);
+    if(!textureDtaspot)
+        std::cout << loaderror << std::endl;
+
+    unsigned int texturespot;
+    glGenTextures(1, &texturespot);
+    glBindTexture(GL_TEXTURE_2D, texturespot);
+
+    lazy::settextureformula();
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, VRCHAT_width, VRCHAT_height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureDtaspot);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(textureDtaspot);
+
     glBindTexture(GL_TEXTURE_2D, 0);
 
     //set the slot of the sampler
     objectShader.Use();
     objectShader.setInt("material.diffuse", 0);
     objectShader.setInt("material.specular", 1);
+    objectShader.setInt("material.spotonly", 2);
 
     //light test
     Light light(&objectShader);
@@ -280,6 +299,8 @@ int main() {
         glBindTexture(GL_TEXTURE_2D, texturediff);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texturespec);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, texturespot);
 
         lightShader.Use();
         lightShader.setMat4("view", view);
