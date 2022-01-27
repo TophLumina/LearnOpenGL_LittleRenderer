@@ -151,11 +151,6 @@ int main() {
     Shader lightShader("./Shaders/7Vex.shader", "./Shaders/lightFag.shader");
     Shader objectShader("./Shaders/lightComplex.vert", "./Shaders/lightComplex.frag");
 
-    glm::vec3 lightpos(1.2f, 1.0f, 2.0f);
-    glm::mat4 lightmodel(1.0f);
-    lightmodel = glm::translate(lightmodel, lightpos);
-    lightmodel = glm::scale(lightmodel, glm::vec3(0.2f));
-
     //passing the texture to sampler in the shader
     int width = 800;
     int height = 800;
@@ -216,6 +211,12 @@ int main() {
         glm::vec3(1.5f, 0.2f, -1.5f),
         glm::vec3(-1.3f, 1.0f, -1.5f)};
 
+    glm::vec3 pointLightPositions[] = {
+        glm::vec3(0.7f, 0.2f, 2.0f),
+        glm::vec3(2.3f, -3.3f, -4.0f),
+        glm::vec3(-4.0f, 2.0f, -12.0f),
+        glm::vec3(0.0f, 0.0f, -3.0f)};
+
     // params used for UI
     bool dynamiclightsign = false;
 
@@ -223,7 +224,7 @@ int main() {
     float shinefactor = 32.0f;
 
     //lights
-    light.num_Pointlight += 1;
+    light.num_Pointlight += 4;
     light.num_Spotlight += 1;
 
     while (!glfwWindowShouldClose(window)) {
@@ -265,7 +266,6 @@ int main() {
 
         lightShader.Use();
         lightShader.setVec3("lightColor", lightcolor);
-        lightShader.setMat4("model", lightmodel);
 
         // and don't forget that the address of the shader was exposed only after the shader is used --<important>--
         objectShader.Use();
@@ -284,14 +284,23 @@ int main() {
         lightShader.setMat4("view", view);
         lightShader.setMat4("projection", projection);
         glBindVertexArray(lightVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        for(glm::vec3 pos : pointLightPositions) {
+            glm::mat4 model(1.0f);
+            model = glm::translate(model, pos);
+            model = glm::scale(model, glm::vec3(0.2f));
+            lightShader.setMat4("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         objectShader.Use();
         objectShader.setMat4("view",view);
         objectShader.setMat4("projection",projection);
         //the lightpos should be in view coords for we caculate lighting in the view space
         //test for class <Light>
-        light.updatePointlight(0, glm::vec3(view * glm::vec4(lightpos, 1.0f)), 0.1f * lightcolor, 0.5f * lightcolor, 1.0f * lightcolor, 1.0f, 0.09f, 0.032f);
+        for (size_t i = 0; i < 4; i++)
+            light.updatePointlight(i, glm::vec3(view * glm::vec4(pointLightPositions[i], 1.0f)), 0.1f * lightcolor, 0.5f * lightcolor, 1.0f * lightcolor, 1.0f, 0.09f, 0.032f);
+
         light.updateSpotlight(0, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.1f * lightcolor, 0.5f * lightcolor, 1.0f * lightcolor, 1.0f, 0.09f, 0.032f, 12.5f, 17.5f);
 
         glBindVertexArray(objectVAO);
