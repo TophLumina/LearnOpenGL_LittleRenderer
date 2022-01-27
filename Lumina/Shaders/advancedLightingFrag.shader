@@ -48,7 +48,7 @@ void main() {
     vec3 specular = spec * light.specular * vec3(texture(material.specular, texCoords));
 
     //flashlight cutoff
-    float theta = dot(light.direction, normalize(-lightDir));
+    float theta = dot(light.direction, -lightDir);
     //soften the edge
     float epsilon = light.cutoff - light.outercutoff;
     float intensity = clamp((theta - light.outercutoff) / epsilon, 0.0, 1.0);

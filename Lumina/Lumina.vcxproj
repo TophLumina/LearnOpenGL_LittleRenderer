@@ -242,9 +242,13 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Render8.cpp">
+    <ClCompile Include="Render8.1.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render8.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -260,6 +264,7 @@
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
+    <ClInclude Include="Light.hpp" />
     <ClInclude Include="Rectangle.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Shaders\ChainShader.hpp" />
@@ -277,6 +282,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader.hpp" />
+    <None Include="Shaders\lightComplex.frag" />
+    <None Include="Shaders\lightComplex.vert" />
     <None Include="Shaders\materializedFag.shader" />
     <None Include="Shaders\materializedtexturedFrag.shader" />
     <None Include="Shaders\materializedtexturedVex.shader" />

@@ -30,6 +30,9 @@
     <Filter Include="imgui">
       <UniqueIdentifier>{e0fd7d3b-6d61-403e-b9f7-8989d717f0e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\AdvancedShaders">
+      <UniqueIdentifier>{b9a2c5eb-5e6e-4857-a5a9-b7994956b38e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -119,6 +122,9 @@
     <ClCompile Include="Render8.cpp">
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
+    <ClCompile Include="Render8.1.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rectangle.hpp">
@@ -190,6 +196,9 @@
     <ClInclude Include="CubewithNormal.hpp">
       <Filter>Data</Filter>
     </ClInclude>
+    <ClInclude Include="Light.hpp">
+      <Filter>Lazy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Lumina.rc">
@@ -250,6 +259,12 @@
     </None>
     <None Include="Shaders\materializedtexturedVex.shader">
       <Filter>Shaders\RealShaders</Filter>
+    </None>
+    <None Include="Shaders\lightComplex.vert">
+      <Filter>Shaders\AdvancedShaders</Filter>
+    </None>
+    <None Include="Shaders\lightComplex.frag">
+      <Filter>Shaders\AdvancedShaders</Filter>
     </None>
   </ItemGroup>
 </Project>

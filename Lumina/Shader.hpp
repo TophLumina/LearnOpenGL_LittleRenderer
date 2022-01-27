@@ -6,6 +6,9 @@
 #include <sstream>
 #include <iostream>
 
+#include "glm/glm.hpp"
+#include "glm/gtc/type_ptr.hpp"
+
 class Shader {
 public:
 	unsigned int ID;
