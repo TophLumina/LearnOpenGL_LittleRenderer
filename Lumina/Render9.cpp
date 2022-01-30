@@ -152,9 +152,9 @@ int main() {
     Shader objectShader("./Shaders/lightComplex.vert", "./Shaders/lightComplex.frag");
 
     //passing the texture to sampler in the shader
-    int width;
-    int height;
-    int colChannel;
+    int width = 800;
+    int height = 800;
+    int colChannel = 3;
 
     const char *loaderror = "Failed to load texture";
     stbi_set_flip_vertically_on_load(true);
@@ -188,10 +188,9 @@ int main() {
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(textureDataspec);
 
-    // these used for laoding texture params
-    int VRCHAT_width;
-    int VRCHAT_height;
-    int VRCHAT_colChannel;
+    int VRCHAT_width = 1920;
+    int VRCHAT_height = 1080;
+    int VRCHAT_colChannel = 3;
 
     unsigned char *textureDtaspot = stbi_load("./Texture/VRChat.png", &VRCHAT_width, &VRCHAT_height, &VRCHAT_colChannel, 0);
     if(!textureDtaspot)
