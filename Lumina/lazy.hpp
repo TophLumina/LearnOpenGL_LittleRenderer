@@ -14,6 +14,7 @@ public:
 	static unsigned int ShaderBulider(unsigned vertexShader, const GLchar* vertexshadersource, unsigned int fragShader, const GLchar* fragshadersource);
 	static void standardimput(GLFWwindow* window);
 	static void settextureformula();
+	static unsigned int TextureFromFile(const char *name, const std::string directory);
 	//lazy guy :)
 };
 
@@ -72,4 +73,41 @@ void lazy::settextureformula() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+}
+
+unsigned int lazy::TextureFromFile(const char *name, const std::string directory) {
+    std::string fileName = std::string(name);
+    fileName = directory + '/' + fileName;
+
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+
+    int width;
+    int height;
+    int colorChannels;
+    unsigned char *textureData = stbi_load(fileName.c_str(), &width, &height, &colorChannels, 0);
+
+    if(textureData) {
+        GLenum format;
+        if(colorChannels == 1)
+            format = GL_RED;
+        else if(colorChannels == 3)
+            format = GL_RGB;
+        else if(colorChannels == 4)
+            format = GL_RGBA;
+
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, textureData);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+		settextureformula();
+
+		stbi_image_free(textureData);
+    }
+    else {
+        std::cout << "Texture Failed to Load at Path:" << fileName << std::endl;
+        stbi_image_free(textureData);
+    }
+
+    return textureID;
 }
