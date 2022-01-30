@@ -349,3 +349,5 @@ int main() {
     glDeleteBuffers(1, &VBO);
     glfwTerminate();
 }
+
+// todo: compelete the Model and Mesh classes and load a model for test.
