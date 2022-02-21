@@ -33,6 +33,9 @@
     <Filter Include="Shaders\AdvancedShaders">
       <UniqueIdentifier>{b9a2c5eb-5e6e-4857-a5a9-b7994956b38e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\ModelizedShader">
+      <UniqueIdentifier>{0c6cc14b-22a5-48f2-b048-aaf1f1b8bf8c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -198,6 +201,12 @@
     </ClInclude>
     <ClInclude Include="Light.hpp">
       <Filter>Lazy</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\Model.hpp">
+      <Filter>Shaders\ModelizedShader</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\Mesh.hpp">
+      <Filter>Shaders\ModelizedShader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

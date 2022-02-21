@@ -322,6 +322,8 @@
     <ClInclude Include="Rectangle.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Shaders\ChainShader.hpp" />
+    <ClInclude Include="Shaders\Mesh.hpp" />
+    <ClInclude Include="Shaders\Model.hpp" />
     <ClInclude Include="Shaders\SimpleShader1.1.hpp" />
     <ClInclude Include="Shaders\SimpleShader1.hpp" />
     <ClInclude Include="Shaders\uniformShader.hpp" />
