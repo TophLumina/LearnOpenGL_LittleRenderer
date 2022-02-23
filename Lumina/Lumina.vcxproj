@@ -73,8 +73,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\lib-vc2022;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\lib-vc2022;C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -83,8 +83,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\lib-vc2022;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\lib-vc2022;C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -97,7 +97,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -134,7 +134,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

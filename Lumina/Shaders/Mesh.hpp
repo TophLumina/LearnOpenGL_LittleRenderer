@@ -33,7 +33,7 @@ public:
         this->textures = textures;
         setpuMesh();
     };
-    void Draw(Shader shader);
+    void Draw(Shader &shader);
 
 private:
     // Render Data
@@ -68,7 +68,7 @@ void Mesh::setpuMesh() {
     glBindVertexArray(0);
 }
 
-void Mesh::Draw(Shader shader) {
+void Mesh::Draw(Shader &shader) {
     // the naming rule fellows texture_ + diffuse/specular/*** + 1/2/3 <the numbers starts from 1>
     // Sample: texture_diffuse1; texture_specular2;
     unsigned int diffuseIndex = 1;

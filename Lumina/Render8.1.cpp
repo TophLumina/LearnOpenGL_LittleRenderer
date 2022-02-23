@@ -246,7 +246,7 @@ int main() {
 
     //lights
     light.num_Pointlight += 4;
-    light.num_Spotlight += 1;
+    // light.num_Spotlight += 1;
 
     while (!glfwWindowShouldClose(window)) {
         input(window);

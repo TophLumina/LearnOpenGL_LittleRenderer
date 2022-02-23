@@ -9,7 +9,7 @@ unsigned int TextureFromFile(const char *path, const std::string directory);
 
 class Model {
 public:
-    Model(char *path) {
+    Model(const char *path) {
         loadModel(path);
     }
     void Draw(Shader shader);
@@ -107,6 +107,8 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         std::vector<Texture> specularMaps = loadMaterialTexture(material, aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
+
+    return Mesh(vertices, indices, textures);
 }
 
 std::vector<Texture> Model::loadMaterialTexture(aiMaterial* material, aiTextureType type, std::string typeName) {
