@@ -21,10 +21,6 @@ public:
     Model(const char *path) {
         loadModel(path);
     }
-    ~Model() {
-        meshes.clear();
-        textures_loaded.clear();
-    }
     void Draw(Shader shader);
 
 private:
