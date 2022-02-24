@@ -174,4 +174,4 @@ int main() {
 }
 
 // problem sloved
-// need test texture loading
+// todo:: need test texture loading
