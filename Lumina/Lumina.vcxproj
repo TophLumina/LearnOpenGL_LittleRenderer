@@ -73,7 +73,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\Lumina\Shaders;C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\lib-vc2022;C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -83,7 +83,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\Lumina\Shaders;C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\26257\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\lib-vc2022;C:\Users\ELINFLOWERSEA\Desktop\OPENGLPROJECTS\Lumina_LearnOpenGL\OPENGLPACKAGE\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -293,9 +293,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Render8.1.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Render8.cpp">
@@ -303,6 +303,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render9.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -338,6 +342,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader.hpp" />
+    <None Include="Shaders\ExternalModel.frag" />
+    <None Include="Shaders\ExternalModel.vert" />
     <None Include="Shaders\lightComplex.frag" />
     <None Include="Shaders\lightComplex.vert" />
     <None Include="Shaders\materializedFag.shader" />

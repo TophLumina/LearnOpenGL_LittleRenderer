@@ -1,6 +1,3 @@
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -16,6 +13,10 @@
 #include "lazy.hpp"
 #include "Shader.hpp"
 #include "Camera.hpp"
+
+// #define STB_IMAGE_IMPLEMENTATION
+// #define STB_IMAGE_STATIC
+// #include "stb_image.h"
 
 #include "Model.hpp"
 
@@ -80,7 +81,7 @@ int main() {
     int ScreenWidth = 800;
     int ScreenHeight = 600;
 
-    GLFWwindow *window = glfwCreateWindow(ScreenWidth, ScreenHeight, "Advanced Light", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(ScreenWidth, ScreenHeight, "Model Loading", NULL, NULL);
     if(window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -118,12 +119,9 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
 
-    //image load option
-    stbi_set_flip_vertically_on_load(true);
-
     Shader modelshader("./Shaders/ExternalModel.vert", "./Shaders/ExternalModel.frag");
 
-    Model nanosuit("C:\\Users\\26257\\Downloads\\nanosuit\\nanosuit.obj");
+    Model nanosuit("./Model/nanosuit/nanosuit.obj");
 
     while (!glfwWindowShouldClose(window)) {
         input(window);

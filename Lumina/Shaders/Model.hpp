@@ -1,9 +1,17 @@
+#pragma onece
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "Mesh.hpp"
+//for debug
+#include <iostream>
+
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_STATIC
 #include "stb_image.h"
+
+#include "Shader.hpp"
+#include "Mesh.hpp"
 
 unsigned int TextureFromFile(const char *path, const std::string directory);
 
@@ -72,11 +80,13 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         position.z = mesh->mVertices[i].z;
         vertex.Position = position;
 
-        glm::vec3 normal;
-        normal.x = mesh->mNormals[i].x;
-        normal.y = mesh->mNormals[i].y;
-        normal.z = mesh->mNormals[i].z;
-        vertex.Normal = normal;
+        if(mesh->HasNormals()){
+            glm::vec3 normal;
+            normal.x = mesh->mNormals[i].x;
+            normal.y = mesh->mNormals[i].y;
+            normal.z = mesh->mNormals[i].z;
+            vertex.Normal = normal;
+        }
 
         if(mesh->mTextureCoords[0]) {
             glm::vec2 texcoords;
@@ -108,10 +118,16 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
 
+    //for debug
+    std::cout << vertices.size() << " Verteices Loaded." << std::endl;
+    std::cout << indices.size() << " Indices Loaded." << std::endl;
+    std::cout << textures.size() << " Textures Loaded." << std::endl;
+
     return Mesh(vertices, indices, textures);
 }
 
 std::vector<Texture> Model::loadMaterialTexture(aiMaterial* material, aiTextureType type, std::string typeName) {
+    // stbi_set_flip_vertically_on_load(true);
     std::vector<Texture> textures;
     for (unsigned int i = 0; i < material->GetTextureCount(type); ++i) {
         aiString texturePath;
@@ -126,8 +142,7 @@ std::vector<Texture> Model::loadMaterialTexture(aiMaterial* material, aiTextureT
             }
         }
 
-            if (!skip)
-            {
+            if (!skip) {
                 Texture texture;
                 texture.id = TextureFromFile(texturePath.C_Str(), directory);
                 texture.type = typeName;

@@ -1,12 +1,12 @@
+#pragma once
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <assimp/Importer.hpp>
 #include <iostream>
 
 #include <vector>
 
 #include "glm/glm.hpp"
-#include "Shader.hpp"
+#include "../Shader.hpp"
 
 struct Vertex {
     glm::vec3 Position;
@@ -51,9 +51,9 @@ void Mesh::setpuMesh() {
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
     // Vertex Pos
     glEnableVertexAttribArray(0);

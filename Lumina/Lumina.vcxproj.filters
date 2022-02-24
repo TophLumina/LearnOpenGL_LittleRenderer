@@ -128,6 +128,9 @@
     <ClCompile Include="Render8.1.cpp">
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
+    <ClCompile Include="Render9.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rectangle.hpp">
@@ -274,6 +277,12 @@
     </None>
     <None Include="Shaders\lightComplex.frag">
       <Filter>Shaders\AdvancedShaders</Filter>
+    </None>
+    <None Include="Shaders\ExternalModel.vert">
+      <Filter>Shaders\ModelizedShader</Filter>
+    </None>
+    <None Include="Shaders\ExternalModel.frag">
+      <Filter>Shaders\ModelizedShader</Filter>
     </None>
   </ItemGroup>
 </Project>
