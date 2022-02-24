@@ -21,7 +21,7 @@
 // for debug_test in Model.hpp
 // #define DEBUG_TEST
 
-#include "Model.hpp"
+#include "./Shaders/Model.hpp"
 
 glm::vec3 campos(0.0, 0.0, 3.0);
 glm::vec3 up(0.0, 1.0, 0.0);

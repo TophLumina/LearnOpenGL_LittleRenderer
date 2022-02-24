@@ -40,7 +40,7 @@ public:
         indices.clear();
         textures.clear();
     }
-    void Draw(Shader &shader);
+    void Draw(Shader shader);
 
 private:
     // Render Data
@@ -75,8 +75,8 @@ void Mesh::setpuMesh() {
     glBindVertexArray(0);
 }
 
-void Mesh::Draw(Shader &shader) {
-    // the naming rule fellows texture_ + diffuse/specular/*** + 1/2/3 <the numbers starts from 1>
+void Mesh::Draw(Shader shader) {
+    // the naming rule should fellows texture_ + diffuse/specular/*** + 1/2/3 <the numbers starts from 1>
     // Sample: texture_diffuse1; texture_specular2;
     unsigned int diffuseIndex = 1;
     unsigned int specularIndex = 1;
@@ -97,7 +97,7 @@ void Mesh::Draw(Shader &shader) {
 
     // draw Mesh
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, (unsigned int)indices.size(), GL_UNSIGNED_INT, 0);
 
     // set otherthings back to defaults
     glBindVertexArray(0);

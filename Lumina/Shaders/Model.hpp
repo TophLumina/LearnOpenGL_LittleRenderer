@@ -85,7 +85,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         position.z = mesh->mVertices[i].z;
         vertex.Position = position;
 
-        if(mesh->HasNormals()){
+        if(mesh->HasNormals()) {
             glm::vec3 normal;
             normal.x = mesh->mNormals[i].x;
             normal.y = mesh->mNormals[i].y;
@@ -125,10 +125,10 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
 
 #ifdef DEBUG_TEST
     std::cout << "DEBUG_TEST::MESH_DATA" << std::endl;
-    std::cout << vertices.size() << " Verteices Loaded." << std::endl;
     std::cout << "DEBUG_TEST::MESH_DATA::VERTEX" << std::endl;
     for(Vertex avertex : vertices)
         std::cout << '(' << avertex.Position.x << ', ' << avertex.Position.y << ', ' << avertex.Position.z << ')' << std::endl;
+    std::cout << vertices.size() << " Verteices Loaded." << std::endl;
     std::cout << indices.size() << " Indices Loaded." << std::endl;
     std::cout << textures.size() << " Textures Loaded." << std::endl;
 #endif
