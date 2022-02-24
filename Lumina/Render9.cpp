@@ -20,6 +20,9 @@
 
 #include "Model.hpp"
 
+//for debug_test in Model.hpp
+#define DEBUG_TEST
+
 glm::vec3 campos(0.0, 0.0, 3.0);
 glm::vec3 up(0.0, 1.0, 0.0);
 Camera camera(campos, up);

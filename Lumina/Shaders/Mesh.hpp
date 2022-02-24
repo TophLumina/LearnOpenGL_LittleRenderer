@@ -1,7 +1,6 @@
 #pragma once
 #include <glad/glad.h>
 #include <assimp/Importer.hpp>
-#include <iostream>
 
 #include <vector>
 

@@ -3,8 +3,9 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-//for debug
+#ifdef DEBUG_TEST
 #include <iostream>
+#endif 
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_STATIC
@@ -122,10 +123,15 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
 
-    //for debug
+#ifdef DEBUG_TEST
+    std::cout << "DEBUG_TEST::MESH_DATA" << std::endl;
     std::cout << vertices.size() << " Verteices Loaded." << std::endl;
+    std::cout << "DEBUG_TEST::MESH_DATA::VERTEX" << std::endl;
+    for(Vertex avertex : vertices)
+        std::cout << '(' << avertex.Position.x << ', ' << avertex.Position.y << ', ' << avertex.Position.z << ')' << std::endl;
     std::cout << indices.size() << " Indices Loaded." << std::endl;
     std::cout << textures.size() << " Textures Loaded." << std::endl;
+#endif
 
     return Mesh(vertices, indices, textures);
 }
