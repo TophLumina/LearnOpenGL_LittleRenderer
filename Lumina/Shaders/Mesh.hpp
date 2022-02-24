@@ -33,6 +33,14 @@ public:
         this->textures = textures;
         setpuMesh();
     };
+    ~Mesh() {
+        glDeleteBuffers(1, &VAO);
+        glDeleteBuffers(1, &VBO);
+        glDeleteBuffers(1, &EBO);
+        vertices.clear();
+        indices.clear();
+        textures.clear();
+    }
     void Draw(Shader &shader);
 
 private:
