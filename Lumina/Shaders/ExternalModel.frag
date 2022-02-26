@@ -24,5 +24,5 @@ void main() {
     vec3 result = vec3(0.0, 0.0, 0.0);
     result += vec3(texture(material.texture_diffuse1, texCoords));
 
-    FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+    FragColor = vec4(result, 1.0);
 }

@@ -124,7 +124,7 @@ int main() {
 
     Shader modelshader("./Shaders/ExternalModel.vert", "./Shaders/ExternalModel.frag");
 
-    Model nanosuit("./Model/nanosuit/nanosuit.obj");
+    Model nanosuit("./Model/Haku/TDA Lacy Haku.pmx");
 
     modelshader.Use();
 
@@ -174,4 +174,4 @@ int main() {
 }
 
 // problem sloved
-// todo:: need test texture loading
+// todo:: compelete all texture load
