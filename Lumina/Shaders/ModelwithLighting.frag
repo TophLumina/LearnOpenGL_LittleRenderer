@@ -81,3 +81,5 @@ void main {
 
     FragColor = vec4(result, 1.0);
 }
+
+//Todo::finish the funcs uesd for caculating lighting
