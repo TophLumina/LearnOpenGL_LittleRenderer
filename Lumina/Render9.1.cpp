@@ -14,11 +14,6 @@
 #include "Shader.hpp"
 #include "Camera.hpp"
 
-// #define STB_IMAGE_IMPLEMENTATION
-// #define STB_IMAGE_STATIC
-// #include "stb_image.h"
-
-// for debug_test in Model.hpp
 // #define DEBUG_TEST
 
 #include "./Shaders/Model.hpp"
@@ -172,3 +167,5 @@ int main() {
     ImGui::DestroyContext();
     glfwTerminate();
 }
+
+//  Todo::Add Lighting to the scene.

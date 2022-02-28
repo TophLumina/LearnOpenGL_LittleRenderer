@@ -1,8 +1,5 @@
 # version 330 core
 
-// const int Diffuse_MAX = 4;
-// const int Specular_MAX = 2;
-
 struct Material {
     sampler2D texture_diffuse1;
     sampler2D texture_diffuse2;
@@ -14,16 +11,14 @@ struct Material {
 
 in vec3 normal;
 in vec3 fragPos;
-in vec2 texCoords;
-
-out vec4 FragColor;
+in vec3 texCoords;
 
 uniform Material material;
 
-void main() {
-    vec3 result = vec3(0.0, 0.0, 0.0);
-    result += vec3(texture(material.texture_diffuse1, texCoords));
-    // result += vec3(texture(material.texture_diffuse2, texCoords));
+out vec4 FragColor;
+
+void main {
+    vec3 result(0.0, 0.0, 0.0);
 
     FragColor = vec4(result, 1.0);
 }

@@ -108,7 +108,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
             indices.push_back(currentFace.mIndices[j]);
     }
 
-    // Material
+    // Material(Textures)
     if(mesh->mMaterialIndex >= 0) {
         aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
 

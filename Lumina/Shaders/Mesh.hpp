@@ -57,9 +57,11 @@ void Mesh::setpuMesh() {
     // Vertex Pos
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);    // easy to find that the stride is a Vertex
+
     // Vertex Normal
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex,Normal));   // the func offsetof(structure,member) can get the offset of a member in a <struct>. and this is because the memery layout of <struct> is sequential for all its items
+    
     // Vertex Texcoord
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, Texcoords));
