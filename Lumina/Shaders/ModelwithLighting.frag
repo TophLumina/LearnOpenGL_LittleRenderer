@@ -82,4 +82,43 @@ void main {
     FragColor = vec4(result, 1.0);
 }
 
+vec3 CalculateDirlight(Dirlight light, vec3 normal, vec3 viewDir) {
+    vec3 lightDir = normalize(-light.direction);
+    float diff = max(dot(lightDir, normal), 0.0);
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float spec = pow(max(dot(reflectDir, viewDir), 0.0), shininess);
+
+    vec3 ambient = light.ambient * vec3(texture(material.texture_diffuse1, texCoords));
+    vec3 diffuse = light.diffuse * diff * vec3(texture(material.texture_diffuse1, texCoords));
+    vec3 specular = light.specular * spec * vec3(texture(material.texture_specular1,texCoords));
+
+    return (ambient + diffuse + specular);
+}
+
+vec3 CalculatePointlight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
+    vec3 lightDir = normalize(light.position - fragPos);
+    float diff = max(dot(lightDir, normal), 0.0);
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float spec = pow(max(dot(reflectDir, viewDir), 0.0), shininess);
+    float distance = length(fragPos - light.position);
+    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+
+    vec3 ambient = light.ambient * vec3(texture(material.texture_diffuse1, texCoords));
+    vec3 diffuse = light.diffuse * diff * vec3(texture(material.texture_diffuse1, texCoords));
+    vec3 specular = light.specular * spec * vec3(texture(material.texture_specular1, texCoords));
+
+    return attenuation * (ambient + diffuse + specular);
+}
+
+vec3 CalculateSpotlight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
+    vec3 lightDir = normalize(light.position - fragPos);
+    float diff = max(dot(lightDir, normal), 0.0);
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float spec = pow(max(dot(lightDir, viewDir), 0.0), shininess);
+    float distance = length(fragPos - light.position);
+    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+
+    
+}
+
 //Todo::finish the funcs uesd for caculating lighting
