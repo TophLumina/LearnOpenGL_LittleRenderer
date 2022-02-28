@@ -3,7 +3,7 @@
 struct Material {
     sampler2D diffuse;
     sampler2D specular;
-    sampler2D spotonly;
+    sampler2D spot_only;
     float shininess;
 };
 
@@ -53,6 +53,8 @@ out vec4 FragColor;
 #define OTHER_LIMITATION 2
 
 uniform Material material;
+
+//Light CTRL
 uniform Dirlight dirlights[OTHER_LIMITATION];
 uniform PointLight pointlights[POINT_LIGHTS_LIMITATION];
 uniform SpotLight spotlights[OTHER_LIMITATION];
@@ -129,8 +131,8 @@ vec3 CalculateSpotlight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 
     vec3 ambient = light.ambient * vec3(texture(material.diffuse, texCoords));
-    vec3 diffuse = diff * light.diffuse * vec3(mix(texture(material.diffuse, texCoords), texture(material.spotonly, texCoords), 1.0));
-    vec3 specular = spec * light.specular * vec3(mix(texture(material.diffuse, texCoords), texture(material.spotonly, texCoords), 1.0));
+    vec3 diffuse = diff * light.diffuse * vec3(mix(texture(material.diffuse, texCoords), texture(material.spot_only, texCoords), 1.0));
+    vec3 specular = spec * light.specular * vec3(mix(texture(material.diffuse, texCoords), texture(material.spot_only, texCoords), 1.0));
 
     return intensity * attenuation * ((theta > light.outercutoff) ? ambient + diffuse + specular : ambient);
 }

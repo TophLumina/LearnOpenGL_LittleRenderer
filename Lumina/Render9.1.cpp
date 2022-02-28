@@ -14,6 +14,8 @@
 #include "Shader.hpp"
 #include "Camera.hpp"
 
+#include "Light.hpp"
+
 // #define DEBUG_TEST
 
 #include "./Shaders/Model.hpp"
