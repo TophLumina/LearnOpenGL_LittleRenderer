@@ -65,7 +65,7 @@ uniform int num_spotlight;
 vec3 CalculateDirlight(Dirlight light, vec3 normal, vec3 viewDir);
 vec3 CalculatePointlight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 vec3 CalculateSpotlight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
-vec3 BCalculateDirlight(Dirlight light, vec3 normal, vec3 viewDir);
+vec3 ComicLikeDirLight(Dirlight light, vec3 normal, vec3 viewDir);
 
 out vec4 FragColor;
 
@@ -85,7 +85,7 @@ void main() {
     //     result += CalculateSpotlight(spotlights[i], norm, fragPos, viewDir);
 
     for(int i = 0; i < num_dirlight; ++i)
-        result += BCalculateDirlight(dirlights[i], norm, viewDir);
+        result += ComicLikeDirLight(dirlights[i], norm, viewDir);
 
     FragColor = vec4(result, 1.0);
 }
@@ -137,12 +137,12 @@ vec3 CalculateSpotlight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir
     return attenuation * intensity * ((theta > light.outer_cutoff) ? ambient + diffuse + specular : ambient);
 }
 
-vec3 BCalculateDirlight(Dirlight light, vec3 normal, vec3 viewDir) {
+vec3 ComicLikeDirLight(Dirlight light, vec3 normal, vec3 viewDir) {
     vec3 lightDir = -light.direction;
     bool bright = dot(lightDir, normal) > 0.2 ? true : false;
 
-    vec3 ambient = vec3(texture(material.texture_diffuse1, texCoords));
-    vec3 diffuse = vec3(texture(material.texture_diffuse1, texCoords));
+    vec3 ambient = 0.4 * vec3(texture(material.texture_diffuse1, texCoords));
+    vec3 diffuse = 0.6 * vec3(texture(material.texture_diffuse1, texCoords));
 
     return bright ? ambient + diffuse : ambient;
 }
