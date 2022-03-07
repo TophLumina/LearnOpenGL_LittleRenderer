@@ -131,10 +131,10 @@ int main() {
     //Lights
     Light light(&modelshader);
     glm::vec3 light_color(1.0f, 1.0f, 1.0f);
-    glm::vec3 Dirlight_dir(-1.0f, -1.0f, -1.0f);
 
     light.num_Dirlight += 1;
-    light.num_Spotlight += 1;
+
+    float Dir[3] = {-1.0f, -1.0f, -1.0f};
 
     while (!glfwWindowShouldClose(window)) {
         input(window);
@@ -151,11 +151,17 @@ int main() {
             ImGui::BulletText("Camera Pos:(%.1f, %.1f, %.1f)", camera.Position.x, camera.Position.y, camera.Position.z);
             ImGui::BulletText("Current Time: %.1fs", (float)glfwGetTime());
             ImGui::BulletText("FPS: %.1f", ImGui::GetIO().Framerate);
+            ImGui::NewLine();
+
+            ImGui::SliderFloat3("DirLight", Dir, -1.0f, 1.0f);
 
             ImGui::End();
         }
 
         ImGui::Render();
+
+        //Dynamic CTRL
+        glm::vec3 Dirlight_dir(Dir[0], Dir[1], Dir[2]);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -169,8 +175,10 @@ int main() {
         modelshader.setMat4("projection", projection);
 
         //Lights Config
-        light.updateDirlight(0, glm::vec3(view * glm::vec4(Dirlight_dir, 1.0f)), 0.1f * light_color, 0.5f * light_color, 1.0f * light_color);
-        light.updateSpotlight(0, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.1f * light_color, 0.5f * light_color, 1.0f * light_color, 1.0f, 0.09f, 0.032f, 12.5f, 17.5f);
+        // light.updateDirlight(0, glm::vec3(view * glm::vec4(Dirlight_dir, 1.0f)), 0.1f * light_color, 0.5f * light_color, 1.0f * light_color);
+
+        //BLight Config
+        light.updateDirlight(0, glm::vec3(view * glm::vec4(Dirlight_dir, 1.0f)), 0.6f * light_color, 0.4f * light_color, 1.0f * light_color);
 
         Haku.Draw(modelshader);
 
@@ -182,5 +190,3 @@ int main() {
     ImGui::DestroyContext();
     glfwTerminate();
 }
-
-//  Todo::Add Lighting to the scene.
