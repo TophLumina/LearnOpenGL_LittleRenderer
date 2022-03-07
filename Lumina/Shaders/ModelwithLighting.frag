@@ -118,7 +118,13 @@ vec3 CalculateSpotlight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir
     float distance = length(fragPos - light.position);
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 
-    
-}
+    float theta = dot(light.direction, -lightDir);
+    float epsilon = light.cutoff - light.outer_cutoff;
+    float intensity = clamp((theta - outer_cutoff) / epsilon, 0.0, 1.0);
 
-//Todo::finish the funcs uesd for caculating lighting
+    vec3 ambient = Light.ambient * vec3(texture(material.texture, texCoords));
+    vec3 diffuse = light.diffuse * diff * vec3(texture(material.texture, texCoords));
+    vec3 specular = light.specular * spec *vec3(texture(material.texture, texCoords));
+
+    return attenuation * intensity * ((theta > outer_cutoff) ? ambient + diffuse + specular : ambient);
+}
