@@ -9,3 +9,7 @@ my very first step to the pratical ComputerGraphics using GLFW and imgui.
 To run the code, you need to confirm the opengl32.lib to your project linker's additional library path. And add the path of OPENGLPACAGE to the include path of the current project.
 
 And as there is many Render.cpp in the project, you are only allowed to add one single render file to the bulid in each run. and please deactivate all other Render.cpp file.
+
+### Vcpkg Requried
+
+Parts of the source file require a list of other libraries which I haven't put them into ./OPENGLPACKAGE.
