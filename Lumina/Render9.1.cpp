@@ -119,14 +119,22 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader modelshader("./Shaders/ExternalModel.vert", "./Shaders/ExternalModel.frag");
+    Shader modelshader("./Shaders/ModelwithLighting.vert", "./Shaders/ModelwithLighting.frag");
 
-    Model nanosuit("./Model/Haku/TDA Lacy Haku.pmx");
+    Model Haku("./Model/Haku/TDA Lacy Haku.pmx");
 
     modelshader.Use();
 
     glm::mat4 model(1.0f);
     modelshader.setMat4("model", model);
+
+    //Lights
+    Light light(&modelshader);
+    glm::vec3 light_color(1.0f, 1.0f, 1.0f);
+    glm::vec3 Dirlight_dir(-1.0f, -1.0f, -1.0f);
+
+    light.num_Dirlight += 1;
+    light.num_Spotlight += 1;
 
     while (!glfwWindowShouldClose(window)) {
         input(window);
@@ -143,6 +151,7 @@ int main() {
             ImGui::BulletText("Camera Pos:(%.1f, %.1f, %.1f)", camera.Position.x, camera.Position.y, camera.Position.z);
             ImGui::BulletText("Current Time: %.1fs", (float)glfwGetTime());
             ImGui::BulletText("FPS: %.1f", ImGui::GetIO().Framerate);
+
             ImGui::End();
         }
 
@@ -159,7 +168,11 @@ int main() {
         modelshader.setMat4("view", view);
         modelshader.setMat4("projection", projection);
 
-        nanosuit.Draw(modelshader);
+        //Lights Config
+        light.updateDirlight(0, glm::vec3(view * glm::vec4(Dirlight_dir, 1.0f)), 0.1f * light_color, 0.5f * light_color, 1.0f * light_color);
+        light.updateSpotlight(0, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.1f * light_color, 0.5f * light_color, 1.0f * light_color, 1.0f, 0.09f, 0.032f, 12.5f, 17.5f);
+
+        Haku.Draw(modelshader);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
