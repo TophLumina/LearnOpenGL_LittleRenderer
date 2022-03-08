@@ -124,7 +124,7 @@ int main() {
 
     Shader modelshader("./Shaders/ExternalModel.vert", "./Shaders/ExternalModel.frag");
 
-    Model nanosuit("./Model/Haku/TDA Lacy Haku.pmx");
+    Model nanosuit("./Model/ModelUsedforGraphics/ModelforGraphics.fbx");
 
     modelshader.Use();
 

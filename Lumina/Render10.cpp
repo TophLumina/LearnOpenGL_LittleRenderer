@@ -61,5 +61,117 @@ void input(GLFWwindow* window) {
         camera.Move(LEFT, deltatime);
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-    
+    if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        glfwSetCursorPosCallback(window, NULL);
+        enter = true;
+    }
+    else {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetCursorPosCallback(window, mouse_callback);
+    }
+}
+
+int main() {
+    lazy::glfwCoreEnv(3, 3);
+    int ScreenWidth = 800;
+    int ScreenHeight = 600;
+
+    GLFWwindow *window = glfwCreateWindow(ScreenWidth, ScreenHeight, "Depth Test", NULL, NULL);
+    if(window == NULL) {
+        std::cout << "Failed to Create GLFW window" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+
+    glfwMakeContextCurrent(window);
+    if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cout << "Failed to init GLAD" << std::endl;
+        return -1;
+    }
+
+    const char *glsl_version = "#version 330 core";
+
+    // imGUI init
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
+    ImGui::StyleColorsLight();
+
+    // Backends init
+    ImGui_ImplGlfw_InitForOpenGL(window,true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
+
+    // Status
+    bool main_page = true;
+
+    bool freeze_depth_testing = false;
+
+    // Callback funcs
+    glViewport(0, 0, ScreenWidth, ScreenHeight);
+    glfwSetFramebufferSizeCallback(window,framebuffer_size_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+
+    // TODO:: Modify Depth Test
+    glEnable(GL_DEPTH_TEST);
+
+    Shader modelshader("./Shaders/ExternalModel.vert", "./Shaders/ExternalModel.frag");
+
+    // Model need for testing
+    Model test_model("./Model/Haku/TDA Lacy Haku.pmx");
+
+    modelshader.Use();
+    glm::mat4 model(1.0f);
+    model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    modelshader.setMat4("model", model);
+
+    while(!glfwWindowShouldClose(window)) {
+        input(window);
+        glfwPollEvents();
+
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        if(main_page) {
+            ImGui::Begin("Status");
+
+            // Test Content
+            ImGui::Checkbox("Freeze glDepthMask", &freeze_depth_testing);
+
+            ImGui::End();
+        }
+
+        ImGui::Render();
+
+        // Dynamic DEBUGING
+        if(freeze_depth_testing)
+            glDepthMask(GL_FALSE);
+        else
+            glDepthMask(GL_TRUE);
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+        // Render Code Here
+        glm::mat4 view = camera.GetViewMatrix();
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)ScreenWidth / (float)ScreenHeight, 0.1f, 100.0f);
+
+        modelshader.Use();
+
+        modelshader.setMat4("view", view);
+        modelshader.setMat4("projection", projection);
+
+        test_model.Draw(modelshader);
+
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        glfwSwapBuffers(window);
+    }
+    ImGui_ImplGlfw_Shutdown();
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui::DestroyContext();
+    glfwTerminate();
 }
