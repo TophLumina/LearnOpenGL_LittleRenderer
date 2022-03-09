@@ -296,5 +296,8 @@
     <None Include="Shaders\ModelwithLighting.vert">
       <Filter>Shaders\ModelizedShader</Filter>
     </None>
+    <None Include="Shaders\SingleColor.frag">
+      <Filter>Shaders\ModelizedShader</Filter>
+    </None>
   </ItemGroup>
 </Project>

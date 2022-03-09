@@ -109,6 +109,7 @@ int main() {
     bool freeze_depth_testing = false;
     bool dpeth_pass_inverse = false;
     bool depth_visualize = false;
+    bool edgeline = false;
 
     // Callback funcs
     glViewport(0, 0, ScreenWidth, ScreenHeight);
@@ -117,11 +118,16 @@ int main() {
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
-    // TODO:: Modify Depth Test
+    // Modify Depth Test
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_ALWAYS);
+    glDepthFunc(GL_ALWAYS); //This func decide how the Depth buffer should be updated.
+
+    // Modify Stencil Test
+    glEnable(GL_STENCIL_TEST);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
     Shader modelshader("./Shaders/ExternalModel.vert", "./Shaders/DepthVisualize.frag");
+    Shader edgeshader("./Shaders/ExternalModel.vert", "./Shaders/SingleColor.frag");
 
     // Model need for testing
     Model test_model("./Model/ModelUsedforGraphics/ModelforGraphics.fbx");
@@ -131,6 +137,9 @@ int main() {
     // model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     modelshader.setMat4("model", model);
     modelshader.setBool("DepthVisualize", depth_visualize);
+
+    edgeshader.Use();
+    edgeshader.setMat4("model", glm::scale(model, glm::vec3(1.1f, 1.1f, 1.1f)));
 
     while(!glfwWindowShouldClose(window)) {
         input(window);
@@ -149,6 +158,13 @@ int main() {
             ImGui::Checkbox("Inverse Depth test PASS", &dpeth_pass_inverse);
             ImGui::NewLine();
             ImGui::Checkbox("Visualize Depth Buffer", &depth_visualize);
+            ImGui::NewLine();
+            ImGui::Checkbox("Visualize EdgeLine", &edgeline);
+            ImGui::NewLine();
+
+            // Status
+            ImGui::BulletText("Time: %.1f", (float)glfwGetTime());
+            ImGui::BulletText("FPS: %.1f", ImGui::GetIO().Framerate);
 
             ImGui::End();
         }
@@ -163,13 +179,13 @@ int main() {
 
 
         if(dpeth_pass_inverse)
-            glDepthFunc(GL_GREATER);
+            glDepthFunc(GL_LESS);
         else
             glDepthFunc(GL_LESS);
 
         modelshader.setBool("DepthVisualize", depth_visualize);
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         // Render Code Here
@@ -181,7 +197,32 @@ int main() {
         modelshader.setMat4("view", view);
         modelshader.setMat4("projection", projection);
 
+        edgeshader.setMat4("view", view);
+        edgeshader.setMat4("projection", projection);
+
+        // Before Drawing the object, set up stencil configs
+        glStencilFunc(GL_ALWAYS, 1, 0xFF); // Set the StencilCode of every pixel passed StencilTest to 1 at layer 0xFF.
+        glStencilMask(0xFF); //Enable write at layer 0xFF.
+
+        modelshader.Use();
         test_model.Draw(modelshader);
+
+        
+        // Need DEBUG
+        if(edgeline) {
+            glStencilFunc(GL_NOTEQUAL, 1, 0xFF); // The fragment will pass StencilTest ONLY when its stencil code is NOT equal to 1 at layer 0xFF.
+            glStencilMask(0x00); // Disable the write of StencilBuffer
+            glDisable(GL_DEPTH_TEST); // The EdgeLine should be at the top of the scene, thus the depth test need to be disabled
+
+            edgeshader.Use();
+            test_model.Draw(edgeshader); //Then draw the bigger object
+            //  And now only the pixels of iner part of the object on screen has StencilCode 1, and they won't be rendered to screen.
+
+            // Set stuffs back
+            glStencilMask(0xFF);
+            glStencilFunc(GL_ALWAYS, 0, 0xFF);
+            glEnable(GL_DEPTH_TEST);
+        }
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);

@@ -27,6 +27,7 @@ void main() {
     FragColor = vec4(result ,1.0);
 }
 
+//Transforming the Z-Buffer back in linear format
 float DepthLinearize(float depth, float znear, float zfar) {
     depth = depth * 2 - 1.0;
     return (2.0 * znear * zfar) / (zfar + znear - depth * (zfar - znear));

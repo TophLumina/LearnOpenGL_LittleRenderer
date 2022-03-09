@@ -365,6 +365,7 @@
     <None Include="Shaders\cubeFrag.shader" />
     <None Include="Shaders\7Vex.shader" />
     <None Include="Shaders\cubeMVP.shader" />
+    <None Include="Shaders\SingleColor.frag" />
     <None Include="Shaders\testfrag.shader" />
     <None Include="Shaders\testvertex.shader" />
     <None Include="Shaders\texFrag.shader" />
