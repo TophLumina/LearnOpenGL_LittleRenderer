@@ -107,6 +107,8 @@ int main() {
     bool main_page = true;
 
     bool freeze_depth_testing = false;
+    bool dpeth_pass_inverse = false;
+    bool depth_visualize = false;
 
     // Callback funcs
     glViewport(0, 0, ScreenWidth, ScreenHeight);
@@ -117,16 +119,18 @@ int main() {
 
     // TODO:: Modify Depth Test
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_ALWAYS);
 
-    Shader modelshader("./Shaders/ExternalModel.vert", "./Shaders/ExternalModel.frag");
+    Shader modelshader("./Shaders/ExternalModel.vert", "./Shaders/DepthVisualize.frag");
 
     // Model need for testing
-    Model test_model("./Model/Haku/TDA Lacy Haku.pmx");
+    Model test_model("./Model/ModelUsedforGraphics/ModelforGraphics.fbx");
 
     modelshader.Use();
     glm::mat4 model(1.0f);
-    model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    // model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     modelshader.setMat4("model", model);
+    modelshader.setBool("DepthVisualize", depth_visualize);
 
     while(!glfwWindowShouldClose(window)) {
         input(window);
@@ -141,6 +145,10 @@ int main() {
 
             // Test Content
             ImGui::Checkbox("Freeze glDepthMask", &freeze_depth_testing);
+            ImGui::NewLine();
+            ImGui::Checkbox("Inverse Depth test PASS", &dpeth_pass_inverse);
+            ImGui::NewLine();
+            ImGui::Checkbox("Visualize Depth Buffer", &depth_visualize);
 
             ImGui::End();
         }
@@ -152,6 +160,14 @@ int main() {
             glDepthMask(GL_FALSE);
         else
             glDepthMask(GL_TRUE);
+
+
+        if(dpeth_pass_inverse)
+            glDepthFunc(GL_GREATER);
+        else
+            glDepthFunc(GL_LESS);
+
+        modelshader.setBool("DepthVisualize", depth_visualize);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
