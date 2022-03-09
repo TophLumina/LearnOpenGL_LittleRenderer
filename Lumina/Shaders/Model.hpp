@@ -180,7 +180,7 @@ unsigned int TextureFromFile(const char *name, const std::string directory) {
         else if(colorChannels == 3)
             format = GL_RGB;
         else if(colorChannels == 4)
-            format = GL_RGBA;
+            format = GL_RGBA; // This helps us alot when load PNGs
 
         glBindTexture(GL_TEXTURE_2D, textureID);
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, textureData);

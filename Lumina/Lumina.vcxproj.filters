@@ -137,6 +137,9 @@
     <ClCompile Include="Render10.cpp">
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
+    <ClCompile Include="Render10.1.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rectangle.hpp">
@@ -297,6 +300,9 @@
       <Filter>Shaders\ModelizedShader</Filter>
     </None>
     <None Include="Shaders\SingleColor.frag">
+      <Filter>Shaders\ModelizedShader</Filter>
+    </None>
+    <None Include="Shaders\AphlaDiscard.frag">
       <Filter>Shaders\ModelizedShader</Filter>
     </None>
   </ItemGroup>

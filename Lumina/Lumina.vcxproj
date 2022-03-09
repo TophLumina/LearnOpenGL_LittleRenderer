@@ -190,7 +190,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Render10.cpp" />
+    <ClCompile Include="Render10.1.cpp" />
+    <ClCompile Include="Render10.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Render2.1.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -348,6 +352,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader.hpp" />
+    <None Include="Shaders\AphlaDiscard.frag" />
     <None Include="Shaders\ExternalModel.frag" />
     <None Include="Shaders\ExternalModel.vert" />
     <None Include="Shaders\lightComplex.frag" />
