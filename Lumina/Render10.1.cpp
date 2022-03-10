@@ -77,7 +77,7 @@ int main() {
     int ScreenWidth = 800;
     int ScreenHeight = 600;
 
-    GLFWwindow *window = glfwCreateWindow(ScreenWidth, ScreenHeight, "Depth Test", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(ScreenWidth, ScreenHeight, "Aphla Blending", NULL, NULL);
     if(window == NULL) {
         std::cout << "Failed to Create GLFW window" << std::endl;
         glfwTerminate();
@@ -115,9 +115,19 @@ int main() {
 
     // Modify Depth Test
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS); //This func decide how the Depth buffer should be updated.
+    glDepthFunc(GL_LESS);
 
-    Shader modelshader("./Shaders/ExternalModel.vert", "./Shaders/AphlaDiscard.frag");
+    // Blening Enable
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Blending Factors
+    // TODO::Need to use more advanced AphlaBlending Mathematics
+
+    // Face Culling
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK); // Decide what faces should be culled
+    glFrontFace(GL_CCW); // Decide what faces should be defined as front face -- CCW -- VertexOrder::CounterClockWise (in View Space)
+
+    Shader modelshader("./Shaders/ExternalModel.vert", "./Shaders/AphlaBlending.frag");
 
     // Model need for testing
     Model test_model("./Model/Haku/TDA Lacy Haku.pmx");
