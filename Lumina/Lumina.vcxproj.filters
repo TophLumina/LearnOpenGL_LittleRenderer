@@ -140,6 +140,9 @@
     <ClCompile Include="Render10.1.cpp">
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
+    <ClCompile Include="Render10.2.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rectangle.hpp">
@@ -219,6 +222,9 @@
     </ClInclude>
     <ClInclude Include="Shaders\Mesh.hpp">
       <Filter>Shaders\ModelizedShader</Filter>
+    </ClInclude>
+    <ClInclude Include="Screen.hpp">
+      <Filter>Data</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -303,6 +309,12 @@
       <Filter>Shaders\ModelizedShader</Filter>
     </None>
     <None Include="Shaders\AphlaDiscard.frag">
+      <Filter>Shaders\ModelizedShader</Filter>
+    </None>
+    <None Include="Shaders\OffScreen.frag">
+      <Filter>Shaders\ModelizedShader</Filter>
+    </None>
+    <None Include="Shaders\OffScreen.vert">
       <Filter>Shaders\ModelizedShader</Filter>
     </None>
   </ItemGroup>
