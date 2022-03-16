@@ -143,6 +143,9 @@
     <ClCompile Include="Render10.2.cpp">
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
+    <ClCompile Include="Shaders\Model.cpp">
+      <Filter>Shaders\ModelizedShader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rectangle.hpp">
