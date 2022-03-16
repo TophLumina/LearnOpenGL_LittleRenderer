@@ -285,8 +285,16 @@ int main()
         modelshader.setMat4("view", view);
         modelshader.setMat4("projection", projection);
 
+        // Dynamic Debug
+        if(screenwireframe)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        else
+            glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+
         modelshader.Use();
         test_model.Draw(modelshader);
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         // Return to the default FrameBuffer and Render the Image on it
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -296,13 +304,6 @@ int main()
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glClear(GL_COLOR_BUFFER_BIT);
-
-        // Dynamic Debug
-        if(screenwireframe)
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        else
-            glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-        
 
         glBindVertexArray(ScreenVAO);
         screenshader.Use();

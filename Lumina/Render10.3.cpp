@@ -225,8 +225,9 @@ int main()
     glGenTextures(1, &skyboxtexture);
     glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxtexture);
 
-    int width, height, colchannel;
     
+
+    int width, height, colchannel;
 
     while (!glfwWindowShouldClose(window))
     {
