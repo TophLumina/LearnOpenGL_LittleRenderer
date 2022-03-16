@@ -233,8 +233,10 @@ int main()
     // Status
     // Wireframe Mode
     bool screenwireframe = false;
-    // Grayscale
+    // Post Effects
+    bool inversion = false;
     bool grayscale = false;
+    int kernelindex = 0;
 
     screenshader.setBool("Grayscale", grayscale);
 
@@ -256,7 +258,12 @@ int main()
             ImGui::BulletText("FPS: %.1f", ImGui::GetIO().Framerate);
             ImGui::Checkbox("Wire Frame Mode", &screenwireframe);
             ImGui::BulletText("Effects:");
+            ImGui::Checkbox("Inversion", &inversion);
             ImGui::Checkbox("GrayScale", &grayscale);
+            ImGui::NewLine();
+            ImGui::BulletText("Post Effect Kernel Available:");
+            ImGui::BulletText("0::NoEffect\t1::Sharpen\t2::Blur\t3::EdgeDetection");// Only 4 kernels
+            ImGui::SliderInt("Kernel Selector", &kernelindex, 0, 3);
 
             ImGui::End();
         }
@@ -300,11 +307,10 @@ int main()
         glBindVertexArray(ScreenVAO);
         screenshader.Use();
 
-        // Dynamic Debug
-        if(grayscale)
-            screenshader.setBool("Grayscale", true);
-        else
-            screenshader.setBool("Grayscale", false);
+        // Post Effect Dynamic
+        screenshader.setBool("Inversion", inversion);
+        screenshader.setBool("Grayscale", grayscale);
+        screenshader.setInt("KernelIndex", kernelindex);
 
         glBindTexture(GL_TEXTURE_2D, texture_attachment);
         glDrawArrays(GL_TRIANGLES, 0, 6);
