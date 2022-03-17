@@ -146,6 +146,9 @@
     <ClCompile Include="Shaders\Model.cpp">
       <Filter>Shaders\ModelizedShader</Filter>
     </ClCompile>
+    <ClCompile Include="Render10.3.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rectangle.hpp">
@@ -228,6 +231,9 @@
     </ClInclude>
     <ClInclude Include="Screen.hpp">
       <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\SkyBox.hpp">
+      <Filter>Shaders\ModelizedShader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -318,6 +324,12 @@
       <Filter>Shaders\ModelizedShader</Filter>
     </None>
     <None Include="Shaders\OffScreen.vert">
+      <Filter>Shaders\ModelizedShader</Filter>
+    </None>
+    <None Include="Shaders\SkyBox.frag">
+      <Filter>Shaders\ModelizedShader</Filter>
+    </None>
+    <None Include="Shaders\SkyBox.vert">
       <Filter>Shaders\ModelizedShader</Filter>
     </None>
   </ItemGroup>

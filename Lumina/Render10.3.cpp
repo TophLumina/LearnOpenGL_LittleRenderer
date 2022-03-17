@@ -16,6 +16,7 @@
 #include "./Shaders/Model.hpp"
 
 #include "Screen.hpp"
+#include "./Shaders/SkyBox.hpp"
 
 // FrameBuffer and OffScreenRendering
 #define ENABLE_TEXTURE_ATTACHMENT ;
@@ -221,13 +222,32 @@ int main()
     int kernelindex = 0;
 
     // CubeMap and Skybox
-    unsigned int skyboxtexture;
-    glGenTextures(1, &skyboxtexture);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxtexture);
+    std::vector<std::string> CubeTexPath{
+        "./Texture/SkyBoxTexture/right.jpg",
+        "./Texture/SkyBoxTexture/left.jpg",
+        "./Texture/SkyBoxTexture/top.jpg",
+        "./Texture/SkyBoxTexture/bottom.jpg",
+        "./Texture/SkyBoxTexture/front.jpg",
+        "./Texture/SkyBoxTexture/back.jpg"
+    };
 
-    
+    unsigned int CubeMapTexture = LoadCubeMap(CubeTexPath);
 
-    int width, height, colchannel;
+    unsigned int skyboxVAO;
+    unsigned int skyboxVBO;
+    glGenVertexArrays(1, &skyboxVAO);
+    glGenBuffers(1, &skyboxVBO);
+    glBindVertexArray(skyboxVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    Shader skyboxShader("./Shaders/SkyBox.vert", "./Shaders/SkyBox.frag");
 
     while (!glfwWindowShouldClose(window))
     {
@@ -270,6 +290,19 @@ int main()
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)ScreenWidth / (float)ScreenHeight, 0.1f, 100.0f);
 
+        // Render SkyBox First
+        glDepthMask(GL_FALSE);
+        skyboxShader.Use();
+        skyboxShader.setMat4("view", glm::mat4(glm::mat3(view)));
+        skyboxShader.setMat4("projection", projection);
+
+        glBindVertexArray(skyboxVAO);
+        // SkyBox Texture
+        glBindTexture(GL_TEXTURE_CUBE_MAP, CubeMapTexture);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        // Enable DepthMasking
+        glDepthMask(GL_TRUE);
+
         modelshader.Use();
         modelshader.setMat4("view", view);
         modelshader.setMat4("projection", projection);
@@ -311,8 +344,10 @@ int main()
         glfwSwapBuffers(window);
         }
     glDeleteFramebuffers(1, &fbo); // Delete framebuffer
-    glDeleteVertexArrays(1, &ScreenVAO);
+    glDeleteVertexArrays(1, &ScreenVAO); // Delete BUffers
     glDeleteBuffers(1, &ScreenVBO);
+    glDeleteVertexArrays(1, &skyboxVAO);
+    glDeleteBuffers(1, &skyboxVBO);
 
     ImGui_ImplGlfw_Shutdown();
     ImGui_ImplOpenGL3_Shutdown();

@@ -194,7 +194,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Render10.2.cpp" />
+    <ClCompile Include="Render10.2.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render10.3.cpp" />
     <ClCompile Include="Render10.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -346,6 +350,7 @@
     <ClInclude Include="Shaders\Model.hpp" />
     <ClInclude Include="Shaders\SimpleShader1.1.hpp" />
     <ClInclude Include="Shaders\SimpleShader1.hpp" />
+    <ClInclude Include="Shaders\SkyBox.hpp" />
     <ClInclude Include="Shaders\uniformShader.hpp" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Triangle.hpp" />
@@ -379,6 +384,8 @@
     <None Include="Shaders\7Vex.shader" />
     <None Include="Shaders\cubeMVP.shader" />
     <None Include="Shaders\SingleColor.frag" />
+    <None Include="Shaders\SkyBox.frag" />
+    <None Include="Shaders\SkyBox.vert" />
     <None Include="Shaders\testfrag.shader" />
     <None Include="Shaders\testvertex.shader" />
     <None Include="Shaders\texFrag.shader" />
