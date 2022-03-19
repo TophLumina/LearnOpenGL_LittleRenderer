@@ -144,8 +144,8 @@ int main()
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
-    // Shader modelshader("./Shaders/ExternalModel.vert", "./Shaders/AphlaBlending.frag");
-    Shader modelshader("./Shaders/ExternalModel.vert", "./Shaders/EnvironmentMapping.frag");
+    Shader modelshader("./Shaders/ExternalModel.vert", "./Shaders/AphlaBlending.frag");
+    // Shader modelshader("./Shaders/ExternalModel.vert", "./Shaders/EnvironmentMapping.frag");
 
     // Model need for testing
     Model test_model("./Model/Haku/TDA Lacy Haku.pmx");
