@@ -38,10 +38,12 @@ public:
         // Sample: texture_diffuse1; texture_specular2;
         unsigned int diffuseIndex = 1;
         unsigned int specularIndex = 1;
-        for (unsigned int i = 0; i < textures.size(); ++i) {
+        for (unsigned int i = 1; i < textures.size(); ++i) {
             // before binding the texture we need to make it active first
+
             // The order of the Sampler index has changed for Environment Mapping.
-            glActiveTexture(GL_TEXTURE1 + i);
+            // GL_TEXTURE0 is reserved for extera texture.
+            glActiveTexture(GL_TEXTURE0 + i);
             // then get its Index number
             std::string number;
             std::string name = textures[i].type;
@@ -50,7 +52,7 @@ public:
             else if(name == "texture_specular")
                 number = std::to_string(specularIndex++);
 
-            shader.setInt(("material." + name + number), i + 1);
+            shader.setInt(("material." + name + number), i);
             glBindTexture(GL_TEXTURE_2D, textures[i].id);
         }
 
