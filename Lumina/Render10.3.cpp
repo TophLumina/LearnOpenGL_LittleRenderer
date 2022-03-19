@@ -132,7 +132,7 @@ int main()
 
     // Modify Depth Test
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
+    glDepthFunc(GL_LEQUAL);
 
     // Blening Enable
     glEnable(GL_BLEND);
@@ -144,7 +144,8 @@ int main()
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
-    Shader modelshader("./Shaders/ExternalModel.vert", "./Shaders/AphlaBlending.frag");
+    // Shader modelshader("./Shaders/ExternalModel.vert", "./Shaders/AphlaBlending.frag");
+    Shader modelshader("./Shaders/ExternalModel.vert", "./Shaders/EnvironmentMapping.frag");
 
     // Model need for testing
     Model test_model("./Model/Haku/TDA Lacy Haku.pmx");
@@ -290,18 +291,20 @@ int main()
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)ScreenWidth / (float)ScreenHeight, 0.1f, 100.0f);
 
-        // Render SkyBox First
-        glDepthMask(GL_FALSE);
-        skyboxShader.Use();
-        skyboxShader.setMat4("view", glm::mat4(glm::mat3(view)));
-        skyboxShader.setMat4("projection", projection);
+        // There is more effecient way to render skybox
 
-        glBindVertexArray(skyboxVAO);
-        // SkyBox Texture
-        glBindTexture(GL_TEXTURE_CUBE_MAP, CubeMapTexture);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        // Enable DepthMasking
-        glDepthMask(GL_TRUE);
+        // // Render SkyBox First
+        // glDepthMask(GL_FALSE);
+        // skyboxShader.Use();
+        // skyboxShader.setMat4("view", glm::mat4(glm::mat3(view)));
+        // skyboxShader.setMat4("projection", projection);
+
+        // glBindVertexArray(skyboxVAO);
+        // // SkyBox Texture
+        // glBindTexture(GL_TEXTURE_CUBE_MAP, CubeMapTexture);
+        // glDrawArrays(GL_TRIANGLES, 0, 36);
+        // // Enable DepthMasking
+        // glDepthMask(GL_TRUE);
 
         modelshader.Use();
         modelshader.setMat4("view", view);
@@ -314,7 +317,18 @@ int main()
             glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
         modelshader.Use();
+        glBindTexture(GL_TEXTURE_CUBE_MAP, CubeMapTexture);
         test_model.Draw(modelshader);
+
+        // Use PRE_DEPTH_TEST to render skybox
+        // for the z-coords of the skybox are always 1.0(max) so it can ONLY be seen when nothing has a less z value in the pixel.
+        skyboxShader.Use();
+        skyboxShader.setMat4("view", glm::mat4(glm::mat3(view)));
+        skyboxShader.setMat4("projection",projection);
+
+        glBindVertexArray(skyboxVAO);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, CubeMapTexture);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // Return to the default FrameBuffer and Render the Image on it
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

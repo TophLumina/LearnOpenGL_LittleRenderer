@@ -16,7 +16,7 @@ vec4 inversion(vec4 color) {
 }
 
 vec4 grayscale(vec4 color) {
-    float average = (0.2162 * color.r + 0.7152 * color.g + 0.0772 * color.b) / 3; 
+    float average = (0.2162 * color.r + 0.7152 * color.g + 0.0772 * color.b) / 3;
     return vec4(average, average, average, 1.0);
 }
 

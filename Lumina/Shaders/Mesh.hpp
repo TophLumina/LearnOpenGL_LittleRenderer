@@ -40,7 +40,8 @@ public:
         unsigned int specularIndex = 1;
         for (unsigned int i = 0; i < textures.size(); ++i) {
             // before binding the texture we need to make it active first
-            glActiveTexture(GL_TEXTURE0 + i);
+            // The order of the Sampler index has changed for Environment Mapping.
+            glActiveTexture(GL_TEXTURE1 + i);
             // then get its Index number
             std::string number;
             std::string name = textures[i].type;
@@ -49,7 +50,7 @@ public:
             else if(name == "texture_specular")
                 number = std::to_string(specularIndex++);
 
-            shader.setInt(("material." + name + number), i);
+            shader.setInt(("material." + name + number), i + 1);
             glBindTexture(GL_TEXTURE_2D, textures[i].id);
         }
 

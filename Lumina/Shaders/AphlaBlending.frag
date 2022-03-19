@@ -23,7 +23,7 @@ uniform Material material;
 void main() {
     vec4 result = vec4(0.0, 0.0, 0.0, 0.0);
     result += texture(material.texture_diffuse1, texCoords);
-    // result += vec3(texture(material.texture_diffuse2, texCoords));
+    // result += texture(material.texture_diffuse2, texCoords); //How to Load multi_texture?
 
     if(result.a < 0.05)
         discard;
