@@ -4,8 +4,8 @@ layout(location = 1) in vec3 aNormal;
 layout(location = 2) in vec2 aTexCoords;
 
 uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
+// uniform mat4 view;
+// uniform mat4 projection;
 
 layout (std140) uniform Matrices {
                         // Standard Offset      Aligned Offset
@@ -19,7 +19,7 @@ layout (std140) uniform Matrices {
                         // 16                   96  [2]
                         // 16                   112 [3]
                         // intotal -- 112 + 16 = 128
-}
+};
 
 out VS_OUT{
     vec3 normal;
