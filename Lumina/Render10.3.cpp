@@ -22,6 +22,9 @@
 #define ENABLE_TEXTURE_ATTACHMENT ;
 #define ENABLE_RENDERBUFFER_OBJECT ;
 
+// Bulit_in Vars Testing Options
+#define GL_FRONTFACING_TEST ;
+
 glm::vec3 campos(0.0f, 0.0f, 0.0f);
 glm::vec3 camup(0.0f, 1.0f, 0.0f);
 
@@ -140,12 +143,16 @@ int main()
     // TODO::Need to use more advanced AphlaBlending Mathematics
 
     // Face Culling
+    // To Test GLSL Bulit_in Var: gl_FrontFacing Face_Culling should be DISABLE
+#ifndef GL_FRONTFACING_TEST
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
+#endif
 
     // Shader modelshader("./Shaders/ExternalModel.vert", "./Shaders/AphlaBlending.frag");
-    Shader modelshader("./Shaders/ExternalModel.vert", "./Shaders/EnvironmentMapping.frag");
+    // Shader modelshader("./Shaders/ExternalModel.vert", "./Shaders/EnvironmentMapping.frag");
+    Shader modelshader("./Shaders/ExternalModel.vert", "./Shaders/BulidinVarsTest.frag");
 
     // Model need for testing
     Model test_model("./Model/Haku/TDA Lacy Haku.pmx");

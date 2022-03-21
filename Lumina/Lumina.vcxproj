@@ -364,6 +364,7 @@
   <ItemGroup>
     <None Include="Shader.hpp" />
     <None Include="Shaders\AphlaDiscard.frag" />
+    <None Include="Shaders\BulidinVarsTest.frag" />
     <None Include="Shaders\EnvironmentReflection.frag" />
     <None Include="Shaders\ExternalModel.frag" />
     <None Include="Shaders\ExternalModel.vert" />

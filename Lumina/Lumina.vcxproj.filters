@@ -335,5 +335,8 @@
     <None Include="Shaders\EnvironmentReflection.frag">
       <Filter>Shaders\ModelizedShader</Filter>
     </None>
+    <None Include="Shaders\BulidinVarsTest.frag">
+      <Filter>Shaders\ModelizedShader</Filter>
+    </None>
   </ItemGroup>
 </Project>
