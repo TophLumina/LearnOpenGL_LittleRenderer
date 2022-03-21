@@ -198,7 +198,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Render10.3.cpp" />
+    <ClCompile Include="Render10.3.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render10.4.cpp" />
     <ClCompile Include="Render10.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -365,6 +369,8 @@
     <None Include="Shader.hpp" />
     <None Include="Shaders\AphlaDiscard.frag" />
     <None Include="Shaders\BulidinVarsTest.frag" />
+    <None Include="Shaders\EMInterface_Block.frag" />
+    <None Include="Shaders\EMInterface_Block.vert" />
     <None Include="Shaders\EnvironmentReflection.frag" />
     <None Include="Shaders\ExternalModel.frag" />
     <None Include="Shaders\ExternalModel.vert" />

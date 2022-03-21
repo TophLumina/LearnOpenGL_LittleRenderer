@@ -149,6 +149,9 @@
     <ClCompile Include="Render10.3.cpp">
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
+    <ClCompile Include="Render10.4.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rectangle.hpp">
@@ -336,6 +339,12 @@
       <Filter>Shaders\ModelizedShader</Filter>
     </None>
     <None Include="Shaders\BulidinVarsTest.frag">
+      <Filter>Shaders\ModelizedShader</Filter>
+    </None>
+    <None Include="Shaders\EMInterface_Block.frag">
+      <Filter>Shaders\ModelizedShader</Filter>
+    </None>
+    <None Include="Shaders\EMInterface_Block.vert">
       <Filter>Shaders\ModelizedShader</Filter>
     </None>
   </ItemGroup>
