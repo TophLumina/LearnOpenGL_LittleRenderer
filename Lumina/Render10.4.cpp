@@ -18,10 +18,6 @@
 #include "Screen.hpp"
 #include "./Shaders/SkyBox.hpp"
 
-// FrameBuffer and OffScreenRendering
-#define ENABLE_TEXTURE_ATTACHMENT ;
-#define ENABLE_RENDERBUFFER_OBJECT ;
-
 glm::vec3 campos(0.0f, 0.0f, 0.0f);
 glm::vec3 camup(0.0f, 1.0f, 0.0f);
 
@@ -139,11 +135,6 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Blending Factors
     // TODO::Need to use more advanced AphlaBlending Mathematics
 
-    // // Face Culling
-    // glEnable(GL_CULL_FACE);
-    // glCullFace(GL_BACK);
-    // glFrontFace(GL_CCW);
-
     Shader modelshader("./Shaders/EMInterface_Block.vert", "./Shaders/EMInterface_Block.frag");
 
     // Model need for testing
@@ -158,8 +149,6 @@ int main()
     glGenFramebuffers(1, &fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-    // Add and Bind Attachments and BUffers
-#ifdef ENABLE_TEXTURE_ATTACHMENT
     // Texture_Attachment Settings
     unsigned int texture_attachment;
     glGenTextures(1, &texture_attachment);
@@ -171,9 +160,7 @@ int main()
 
     // Attach it to FrameBuffer
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_attachment, 0);
-#endif
 
-#ifdef ENABLE_RENDERBUFFER_OBJECT
     // RenderBuffers are usually Write_ONLY, so it mostly use for Storeing Depth and Stencil. we need Depth and Stencil for Depth_test and Stencil_test but hardly sampling them
     unsigned int rbo;
     glGenRenderbuffers(1, &rbo);
@@ -183,8 +170,6 @@ int main()
 
     // Attach it to FrameBuffer
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
-#endif
 
     // Check the Bound Framebuffer
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -249,6 +234,27 @@ int main()
 
     Shader skyboxShader("./Shaders/SkyBox.vert", "./Shaders/SkyBox.frag");
 
+    // Uniform Buffer Usage
+    unsigned int uboMatricesBlock;
+    glGenBuffers(1,&uboMatricesBlock);
+    glBindBuffer(GL_UNIFORM_BUFFER, uboMatricesBlock);
+    // glBufferData(GL_UNIFORM_BUFFER, 128, NULL, GL_STATIC_DRAW);
+    glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    // Bindings
+    modelshader.Use();
+    unsigned int model_Matrices_index = glGetUniformBlockIndex(modelshader.ID, "Matrices");
+    glUniformBlockBinding(modelshader.ID, model_Matrices_index, 0);
+
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboMatricesBlock);
+
+    // Update Data in Uniform Buffer
+    glBindBuffer(GL_UNIFORM_BUFFER, uboMatricesBlock);
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)ScreenWidth / (float)ScreenHeight, 0.1f, 100.0f);
+    glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
     while (!glfwWindowShouldClose(window))
     {
         input(window);
@@ -288,22 +294,11 @@ int main()
         glEnable(GL_DEPTH_TEST);
 
         glm::mat4 view = camera.GetViewMatrix();
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)ScreenWidth / (float)ScreenHeight, 0.1f, 100.0f);
 
-        // There is more effecient way to render skybox
-
-        // // Render SkyBox First
-        // glDepthMask(GL_FALSE);
-        // skyboxShader.Use();
-        // skyboxShader.setMat4("view", glm::mat4(glm::mat3(view)));
-        // skyboxShader.setMat4("projection", projection);
-
-        // glBindVertexArray(skyboxVAO);
-        // // SkyBox Texture
-        // glBindTexture(GL_TEXTURE_CUBE_MAP, CubeMapTexture);
-        // glDrawArrays(GL_TRIANGLES, 0, 36);
-        // // Enable DepthMasking
-        // glDepthMask(GL_TRUE);
+        // Update Data in Uniform Buffer
+        glBindBuffer(GL_UNIFORM_BUFFER, uboMatricesBlock);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(view));
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
         modelshader.Use();
         modelshader.setMat4("view", view);

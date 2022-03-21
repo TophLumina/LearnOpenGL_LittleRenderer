@@ -7,6 +7,20 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+layout (std140) uniform Matrices {
+                        // Standard Offset      Aligned Offset
+    mat4 view;          // 16                   0   [0]
+                        // 16                   16  [1]
+                        // 16                   32  [2]
+                        // 16                   48  [3]
+
+    mat4 projection;    // 16                   64  [0]
+                        // 16                   80  [1]
+                        // 16                   96  [2]
+                        // 16                   112 [3]
+                        // intotal -- 112 + 16 = 128
+}
+
 out VS_OUT{
     vec3 normal;
     vec3 fragPos;
