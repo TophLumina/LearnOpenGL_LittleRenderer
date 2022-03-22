@@ -145,6 +145,7 @@ int main()
     // model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     modelshader.setMat4("model", model);
 
+    // FrameBuffer Usage
     unsigned int fbo;
     glGenFramebuffers(1, &fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -232,7 +233,7 @@ int main()
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    Shader skyboxShader("./Shaders/SkyBox.vert", "./Shaders/SkyBox.frag");
+    Shader skyboxShader("./Shaders/SkyBox_UB.vert", "./Shaders/SkyBox_UB.frag");
 
     // Uniform Buffer Usage
     unsigned int uboMatricesBlock;
@@ -246,6 +247,10 @@ int main()
     modelshader.Use();
     unsigned int model_Matrices_index = glGetUniformBlockIndex(modelshader.ID, "Matrices");
     glUniformBlockBinding(modelshader.ID, model_Matrices_index, 0);
+    
+    skyboxShader.Use();
+    unsigned int skybox_Matrices_index = glGetUniformBlockIndex(skyboxShader.ID, "Matrices");
+    glUniformBlockBinding(skyboxShader.ID, skybox_Matrices_index, 0);
 
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboMatricesBlock);
 
@@ -295,15 +300,10 @@ int main()
 
         glm::mat4 view = camera.GetViewMatrix();
 
-        // Update Data in Uniform Buffer
+        // Update Data in Uniform Buffer for ModelShader
         glBindBuffer(GL_UNIFORM_BUFFER, uboMatricesBlock);
         glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(view));
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-        // Use UniformBuffer
-        // modelshader.Use();
-        // modelshader.setMat4("view", view);
-        // modelshader.setMat4("projection", projection);
 
         // Dynamic Debug
         if(modelwireframe)
@@ -315,12 +315,14 @@ int main()
         glBindTexture(GL_TEXTURE_CUBE_MAP, CubeMapTexture);
         test_model.Draw(modelshader);
 
+        // Update Data in Uniform Buffer for SkyBoxShader
+        glBindBuffer(GL_UNIFORM_BUFFER, uboMatricesBlock);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(glm::mat4(glm::mat3(view))));
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
         // Use PRE_DEPTH_TEST to render skybox
         // for the z-coords of the skybox are always 1.0(max) so it can ONLY be seen when nothing has a less z value in the pixel.
         skyboxShader.Use();
-        skyboxShader.setMat4("view", glm::mat4(glm::mat3(view)));
-        skyboxShader.setMat4("projection",projection);
-
         glBindVertexArray(skyboxVAO);
         glBindTexture(GL_TEXTURE_CUBE_MAP, CubeMapTexture);
         glDrawArrays(GL_TRIANGLES, 0, 36);

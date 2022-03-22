@@ -2,7 +2,9 @@
 
 out vec4 FragColor;
 
-in vec2 texCoords;
+in VS_OUT {
+    vec2 texCoords;
+} fs_in;
 
 uniform sampler2D ScreenTexture;
 uniform bool Grayscale;
@@ -87,7 +89,7 @@ void main() {
     }
 
     for(int i = 0; i < 9; ++i)
-        color += kernel[i] * vec3(texture(ScreenTexture, texCoords + offsets[i]));
+        color += kernel[i] * vec3(texture(ScreenTexture, fs_in.texCoords + offsets[i]));
 
     vec4 result = vec4(color, 1.0);
 

@@ -5,7 +5,11 @@ layout (location = 1) in vec2 atexCoords;
 
 out vec2 texCoords;
 
+out VS_OUT {
+    vec2 texCoords;
+} vs_out;
+
 void main() {
     gl_Position = vec4(aPosition, 0.0, 1.0);
-    texCoords = atexCoords;
+    vs_out.texCoords = atexCoords;
 }
