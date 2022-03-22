@@ -300,9 +300,10 @@ int main()
         glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(view));
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-        modelshader.Use();
-        modelshader.setMat4("view", view);
-        modelshader.setMat4("projection", projection);
+        // Use UniformBuffer
+        // modelshader.Use();
+        // modelshader.setMat4("view", view);
+        // modelshader.setMat4("projection", projection);
 
         // Dynamic Debug
         if(modelwireframe)
