@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../glad/glad.h"
-#include "../GLFW/glfw3.h"
+#include "./glad/glad.h"
+#include "./GLFW/glfw3.h"
 #include "../Shader.hpp"
 #include <iostream>
 
@@ -27,6 +27,9 @@ class FrameBuffer
         unsigned int ID;
 
         FrameBuffer(int width, int height) {
+            ScreenWidth = width;
+            ScreenHeight = height;
+            
             glGenFramebuffers(1, &ID);
             glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
@@ -73,10 +76,10 @@ class FrameBuffer
         };
 
         void bulidVAO(){
+            bulidVBO();
+
             glGenBuffers(1, &VAO);
             glBindVertexArray(VAO);
-
-            bulidVBO;
 
             glBindBuffer(GL_ARRAY_BUFFER,VBO);
             glBindVertexArray(0);

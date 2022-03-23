@@ -202,11 +202,15 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Render10.4.cpp" />
+    <ClCompile Include="Render10.4.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Render10.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Render11.cpp" />
     <ClCompile Include="Render2.1.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -350,6 +354,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Screen.hpp" />
     <ClInclude Include="Shaders\ChainShader.hpp" />
+    <ClInclude Include="Shaders\FrameBuffer.hpp" />
     <ClInclude Include="Shaders\Mesh.hpp" />
     <ClInclude Include="Shaders\Model.hpp" />
     <ClInclude Include="Shaders\SimpleShader1.1.hpp" />
@@ -391,6 +396,9 @@
     <None Include="Shaders\cubeFrag.shader" />
     <None Include="Shaders\7Vex.shader" />
     <None Include="Shaders\cubeMVP.shader" />
+    <None Include="Shaders\Points.frag" />
+    <None Include="Shaders\Points.geom" />
+    <None Include="Shaders\Points.vert" />
     <None Include="Shaders\SingleColor.frag" />
     <None Include="Shaders\SkyBox.frag" />
     <None Include="Shaders\SkyBox.vert" />

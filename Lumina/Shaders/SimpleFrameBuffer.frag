@@ -9,6 +9,5 @@ in VS_OUT {
 uniform sampler2D ScreenTexture;
 
 void main() {
-    vec3 col = texture(ScreenTexture, texCoords);
-    FragColor = vec4(col, 1.0);
+    FragColor = texture(ScreenTexture, fs_in.texCoords);
 }

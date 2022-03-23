@@ -20,6 +20,14 @@ glm::vec3 camup(0.0, 1.0, 0.0);
 
 Camera camera(campos, camup);
 
+// Geometry Shader input
+float points[] = {
+    // Pos           // Col
+    -0.5f, 0.5f,    1.0f, 0.0f, 0.0f,
+    0.5f, 0.5f,     0.0f, 1.0f, 0.0f,
+    0.5f, -0.5f,    0.0f, 0.0f, 1.0f,
+    -0.5f, -0.5f,   1.0f, 1.0f, 0.0f};
+
 bool enter = true;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -122,6 +130,21 @@ int main()
     Shader FBOShader("./Shaders/OffScreen.vert", "./Shaders/SimpleFrameBuffer.frag");
 
     // Stuffs todo Here
+    Shader GeoTestshader("./Shaders/Points.vert", "./Shaders/Points.geom", "./Shaders/Points.frag");
+    unsigned int pointsVAO;
+    glGenVertexArrays(1, &pointsVAO);
+    glBindVertexArray(pointsVAO);
+    unsigned int pointsVBO;
+    glGenBuffers(1, &pointsVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, pointsVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(2 * sizeof(float)));
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     while(!glfwWindowShouldClose(window))
     {
@@ -134,7 +157,7 @@ int main()
 
         if(main_page)
         {
-            ImGui::Begin("Geometry Shader");
+            ImGui::Begin("Status");
 
             ImGui::End();
         }
@@ -148,6 +171,9 @@ int main()
         glEnable(GL_DEPTH_TEST);
 
         // Render Code Here (on FrameBuffer)
+        GeoTestshader.Use();
+        glBindVertexArray(pointsVAO);
+        glDrawArrays(GL_POINTS, 0, 4);
 
         // Render FrameBuffer
         glBindFramebuffer(GL_FRAMEBUFFER, 0);

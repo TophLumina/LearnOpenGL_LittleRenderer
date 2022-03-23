@@ -36,6 +36,9 @@
     <Filter Include="Shaders\ModelizedShader">
       <UniqueIdentifier>{0c6cc14b-22a5-48f2-b048-aaf1f1b8bf8c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\GeoShaders">
+      <UniqueIdentifier>{2d532cb8-4e65-4cde-adea-b33ca4072e46}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -143,14 +146,17 @@
     <ClCompile Include="Render10.2.cpp">
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
-    <ClCompile Include="Shaders\Model.cpp">
-      <Filter>Shaders\ModelizedShader</Filter>
-    </ClCompile>
     <ClCompile Include="Render10.3.cpp">
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
     <ClCompile Include="Render10.4.cpp">
       <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Render11.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Shaders\Model.cpp">
+      <Filter>Shaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -226,17 +232,20 @@
     <ClInclude Include="Light.hpp">
       <Filter>Lazy</Filter>
     </ClInclude>
-    <ClInclude Include="Shaders\Model.hpp">
-      <Filter>Shaders\ModelizedShader</Filter>
-    </ClInclude>
-    <ClInclude Include="Shaders\Mesh.hpp">
-      <Filter>Shaders\ModelizedShader</Filter>
-    </ClInclude>
     <ClInclude Include="Screen.hpp">
       <Filter>Data</Filter>
     </ClInclude>
+    <ClInclude Include="Shaders\Mesh.hpp">
+      <Filter>Shaders</Filter>
+    </ClInclude>
     <ClInclude Include="Shaders\SkyBox.hpp">
-      <Filter>Shaders\ModelizedShader</Filter>
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\Model.hpp">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\FrameBuffer.hpp">
+      <Filter>Shaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -346,6 +355,15 @@
     </None>
     <None Include="Shaders\EMInterface_Block.vert">
       <Filter>Shaders\ModelizedShader</Filter>
+    </None>
+    <None Include="Shaders\Points.frag">
+      <Filter>Shaders\GeoShaders</Filter>
+    </None>
+    <None Include="Shaders\Points.geom">
+      <Filter>Shaders\GeoShaders</Filter>
+    </None>
+    <None Include="Shaders\Points.vert">
+      <Filter>Shaders\GeoShaders</Filter>
     </None>
   </ItemGroup>
 </Project>
