@@ -328,12 +328,11 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // Return to the default FrameBuffer and Render the Image on it
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        
         // Don't need Depth Test now
         glDisable(GL_DEPTH_TEST);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glBindVertexArray(ScreenVAO);
