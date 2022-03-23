@@ -11,84 +11,77 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 #include "lazy.hpp"
-// #include "Camera.hpp"
+#include "Camera.hpp"
 #include "Shader.hpp"
 #include "Screen.hpp"
+#include "Model.hpp"
 
-// glm::vec3 campos(0.0, 0.0, 0.0);
-// glm::vec3 camup(0.0, 1.0, 0.0);
+glm::vec3 campos(0.0, 0.0, 0.0);
+glm::vec3 camup(0.0, 1.0, 0.0);
 
-// Camera camera(campos, camup);
+Camera camera(campos, camup);
 
-// Geometry Shader input
-float points[] = {
-    // Pos           // Col
-    -0.5f, 0.5f,    1.0f, 0.0f, 0.0f,
-    0.5f, 0.5f,     0.0f, 1.0f, 0.0f,
-    0.5f, -0.5f,    0.0f, 0.0f, 1.0f,
-    -0.5f, -0.5f,   1.0f, 1.0f, 0.0f};
+bool enter = true;
 
-// bool enter = true;
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
 
-// void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-// {
-//     glViewport(0, 0, width, height);
-// }
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    static float lastxpos = 400;
+    static float lastypos = 300;
+    if(enter)
+    {
+        lastxpos = xpos;
+        lastypos = ypos;
+        enter = false;
+    }
+    float xoffset = xpos - lastxpos;
+    float yoffset = ypos - lastypos;
+    lastxpos = xpos;
+    lastypos = ypos;
+    camera.Mouse(xoffset, yoffset);
+}
 
-// void mouse_callback(GLFWwindow* window, double xpos, double ypos)
-// {
-//     static float lastxpos = 400;
-//     static float lastypos = 300;
-//     if(enter)
-//     {
-//         lastxpos = xpos;
-//         lastypos = ypos;
-//         enter = false;
-//     }
-//     float xoffset = xpos - lastxpos;
-//     float yoffset = ypos - lastypos;
-//     lastxpos = xpos;
-//     lastypos = ypos;
-//     camera.Mouse(xoffset, yoffset);
-// }
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    camera.MouseScroll(yoffset);
+}
 
-// void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-// {
-//     camera.MouseScroll(yoffset);
-// }
+void inputs(GLFWwindow* window)
+{
+    static float lastframe_time = 0;
+    static float deltatime = 0;
+    float currentframe_time = glfwGetTime();
+    deltatime = currentframe_time - lastframe_time;
+    lastframe_time = currentframe_time;
 
-// void inputs(GLFWwindow* window)
-// {
-//     static float lastframe_time = 0;
-//     static float deltatime = 0;
-//     float currentframe_time = glfwGetTime();
-//     deltatime = currentframe_time - lastframe_time;
-//     lastframe_time = currentframe_time;
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        camera.Move(FORWARD, deltatime);
+    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        camera.Move(LEFT, deltatime);
+    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera.Move(BACKWARD, deltatime);
+    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.Move(RIGHT, deltatime);
 
-//     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-//         camera.Move(FORWARD, deltatime);
-//     if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-//         camera.Move(LEFT, deltatime);
-//     if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-//         camera.Move(BACKWARD, deltatime);
-//     if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-//         camera.Move(RIGHT, deltatime);
+    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
 
-//     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-//         glfwSetWindowShouldClose(window, true);
-
-//     if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-//     {
-//         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-//         glfwSetCursorPosCallback(window, NULL);
-//         enter = true;
-//     }
-//     else
-//     {
-//         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-//         glfwSetCursorPosCallback(window, mouse_callback);
-//     }
-// }
+    if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+    {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        glfwSetCursorPosCallback(window, NULL);
+        enter = true;
+    }
+    else
+    {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetCursorPosCallback(window, mouse_callback);
+    }
+}
 
 int main()
 {
@@ -124,27 +117,6 @@ int main()
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     bool main_page = true;
-
-    // Stuffs todo Here
-    Shader GeoTestshader("./Shaders/Geo_test.vert", "./Shaders/Geo_test.geom", "./Shaders/Geo_test.frag");
-    unsigned int pointsVAO;
-    glGenVertexArrays(1, &pointsVAO);
-    unsigned int pointsVBO;
-    glGenBuffers(1, &pointsVBO);
-
-    glBindVertexArray(pointsVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, pointsVBO);
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(2 * sizeof(float)));
-
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    glPointSize(10);
 
     // FrameBuffer Usage
     unsigned int fbo;
@@ -197,15 +169,27 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     // fin
 
-
     // Shader for Screen
     Shader screenshader("./Shaders/OffScreen.vert", "./Shaders/SimpleFrameBuffer.frag");
+
+    // Model with Shader
+    Model Haku("./Model/Haku/TDA Lacy Haku.pmx");
+    Shader HakuShader("./Shaders/Explode.vert", "./Shaders/Explode.geom", "./Shaders/Explode.frag");
+
+    // UniformBuffer Init
+    unsigned int uboMatricesBlock;
+    glGenBuffers(1, &uboMatricesBlock);
+    glBindBuffer(GL_UNIFORM_BUFFER, uboMatricesBlock);
+    glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)ScreenWidth / (float)ScreenHeight, 0.1f, 100.0f);
+    glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
     while(!glfwWindowShouldClose(window))
     {
         // inputs(window);
         glfwPollEvents();
-
+        
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -220,15 +204,17 @@ int main()
         ImGui::Render();
 
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        glEnable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.0, 0.0, 0.0, 1.0);
 
-        GeoTestshader.Use();
-        glBindVertexArray(pointsVAO);
-        glDrawArrays(GL_POINTS, 0, 4);
+        // Render Code Here
+
+
         glBindVertexArray(0);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glDisable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT);
         glClearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -241,8 +227,6 @@ int main()
         glfwSwapBuffers(window);
     }
     glDeleteFramebuffers(1, &fbo);
-    glDeleteBuffers(1, &pointsVBO);
-    glDeleteBuffers(1, &pointsVAO);
     glDeleteBuffers(1, &ScreenVBO);
     glDeleteBuffers(1, &ScreenVAO);
 

@@ -356,13 +356,13 @@
     <None Include="Shaders\EMInterface_Block.vert">
       <Filter>Shaders\ModelizedShader</Filter>
     </None>
-    <None Include="Shaders\Points.frag">
+    <None Include="Shaders\Geo_test.frag">
       <Filter>Shaders\GeoShaders</Filter>
     </None>
-    <None Include="Shaders\Points.geom">
+    <None Include="Shaders\Geo_test.geom">
       <Filter>Shaders\GeoShaders</Filter>
     </None>
-    <None Include="Shaders\Points.vert">
+    <None Include="Shaders\Geo_test.vert">
       <Filter>Shaders\GeoShaders</Filter>
     </None>
   </ItemGroup>

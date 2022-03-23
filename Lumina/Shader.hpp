@@ -110,7 +110,7 @@ public:
 			std::stringstream gShaderStream;
 			std::stringstream fShaderStream;
 			vShaderStream << vShaderFile.rdbuf();
-			gShaderStream << vShaderFile.rdbuf();
+			gShaderStream << gShaderFile.rdbuf();
 			fShaderStream << fShaderFile.rdbuf();
 			vShaderFile.close();
 			gShaderFile.close();

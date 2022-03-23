@@ -399,9 +399,9 @@
     <None Include="Shaders\cubeFrag.shader" />
     <None Include="Shaders\7Vex.shader" />
     <None Include="Shaders\cubeMVP.shader" />
-    <None Include="Shaders\Points.frag" />
-    <None Include="Shaders\Points.geom" />
-    <None Include="Shaders\Points.vert" />
+    <None Include="Shaders\Geo_test.frag" />
+    <None Include="Shaders\Geo_test.geom" />
+    <None Include="Shaders\Geo_test.vert" />
     <None Include="Shaders\SingleColor.frag" />
     <None Include="Shaders\SkyBox.frag" />
     <None Include="Shaders\SkyBox.vert" />

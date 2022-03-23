@@ -21,7 +21,7 @@ layout (std140) uniform Matrices {
                         // intotal -- 112 + 16 = 128
 };
 
-out VS_OUT{
+out VS_OUT {
     vec3 normal;
     vec3 fragPos;
     vec2 texCoords;
