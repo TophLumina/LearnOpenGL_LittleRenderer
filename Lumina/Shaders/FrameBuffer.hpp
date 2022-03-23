@@ -34,9 +34,9 @@ class FrameBuffer
             glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
             bulidTexture_Attachment();
-            bulidRender_Buffer();
-
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_attachment, 0);
+            
+            bulidRender_Buffer();
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderbuffer);
 
             if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -86,3 +86,5 @@ class FrameBuffer
             glBindBuffer(GL_ARRAY_BUFFER, 0);
         };
 };
+
+// Need further debug

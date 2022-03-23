@@ -260,6 +260,9 @@ int main()
     glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+    // test
+    
+
     while (!glfwWindowShouldClose(window))
     {
         input(window);

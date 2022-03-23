@@ -7,5 +7,5 @@ in VS_OUT {
 } fs_in;
 
 void main() {
-    FragColor = vec4(0.0, 1.0, 0.0, 1.0); 
+    FragColor = vec4(fs_in.color, 1.0); 
 }

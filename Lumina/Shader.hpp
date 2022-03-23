@@ -133,13 +133,13 @@ public:
 		unsigned int geometry;
 		unsigned int fragment;
 
+		int success;
+		char infoLog[512];
+
 		// VERTEX
 		vertex = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(vertex, 1, &vShaderCode, NULL);
 		glCompileShader(vertex);
-
-		int success;
-		char infoLog[512];
 
 		// check complie errors
 		glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);

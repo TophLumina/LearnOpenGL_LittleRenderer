@@ -11,14 +11,14 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 #include "lazy.hpp"
-#include "Camera.hpp"
+// #include "Camera.hpp"
 #include "Shader.hpp"
-#include "./Shaders/FrameBuffer.hpp"
+#include "Screen.hpp"
 
-glm::vec3 campos(0.0, 0.0, 0.0);
-glm::vec3 camup(0.0, 1.0, 0.0);
+// glm::vec3 campos(0.0, 0.0, 0.0);
+// glm::vec3 camup(0.0, 1.0, 0.0);
 
-Camera camera(campos, camup);
+// Camera camera(campos, camup);
 
 // Geometry Shader input
 float points[] = {
@@ -28,67 +28,67 @@ float points[] = {
     0.5f, -0.5f,    0.0f, 0.0f, 1.0f,
     -0.5f, -0.5f,   1.0f, 1.0f, 0.0f};
 
-bool enter = true;
+// bool enter = true;
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    glViewport(0, 0, width, height);
-}
+// void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+// {
+//     glViewport(0, 0, width, height);
+// }
 
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
-{
-    static float lastxpos = 400;
-    static float lastypos = 300;
-    if(enter)
-    {
-        lastxpos = xpos;
-        lastypos = ypos;
-        enter = false;
-    }
-    float xoffset = xpos - lastxpos;
-    float yoffset = ypos - lastypos;
-    lastxpos = xpos;
-    lastypos = ypos;
-    camera.Mouse(xoffset, yoffset);
-}
+// void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+// {
+//     static float lastxpos = 400;
+//     static float lastypos = 300;
+//     if(enter)
+//     {
+//         lastxpos = xpos;
+//         lastypos = ypos;
+//         enter = false;
+//     }
+//     float xoffset = xpos - lastxpos;
+//     float yoffset = ypos - lastypos;
+//     lastxpos = xpos;
+//     lastypos = ypos;
+//     camera.Mouse(xoffset, yoffset);
+// }
 
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
-    camera.MouseScroll(yoffset);
-}
+// void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+// {
+//     camera.MouseScroll(yoffset);
+// }
 
-void inputs(GLFWwindow* window)
-{
-    static float lastframe_time = 0;
-    static float deltatime = 0;
-    float currentframe_time = glfwGetTime();
-    deltatime = currentframe_time - lastframe_time;
-    lastframe_time = currentframe_time;
+// void inputs(GLFWwindow* window)
+// {
+//     static float lastframe_time = 0;
+//     static float deltatime = 0;
+//     float currentframe_time = glfwGetTime();
+//     deltatime = currentframe_time - lastframe_time;
+//     lastframe_time = currentframe_time;
 
-    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.Move(FORWARD, deltatime);
-    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.Move(LEFT, deltatime);
-    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.Move(BACKWARD, deltatime);
-    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.Move(RIGHT, deltatime);
+//     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+//         camera.Move(FORWARD, deltatime);
+//     if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+//         camera.Move(LEFT, deltatime);
+//     if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+//         camera.Move(BACKWARD, deltatime);
+//     if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+//         camera.Move(RIGHT, deltatime);
 
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
+//     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+//         glfwSetWindowShouldClose(window, true);
 
-    if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-    {
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-        glfwSetCursorPosCallback(window, NULL);
-        enter = true;
-    }
-    else
-    {
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        glfwSetCursorPosCallback(window, mouse_callback);
-    }
-}
+//     if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+//     {
+//         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+//         glfwSetCursorPosCallback(window, NULL);
+//         enter = true;
+//     }
+//     else
+//     {
+//         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+//         glfwSetCursorPosCallback(window, mouse_callback);
+//     }
+// }
 
 int main()
 {
@@ -125,30 +125,84 @@ int main()
 
     bool main_page = true;
 
-    // FrameBuffer Init
-    FrameBuffer fbo(ScreenWidth, ScreenHeight);
-    Shader FBOShader("./Shaders/OffScreen.vert", "./Shaders/SimpleFrameBuffer.frag");
-
     // Stuffs todo Here
-    Shader GeoTestshader("./Shaders/Points.vert", "./Shaders/Points.geom", "./Shaders/Points.frag");
+    Shader GeoTestshader("./Shaders/Points.vert", "./Shaders/Points.frag");
     unsigned int pointsVAO;
     glGenVertexArrays(1, &pointsVAO);
-    glBindVertexArray(pointsVAO);
     unsigned int pointsVBO;
     glGenBuffers(1, &pointsVBO);
+
+    glBindVertexArray(pointsVAO);
     glBindBuffer(GL_ARRAY_BUFFER, pointsVBO);
+
     glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(2 * sizeof(float)));
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+    glPointSize(10);
+
+    // FrameBuffer Usage
+    unsigned int fbo;
+    glGenFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+    // Texture_Attachment Settings
+    unsigned int texture_attachment;
+    glGenTextures(1, &texture_attachment);
+    glBindTexture(GL_TEXTURE_2D, texture_attachment);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    // Attach it to FrameBuffer
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_attachment, 0);
+
+    // RenderBuffers are usually Write_ONLY, so it mostly use for Storeing Depth and Stencil. we need Depth and Stencil for Depth_test and Stencil_test but hardly sampling them
+    unsigned int rbo;
+    glGenRenderbuffers(1, &rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 600);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+    // Attach it to FrameBuffer
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+    // Check the Bound Framebuffer
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "ERROR::FRAMEBUFFER:: FrameBuffer is NOT Compelete." << std::endl;
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // Load VAO and VBO for Screen
+    unsigned int ScreenVAO;
+    glGenVertexArrays(1, &ScreenVAO);
+    glBindVertexArray(ScreenVAO);
+
+    unsigned int ScreenVBO;
+    glGenBuffers(1, &ScreenVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, ScreenVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertces), &vertces, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // fin
+
+    // Shader for Screen
+    Shader screenshader("./Shaders/OffScreen.vert", "./Shaders/SimpleFrameBuffer.frag");
+
     while(!glfwWindowShouldClose(window))
     {
-        inputs(window);
+        // inputs(window);
         glfwPollEvents();
 
         ImGui_ImplOpenGL3_NewFrame();
@@ -164,26 +218,22 @@ int main()
 
         ImGui::Render();
 
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo.ID);
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.0, 0.0, 0.0, 1.0);
 
-        glEnable(GL_DEPTH_TEST);
-
-        // Render Code Here (on FrameBuffer)
         GeoTestshader.Use();
         glBindVertexArray(pointsVAO);
         glDrawArrays(GL_POINTS, 0, 4);
+        glBindVertexArray(0);
 
-        // Render FrameBuffer
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glDisable(GL_DEPTH_TEST);
-
         glClear(GL_COLOR_BUFFER_BIT);
+        glClearColor(0.0, 0.0, 0.0, 1.0);
 
-        glBindVertexArray(fbo.VAO);
-        FBOShader.Use();
-        glBindTexture(GL_TEXTURE_2D, fbo.texture_attachment);
+        screenshader.Use();
+        glBindVertexArray(ScreenVAO);
+        glBindTexture(GL_TEXTURE_2D, texture_attachment);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
