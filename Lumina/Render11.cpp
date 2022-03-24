@@ -15,6 +15,8 @@
 #include "Shader.hpp"
 #include "Screen.hpp"
 
+#include "./Shaders/FrameBuffer.hpp"
+
 // glm::vec3 campos(0.0, 0.0, 0.0);
 // glm::vec3 camup(0.0, 1.0, 0.0);
 
@@ -146,57 +148,7 @@ int main()
 
     glPointSize(10);
 
-    // FrameBuffer Usage
-    unsigned int fbo;
-    glGenFramebuffers(1, &fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-    // Texture_Attachment Settings
-    unsigned int texture_attachment;
-    glGenTextures(1, &texture_attachment);
-    glBindTexture(GL_TEXTURE_2D, texture_attachment);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    // Attach it to FrameBuffer
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_attachment, 0);
-
-    // RenderBuffers are usually Write_ONLY, so it mostly use for Storeing Depth and Stencil. we need Depth and Stencil for Depth_test and Stencil_test but hardly sampling them
-    unsigned int rbo;
-    glGenRenderbuffers(1, &rbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 600);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-    // Attach it to FrameBuffer
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
-    // Check the Bound Framebuffer
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "ERROR::FRAMEBUFFER:: FrameBuffer is NOT Compelete." << std::endl;
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    // Load VAO and VBO for Screen
-    unsigned int ScreenVAO;
-    glGenVertexArrays(1, &ScreenVAO);
-    glBindVertexArray(ScreenVAO);
-
-    unsigned int ScreenVBO;
-    glGenBuffers(1, &ScreenVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, ScreenVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertces), &vertces, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
-
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    // fin
-
+    FrameBuffer fbo(ScreenWidth, ScreenHeight);
 
     // Shader for Screen
     Shader screenshader("./Shaders/OffScreen.vert", "./Shaders/SimpleFrameBuffer.frag");
@@ -219,7 +171,7 @@ int main()
 
         ImGui::Render();
 
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo.ID);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -233,18 +185,16 @@ int main()
         glClearColor(0.0, 0.0, 0.0, 1.0);
 
         screenshader.Use();
-        glBindVertexArray(ScreenVAO);
-        glBindTexture(GL_TEXTURE_2D, texture_attachment);
+        glBindTexture(GL_TEXTURE_2D, fbo.texture_attachment);
+        glBindVertexArray(fbo.VAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
     }
-    glDeleteFramebuffers(1, &fbo);
+    fbo.Delete();
     glDeleteBuffers(1, &pointsVBO);
     glDeleteBuffers(1, &pointsVAO);
-    glDeleteBuffers(1, &ScreenVBO);
-    glDeleteBuffers(1, &ScreenVAO);
 
     ImGui_ImplGlfw_Shutdown();
     ImGui_ImplOpenGL3_Shutdown();
