@@ -19,4 +19,5 @@ void GenerateLine(int index)
 
 void main() {
     GenerateLine(0);
+    // I wander if i can make the normal root on the center of the triangle, but failed to do it.
 }
