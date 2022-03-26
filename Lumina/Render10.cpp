@@ -205,7 +205,7 @@ int main() {
         glStencilMask(0xFF); //Enable write at layer 0xFF.
 
         modelshader.Use();
-        test_model.Draw(modelshader);
+        test_model.Draw(&modelshader);
 
         
         // Need DEBUG
@@ -215,7 +215,7 @@ int main() {
             glDisable(GL_DEPTH_TEST); // The EdgeLine should be at the top of the scene, thus the depth test need to be disabled
 
             edgeshader.Use();
-            test_model.Draw(edgeshader); //Then draw the bigger object
+            test_model.Draw(&edgeshader); //Then draw the bigger object
             //  And now only the pixels of iner part of the object on screen has StencilCode 1, and they won't be rendered to screen.
 
             // Set stuffs back

@@ -325,7 +325,7 @@ int main()
 
         modelshader.Use();
         glBindTexture(GL_TEXTURE_CUBE_MAP, CubeMapTexture);
-        test_model.Draw(modelshader);
+        test_model.Draw(&modelshader);
 
         // Use PRE_DEPTH_TEST to render skybox
         // for the z-coords of the skybox are always 1.0(max) so it can ONLY be seen when nothing has a less z value in the pixel.

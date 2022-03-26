@@ -162,7 +162,7 @@ int main() {
         modelshader.setMat4("view", view);
         modelshader.setMat4("projection", projection);
 
-        nanosuit.Draw(modelshader);
+        nanosuit.Draw(&modelshader);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);

@@ -170,7 +170,7 @@ int main() {
         modelshader.setMat4("projection", projection);
 
         modelshader.Use();
-        test_model.Draw(modelshader);
+        test_model.Draw(&modelshader);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);

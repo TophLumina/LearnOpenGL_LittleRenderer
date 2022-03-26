@@ -6,16 +6,16 @@ struct Material {
     sampler2D texture_specular1;
 };
 
-in vec3 texCoords;
+in vec2 TexCoords;
 
 out vec4 FragColor;
 
 uniform Material material;
 
 void main() {
-    vec4 col = texture(material.texture_diffuse1, texCoords);
+    vec4 col = texture(material.texture_diffuse1, TexCoords);
 
-    if(col < 0.05)
+    if(col.a < 0.05)
         discard;
     
     FragColor = col;

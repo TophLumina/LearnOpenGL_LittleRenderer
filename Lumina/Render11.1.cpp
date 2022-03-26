@@ -14,7 +14,8 @@
 #include "Camera.hpp"
 #include "Shader.hpp"
 #include "Screen.hpp"
-#include "Model.hpp"
+#include "./Shaders/Model.hpp"
+#include "./Shaders/FrameBuffer.hpp"
 
 glm::vec3 campos(0.0, 0.0, 0.0);
 glm::vec3 camup(0.0, 1.0, 0.0);
@@ -39,7 +40,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
         enter = false;
     }
     float xoffset = xpos - lastxpos;
-    float yoffset = ypos - lastypos;
+    float yoffset = -(ypos - lastypos);
     lastxpos = xpos;
     lastypos = ypos;
     camera.Mouse(xoffset, yoffset);
@@ -118,63 +119,31 @@ int main()
 
     bool main_page = true;
 
-    // FrameBuffer Usage
-    unsigned int fbo;
-    glGenFramebuffers(1, &fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    // CallBacks
+    glViewport(0, 0, ScreenWidth, ScreenHeight);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
-    // Texture_Attachment Settings
-    unsigned int texture_attachment;
-    glGenTextures(1, &texture_attachment);
-    glBindTexture(GL_TEXTURE_2D, texture_attachment);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
 
-    // Attach it to FrameBuffer
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_attachment, 0);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // RenderBuffers are usually Write_ONLY, so it mostly use for Storeing Depth and Stencil. we need Depth and Stencil for Depth_test and Stencil_test but hardly sampling them
-    unsigned int rbo;
-    glGenRenderbuffers(1, &rbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 600);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-    // Attach it to FrameBuffer
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
-    // Check the Bound Framebuffer
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "ERROR::FRAMEBUFFER:: FrameBuffer is NOT Compelete." << std::endl;
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    // Load VAO and VBO for Screen
-    unsigned int ScreenVAO;
-    glGenVertexArrays(1, &ScreenVAO);
-    glBindVertexArray(ScreenVAO);
-
-    unsigned int ScreenVBO;
-    glGenBuffers(1, &ScreenVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, ScreenVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertces), &vertces, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
-
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    // fin
+    FrameBuffer fbo(ScreenWidth, ScreenHeight);
 
     // Shader for Screen
     Shader screenshader("./Shaders/OffScreen.vert", "./Shaders/SimpleFrameBuffer.frag");
 
-    // Model with Shader
+    // Model and Shader
     Model Haku("./Model/Haku/TDA Lacy Haku.pmx");
     Shader HakuShader("./Shaders/Explode.vert", "./Shaders/Explode.geom", "./Shaders/Explode.frag");
+
+    HakuShader.Use();
+    glm::mat4 model(1.0f);
+    HakuShader.setMat4("model", model);
 
     // UniformBuffer Init
     unsigned int uboMatricesBlock;
@@ -185,9 +154,17 @@ int main()
     glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+    // Shader Binding
+    HakuShader.Use();
+    unsigned int HAKU_Matrices_Index = glGetUniformBlockIndex(HakuShader.ID, "Matrices");
+    glUniformBlockBinding(HakuShader.ID, HAKU_Matrices_Index, 0);
+
+    // UniformBlock Binding
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboMatricesBlock);
+
     while(!glfwWindowShouldClose(window))
     {
-        // inputs(window);
+        inputs(window);
         glfwPollEvents();
         
         ImGui_ImplOpenGL3_NewFrame();
@@ -198,18 +175,30 @@ int main()
         {
             ImGui::Begin("Status");
 
+            ImGui::BulletText("Time: %.1fs", (float)glfwGetTime());
+            ImGui::BulletText("FPS: %.1f", ImGui::GetIO().Framerate);
+
             ImGui::End();
         }
 
         ImGui::Render();
 
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        // Matrices
+        glm::mat4 view = camera.GetViewMatrix();
+
+        // Update UniformBuffer
+        glBindBuffer(GL_UNIFORM_BUFFER, uboMatricesBlock);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(view));
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo.ID);
         glEnable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.0, 0.0, 0.0, 1.0);
 
         // Render Code Here
-
+        HakuShader.Use();
+        Haku.Draw(&HakuShader);
 
         glBindVertexArray(0);
 
@@ -219,16 +208,14 @@ int main()
         glClearColor(0.0, 0.0, 0.0, 1.0);
 
         screenshader.Use();
-        glBindVertexArray(ScreenVAO);
-        glBindTexture(GL_TEXTURE_2D, texture_attachment);
+        glBindVertexArray(fbo.VAO);
+        glBindTexture(GL_TEXTURE_2D, fbo.texture_attachment);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
     }
-    glDeleteFramebuffers(1, &fbo);
-    glDeleteBuffers(1, &ScreenVBO);
-    glDeleteBuffers(1, &ScreenVAO);
+    fbo.Delete();
 
     ImGui_ImplGlfw_Shutdown();
     ImGui_ImplOpenGL3_Shutdown();

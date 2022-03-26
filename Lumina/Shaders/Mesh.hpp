@@ -33,7 +33,7 @@ public:
         setpuMesh();
     }
 
-    void Draw(Shader shader) {
+    void Draw(Shader *shader) {
         // the naming rule should fellows texture_ + diffuse/specular/*** + 1/2/3 <the numbers starts from 1>
         // Sample: texture_diffuse1; texture_specular2;
         unsigned int diffuseIndex = 1;
@@ -52,7 +52,7 @@ public:
             else if(name == "texture_specular")
                 number = std::to_string(specularIndex++);
 
-            shader.setInt(("material." + name + number), i + 1);
+            shader->setInt(("material." + name + number), i + 1);
             glBindTexture(GL_TEXTURE_2D, textures[i].id);
         }
 

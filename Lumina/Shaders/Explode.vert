@@ -13,7 +13,7 @@ layout (std140) uniform Matrices {
 out VS_OUT {
     vec3 normal;
     vec3 fragPos;
-    vec3 texCoords;
+    vec2 texCoords;
 } vs_out;
 
 void main() {

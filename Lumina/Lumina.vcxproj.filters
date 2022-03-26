@@ -158,6 +158,9 @@
     <ClCompile Include="Shaders\Model.cpp">
       <Filter>Shaders</Filter>
     </ClCompile>
+    <ClCompile Include="Render11.1.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rectangle.hpp">
@@ -363,6 +366,15 @@
       <Filter>Shaders\GeoShaders</Filter>
     </None>
     <None Include="Shaders\Geo_test.vert">
+      <Filter>Shaders\GeoShaders</Filter>
+    </None>
+    <None Include="Shaders\Explode.frag">
+      <Filter>Shaders\GeoShaders</Filter>
+    </None>
+    <None Include="Shaders\Explode.geom">
+      <Filter>Shaders\GeoShaders</Filter>
+    </None>
+    <None Include="Shaders\Explode.vert">
       <Filter>Shaders\GeoShaders</Filter>
     </None>
   </ItemGroup>

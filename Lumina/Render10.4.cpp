@@ -316,7 +316,7 @@ int main()
 
         modelshader.Use();
         glBindTexture(GL_TEXTURE_CUBE_MAP, CubeMapTexture);
-        test_model.Draw(modelshader);
+        test_model.Draw(&modelshader);
 
         // Update Data in Uniform Buffer for SkyBoxShader
         glBindBuffer(GL_UNIFORM_BUFFER, uboMatricesBlock);

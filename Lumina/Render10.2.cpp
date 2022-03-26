@@ -292,7 +292,7 @@ int main()
             glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
         modelshader.Use();
-        test_model.Draw(modelshader);
+        test_model.Draw(&modelshader);
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 

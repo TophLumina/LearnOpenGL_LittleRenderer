@@ -180,7 +180,7 @@ int main() {
         //BLight Config
         light.updateDirlight(0, glm::vec3(view * glm::vec4(Dirlight_dir, 1.0f)), 0.6f * light_color, 0.4f * light_color, 1.0f * light_color);
 
-        Haku.Draw(modelshader);
+        Haku.Draw(&modelshader);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
