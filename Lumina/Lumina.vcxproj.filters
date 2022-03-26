@@ -39,6 +39,9 @@
     <Filter Include="Shaders\GeoShaders">
       <UniqueIdentifier>{2d532cb8-4e65-4cde-adea-b33ca4072e46}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Instance">
+      <UniqueIdentifier>{0167c118-94d8-462d-abfa-9ddcc4e2d23c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -162,6 +165,9 @@
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
     <ClCompile Include="Render11.2.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Render11.3.cpp">
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
   </ItemGroup>
@@ -388,6 +394,12 @@
     </None>
     <None Include="Shaders\VisualizeNormal.vert">
       <Filter>Shaders\GeoShaders</Filter>
+    </None>
+    <None Include="Shaders\Instance.frag">
+      <Filter>Shaders\Instance</Filter>
+    </None>
+    <None Include="Shaders\Instance.vert">
+      <Filter>Shaders\Instance</Filter>
     </None>
   </ItemGroup>
 </Project>

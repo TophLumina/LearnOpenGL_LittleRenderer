@@ -13,7 +13,6 @@
 #include "lazy.hpp"
 #include "Camera.hpp"
 #include "Shader.hpp"
-#include "Screen.hpp"
 #include "./Shaders/Model.hpp"
 #include "./Shaders/FrameBuffer.hpp"
 
