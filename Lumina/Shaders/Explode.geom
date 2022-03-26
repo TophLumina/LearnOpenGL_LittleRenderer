@@ -10,7 +10,7 @@ in VS_OUT {
     vec2 texCoords;
 } gs_in[];
 
-out vec2 TexCoords;
+out vec2 texCoords;
 
 vec3 CaculateNormal() {
     vec3 a = vec3(gl_in[0].gl_Position - gl_in[1].gl_Position);
@@ -27,15 +27,15 @@ void main() {
     vec3 norm = CaculateNormal();
 
     gl_Position = Explode(gl_in[0].gl_Position, norm);
-    TexCoords = gs_in[0].texCoords;
+    texCoords = gs_in[0].texCoords;
     EmitVertex();
 
     gl_Position = Explode(gl_in[1].gl_Position, norm);
-    TexCoords = gs_in[1].texCoords;
+    texCoords = gs_in[1].texCoords;
     EmitVertex();
 
     gl_Position = Explode(gl_in[2].gl_Position, norm);
-    TexCoords = gs_in[2].texCoords;
+    texCoords = gs_in[2].texCoords;
     EmitVertex();
 
     EndPrimitive();
