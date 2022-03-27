@@ -88,18 +88,35 @@ int main()
         for (int y = -10; y < 10; y += 2)
         {
             glm::vec2 offset;
-            offset.x = (float)x / 1.0f + defaultoffset;
-            offset.y = (float)y / 1.0f + defaultoffset;
+            offset.x = (float)x / 10.0f + defaultoffset;
+            offset.y = (float)y / 10.0f + defaultoffset;
             offsets[index++] = offset;
         }
     }
 
-    InstanceShader.Use();
-    for(unsigned int i = 0; i < 100; ++i)
-    {
-        std::string s = std::to_string(i);
-        InstanceShader.setVec2(("offsets[" + s + "]").c_str(), offsets[i]);
-    }
+    // Using Instanced Array
+    unsigned int InstancedArrayVBO;
+    glGenBuffers(1, &InstancedArrayVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, InstancedArrayVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 100, &offsets[0], GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    // InstanceShader.Use();
+    // for(unsigned int i = 0; i < 100; ++i)
+    // {
+    //     std::string s = std::to_string(i);
+    //     InstanceShader.setVec2(("offsets[" + s + "]").c_str(), offsets[i]);
+    // }
+
+
+    // AttribPointer
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, InstancedArrayVBO);
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)0);
+    glVertexAttribDivisor(2, 1);
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -109,6 +126,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
         glClearColor(0.0, 0.0, 0.0, 1.0);
 
+        InstanceShader.Use();
         glBindVertexArray(VAO);
         glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100);
 
