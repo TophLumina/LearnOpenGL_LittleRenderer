@@ -98,7 +98,7 @@ int main()
     unsigned int InstancedArrayVBO;
     glGenBuffers(1, &InstancedArrayVBO);
     glBindBuffer(GL_ARRAY_BUFFER, InstancedArrayVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 100, &offsets[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 100 * sizeof(glm::vec2), &offsets[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
     // InstanceShader.Use();
