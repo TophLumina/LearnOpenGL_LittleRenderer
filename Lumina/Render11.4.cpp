@@ -135,6 +135,21 @@ int main()
     FrameBuffer fb(ScreenWidth, ScreenHeight);
     Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/SimpleFrameBuffer.frag");
 
+    Model Haku("./Model/Haku/TDA Lacy Haku.pmx");
+    Shader HakuShader("./Shaders/EMInterface_Block.vert", "./Shaders/EMInterface_Block.frag");
+
+    glm::mat4 model(1.0f);
+    HakuShader.Use();
+    HakuShader.setMat4("model", model);
+
+    // UniformBuffer
+    unsigned int MatricesBlock;
+    glGenBuffers(1, &MatricesBlock);
+    glBindBuffer(GL_UNIFORM_BUFFER, MatricesBlock);
+    glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)ScreenWidth / (float)ScreenWidth, 0.1f, 100.0f);
+    
+
     // todo list here
 
     while(!glfwWindowShouldClose(window))
@@ -157,5 +172,7 @@ int main()
         }
 
         ImGui::Render();
+
+        
     }
 }
