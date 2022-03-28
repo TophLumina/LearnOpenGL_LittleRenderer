@@ -222,7 +222,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Render11.4.cpp" />
+    <ClCompile Include="Render11.4.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Render11.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -400,6 +403,8 @@
     <None Include="Shaders\ExternalModel.vert" />
     <None Include="Shaders\Instance.frag" />
     <None Include="Shaders\Instance.vert" />
+    <None Include="Shaders\InstanceCube.frag" />
+    <None Include="Shaders\instanceCube.vert" />
     <None Include="Shaders\lightComplex.frag" />
     <None Include="Shaders\lightComplex.vert" />
     <None Include="Shaders\materializedFag.shader" />

@@ -135,8 +135,12 @@ int main()
     FrameBuffer fb(ScreenWidth, ScreenHeight);
     Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/SimpleFrameBuffer.frag");
 
+    // Models and Shaders
     Model Haku("./Model/Haku/TDA Lacy Haku.pmx");
     Shader HakuShader("./Shaders/EMInterface_Block.vert", "./Shaders/EMInterface_Block.frag");
+
+    Model Cube("./Model/JustCube/untitled.fbx");
+    Shader CubeShader("./Shaders/instanceCube.vert", "./Shaders/InstanceCube.frag");
 
     glm::mat4 model(1.0f);
     HakuShader.Use();
@@ -156,10 +160,77 @@ int main()
     unsigned int HAKU_Matrices_Index = glGetUniformBlockIndex(HakuShader.ID, "Matrices");
     glUniformBlockBinding(HakuShader.ID, HAKU_Matrices_Index, 0);
 
+    CubeShader.Use();
+    unsigned int CUBE_Matrices_Index = glGetUniformBlockIndex(CubeShader.ID, "Matrices");
+    glUniformBlockBinding(CubeShader.ID, CUBE_Matrices_Index, 0);
+
     // UniformbLock Slot Binding
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, MatricesBlock);
 
-    // todo list here
+    // Ring Positioning Vars
+    unsigned int num = 1000;
+    glm::mat4 *Instancemodel;
+    Instancemodel = new glm::mat4[num];
+    srand(static_cast<unsigned int>(glfwGetTime()));
+    // Radius of Circle
+    float R = 30.0f;
+    float offset = 7.5f;
+    for (unsigned int i = 0; i < num; ++i)
+    {
+        glm::mat4 model(1.0f);
+        float angle = (float)i / (float)num * 360.0f;
+        float alias = (rand() % (int)(2 * offset)) * 1.0f - offset;
+        float x = sin(angle) * R + alias;
+        alias = (rand() % (int)(2 * offset)) * 1.0f - offset;
+        float y = 0.4f * alias;
+        alias = (rand() % (int)(2 * offset)) * 1.0f - offset;
+        float z = cos(angle) * R + alias;
+        // Location Config
+
+        model = glm::translate(model, glm::vec3(x, y, z));
+
+        // Scale
+        float scale = static_cast<float>((rand() % 20) / 100.0f + 0.05f);
+        model = glm::scale(model, glm::vec3(scale));
+
+        float rotate = static_cast<float>(rand() % 360);
+        model = glm::rotate(model, rotate, glm::vec3(0.4f, 0.6f, 0.8f)); // Rotate Axis
+
+        Instancemodel[i] = model;
+    }
+
+    // Buffer used for Instance Rendering
+    unsigned int InstanceMatrices;
+    glGenBuffers(1, &InstanceMatrices);
+    glBindBuffer(GL_ARRAY_BUFFER, InstanceMatrices);
+    glBufferData(GL_ARRAY_BUFFER, 100 * sizeof(glm::mat4), Instancemodel, GL_STATIC_DRAW);
+    std::vector<Mesh> CubeMesh = Cube.ServeMeshes();
+
+    for (unsigned int i = 0; i < CubeMesh.size(); ++i)
+    {
+        unsigned int currentVAO = CubeMesh[i].ServeVAO();
+        glBindVertexArray(currentVAO);
+
+        // OPENGL can receive 4 float-type data in one single layer
+        // so devide a mat4 into 4 vec4 and sent them in 4 different layers
+        GLsizei sizeVec4 = sizeof(glm::vec4);
+        glEnableVertexAttribArray(3);
+        glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)0);
+        glEnableVertexAttribArray(4);
+        glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)(sizeVec4));
+        glEnableVertexAttribArray(5);
+        glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)(2 * sizeVec4));
+        glEnableVertexAttribArray(6);
+        glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)(3 * sizeVec4));
+
+        glVertexAttribDivisor(3, 1);
+        glVertexAttribDivisor(4, 1);
+        glVertexAttribDivisor(5, 1);
+        glVertexAttribDivisor(6, 1);
+
+        glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
 
     while(!glfwWindowShouldClose(window))
     {
@@ -176,6 +247,8 @@ int main()
 
             ImGui::BulletText("Time:%.1fs", (float)glfwGetTime());
             ImGui::BulletText("FPS:%.1f", ImGui::GetIO().Framerate);
+            ImGui::NewLine();
+            ImGui::BulletText("Instance Items Rendered: %i", num);
 
             ImGui::End();
         }
@@ -199,6 +272,8 @@ int main()
         Haku.Draw(&HakuShader);
 
         // Instance Rendering Code Here
+        CubeShader.Use();
+        Cube.DrawbyInstance(&CubeShader, num);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glDisable(GL_DEPTH_TEST);

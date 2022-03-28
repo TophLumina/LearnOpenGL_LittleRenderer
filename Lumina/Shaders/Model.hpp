@@ -27,6 +27,18 @@ public:
             amesh.Draw(shader);
     }
 
+    void DrawbyInstance(Shader *shader,int num)
+    {
+        for (Mesh amesh : meshes)
+            amesh.DrawbyInstance(shader, num);
+    }
+
+    // Used for Instance Rendering
+    std::vector<Mesh> ServeMeshes() 
+    {
+        return this->meshes;
+    }
+
 private:
     // Optimization
     std::vector<Texture> textures_loaded;

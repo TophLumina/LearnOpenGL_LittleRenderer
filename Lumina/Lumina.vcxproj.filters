@@ -404,5 +404,11 @@
     <None Include="Shaders\Instance.vert">
       <Filter>Shaders\Instance</Filter>
     </None>
+    <None Include="Shaders\InstanceCube.frag">
+      <Filter>Shaders\Instance</Filter>
+    </None>
+    <None Include="Shaders\instanceCube.vert">
+      <Filter>Shaders\Instance</Filter>
+    </None>
   </ItemGroup>
 </Project>

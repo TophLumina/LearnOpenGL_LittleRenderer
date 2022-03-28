@@ -65,6 +65,38 @@ public:
         glActiveTexture(GL_TEXTURE0);
     }
 
+    void DrawbyInstance(Shader *shader, unsigned int num) {
+        // the naming rule should fellows texture_ + diffuse/specular/*** + 1/2/3 <the numbers starts from 1>
+        // Sample: texture_diffuse1; texture_specular2;
+        unsigned int diffuseIndex = 1;
+        unsigned int specularIndex = 1;
+        for (unsigned int i = 0; i < textures.size(); ++i) {
+            glActiveTexture(GL_TEXTURE1 + i);
+            std::string number;
+            std::string name = textures[i].type;
+            if(name == "texture_diffuse")
+                number = std::to_string(diffuseIndex++);
+            else if(name == "texture_specular")
+                number = std::to_string(specularIndex++);
+
+            shader->setInt(("material." + name + number), i + 1);
+            glBindTexture(GL_TEXTURE_2D, textures[i].id);
+        }
+
+        glBindVertexArray(VAO);
+        // glDrawElements(GL_TRIANGLES, (unsigned int)indices.size(), GL_UNSIGNED_INT, 0);
+        // Using Func::glDrawElementsInstanced() for Instance Rendering
+        glDrawElementsInstanced(GL_TRIANGLES, (unsigned int)indices.size(), GL_UNSIGNED_INT, 0, num);
+
+        glBindVertexArray(0);
+        glActiveTexture(GL_TEXTURE0);
+    }
+
+    // Used for Instance Rendering
+    unsigned int ServeVAO() {
+        return this->VAO;
+    }
+
 private:
     // Render Data
     unsigned int VAO;
