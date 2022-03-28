@@ -148,7 +148,16 @@ int main()
     glBindBuffer(GL_UNIFORM_BUFFER, MatricesBlock);
     glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
     glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)ScreenWidth / (float)ScreenWidth, 0.1f, 100.0f);
-    
+    glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    // Shader UniformBlock Binding
+    HakuShader.Use();
+    unsigned int HAKU_Matrices_Index = glGetUniformBlockIndex(HakuShader.ID, "Matrices");
+    glUniformBlockBinding(HakuShader.ID, HAKU_Matrices_Index, 0);
+
+    // UniformbLock Slot Binding
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, MatricesBlock);
 
     // todo list here
 
@@ -173,6 +182,41 @@ int main()
 
         ImGui::Render();
 
-        
+        glm::mat4 view = camera.GetViewMatrix();
+
+        // UniformBlock Data Update
+        glBindBuffer(GL_UNIFORM_BUFFER, MatricesBlock);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(view));
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, fb.ID);
+        glEnable(GL_DEPTH_TEST);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(0.0, 0.0, 0.0, 1.0);
+
+        // Render Code
+        HakuShader.Use();
+        Haku.Draw(&HakuShader);
+
+        // Instance Rendering Code Here
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glDisable(GL_DEPTH_TEST);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glClearColor(0.0, 0.0, 0.0, 1.0);
+
+        fbShader.Use();
+        glBindVertexArray(fb.VAO);
+        glBindTexture(GL_TEXTURE_2D,fb.texture_attachment);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        glfwSwapBuffers(window);
     }
+    fb.Delete();
+
+    ImGui_ImplGlfw_Shutdown();
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui::DestroyContext();
+    glfwTerminate();
 }
