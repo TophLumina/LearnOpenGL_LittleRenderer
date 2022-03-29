@@ -179,29 +179,29 @@ int main()
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, MatricesBlock);
 
     // Ring Positioning Vars
-    unsigned int num = 1000;
+    unsigned int num = 15000;
     glm::mat4 *Instancemodel;
     Instancemodel = new glm::mat4[num];
     srand(static_cast<unsigned int>(glfwGetTime()));
     // Radius of Circle
-    float R = 30.0f;
-    float offset = 7.5f;
+    float R = 25.0f;
+    float offset = 5.0f;
     for (unsigned int i = 0; i < num; ++i)
     {
         glm::mat4 model(1.0f);
         float angle = (float)i / (float)num * 360.0f;
-        float alias = (rand() % (int)(2 * offset)) * 1.0f - offset;
+        float alias = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
         float x = sin(angle) * R + alias;
-        alias = (rand() % (int)(2 * offset)) * 1.0f - offset;
-        float y = 0.4f * alias;
-        alias = (rand() % (int)(2 * offset)) * 1.0f - offset;
+        alias = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+        float y = 8.0f * alias + 20.0f;
+        alias = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
         float z = cos(angle) * R + alias;
         // Location Config
 
         model = glm::translate(model, glm::vec3(x, y, z));
 
         // Scale
-        float scale = static_cast<float>((rand() % 20) / 100.0f + 0.1f);
+        float scale = static_cast<float>((rand() % 140) / 100.0f + 0.2f);
         model = glm::scale(model, glm::vec3(scale));
 
         float rotate = static_cast<float>(rand() % 360);
@@ -210,11 +210,26 @@ int main()
         Instancemodel[i] = model;
     }
 
+    // Colors
+    glm::vec3 *colors;
+    colors = new glm::vec3[num];
+    for (unsigned int i = 0; i < num; ++i)
+    {
+        float R = static_cast<float>(rand() % 50 + 50);
+        float G = static_cast<float>(rand() % 50 + 50);
+        float B = static_cast<float>(rand() % 50 + 50);
+
+        glm::vec3 col(R, G, B);
+        col /= 100;
+
+        colors[i] = col;
+    }
+
     // Buffer used for Instance Rendering
     unsigned int InstanceMatrices;
     glGenBuffers(1, &InstanceMatrices);
     glBindBuffer(GL_ARRAY_BUFFER, InstanceMatrices);
-    glBufferData(GL_ARRAY_BUFFER, 100 * sizeof(glm::mat4), Instancemodel, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, num * sizeof(glm::mat4), Instancemodel, GL_STATIC_DRAW);
     std::vector<Mesh> CubeMesh = Cube.ServeMeshes();
 
     for (unsigned int i = 0; i < CubeMesh.size(); ++i)
@@ -240,8 +255,25 @@ int main()
         glVertexAttribDivisor(6, 1);
 
         glBindVertexArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    unsigned int InstacnceColor;
+    glGenBuffers(1, &InstacnceColor);
+    glBindBuffer(GL_ARRAY_BUFFER, InstacnceColor);
+    glBufferData(GL_ARRAY_BUFFER, num * sizeof(glm::vec3), colors, GL_STATIC_DRAW);
+    for (unsigned int i = 0; i < CubeMesh.size(); ++i)
+    {
+        unsigned int currentVAO = CubeMesh[i].ServeVAO();
+        glBindVertexArray(currentVAO);
+
+        glEnableVertexAttribArray(7);
+        glVertexAttribPointer(7, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void *)0);
+
+        glVertexAttribDivisor(7, 1);
+        glBindVertexArray(0);
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     while(!glfwWindowShouldClose(window))
     {
@@ -300,6 +332,10 @@ int main()
         glfwSwapBuffers(window);
     }
     fb.Delete();
+    glDeleteBuffers(1, &InstanceMatrices);
+    glDeleteBuffers(1, &InstacnceColor);
+    delete (Instancemodel);
+    delete (colors);
 
     ImGui_ImplGlfw_Shutdown();
     ImGui_ImplOpenGL3_Shutdown();
