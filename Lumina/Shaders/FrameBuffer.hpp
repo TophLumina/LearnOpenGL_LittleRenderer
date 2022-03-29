@@ -45,6 +45,7 @@ public:
             glDeleteFramebuffers(1, &tmpfbo);
     };
 
+    // Served Texture for Post Effects and MultiSampling
     unsigned int MultiSampledTexture2D()
     {
         glBindFramebuffer(GL_READ_FRAMEBUFFER, ID);
@@ -113,7 +114,7 @@ private:
             glGenFramebuffers(1, &tmpfbo);
             glBindFramebuffer(GL_FRAMEBUFFER, tmpfbo);
 
-            glGenBuffers(1, &tmp_texture_attachment);
+            glGenTextures(1, &tmp_texture_attachment);
             glGenRenderbuffers(1, &tmp_render_buffer);
 
             glBindTexture(GL_TEXTURE_2D, tmp_texture_attachment);

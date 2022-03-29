@@ -292,7 +292,7 @@ int main()
         glClearColor(0.0, 0.0, 0.0, 1.0);
 
         fbShader.Use();
-        glBindTexture(GL_TEXTURE_2D, fb.texture_attachment);
+        glBindTexture(GL_TEXTURE_2D, fb.MultiSampledTexture2D());
         glBindVertexArray(fb.VAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
