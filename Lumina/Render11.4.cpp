@@ -23,6 +23,9 @@ Camera camera(campos, camup);
 
 bool enter = true;
 
+// MultiSampling
+int multisample = 4;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -89,6 +92,9 @@ int main()
     int ScreenWidth = 800;
     int ScreenHeight = 600;
 
+    // This Func Should be Called before the Window being Created
+    glfwWindowHint(GLFW_SAMPLES, multisample);
+
     GLFWwindow *window = glfwCreateWindow(ScreenWidth, ScreenHeight, "Instance Rendering Application", NULL, NULL);
     if(window == NULL)
     {
@@ -125,6 +131,11 @@ int main()
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
+    // GL_ENABLES
+
+    // Enable by default
+    glEnable(GL_MULTISAMPLE);
+
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
@@ -132,7 +143,7 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // FrameBuffer
-    FrameBuffer fb(ScreenWidth, ScreenHeight);
+    FrameBuffer fb(ScreenWidth, ScreenHeight, 4);
     Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/SimpleFrameBuffer.frag");
 
     // Models and Shaders
@@ -190,7 +201,7 @@ int main()
         model = glm::translate(model, glm::vec3(x, y, z));
 
         // Scale
-        float scale = static_cast<float>((rand() % 20) / 100.0f + 0.05f);
+        float scale = static_cast<float>((rand() % 20) / 100.0f + 0.1f);
         model = glm::scale(model, glm::vec3(scale));
 
         float rotate = static_cast<float>(rand() % 360);
@@ -281,8 +292,8 @@ int main()
         glClearColor(0.0, 0.0, 0.0, 1.0);
 
         fbShader.Use();
+        glBindTexture(GL_TEXTURE_2D, fb.texture_attachment);
         glBindVertexArray(fb.VAO);
-        glBindTexture(GL_TEXTURE_2D,fb.texture_attachment);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
