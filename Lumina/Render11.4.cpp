@@ -143,8 +143,8 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // FrameBuffer
-    FrameBuffer fb(ScreenWidth, ScreenHeight, 4);
-    Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/SimpleFrameBuffer.frag");
+    FrameBuffer fb(ScreenWidth, ScreenHeight, 8);
+    Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/OffScreen.frag");
 
     // Models and Shaders
     Model Haku("./Model/Haku/TDA Lacy Haku.pmx");
@@ -183,7 +183,7 @@ int main()
     glm::mat4 *Instancemodel;
     Instancemodel = new glm::mat4[num];
     srand(static_cast<unsigned int>(glfwGetTime()));
-    // Radius of Circle
+    // Scattering -- Radius of Circle
     float R = 25.0f;
     float offset = 5.0f;
     for (unsigned int i = 0; i < num; ++i)
@@ -275,6 +275,11 @@ int main()
     }
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+    // Vars used for imgui
+    bool grayscale = false;
+    bool inversion = false;
+    int kernel = 0;
+
     while(!glfwWindowShouldClose(window))
     {
         inputs(window);
@@ -292,6 +297,13 @@ int main()
             ImGui::BulletText("FPS:%.1f", ImGui::GetIO().Framerate);
             ImGui::NewLine();
             ImGui::BulletText("Instance Items Rendered: %i", num);
+
+            ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "PostEffects:");
+            ImGui::NewLine();
+            ImGui::Checkbox("Grayscale", &grayscale);
+            ImGui::Checkbox("Inversion", &inversion);
+            ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Kernels Available:\n0::NoEffect\t1::Sharpen\t2::Blur\t3::EdgeDetection");
+            ImGui::SliderInt("Kernel Selector", &kernel, 0, 3);
 
             ImGui::End();
         }
@@ -322,6 +334,12 @@ int main()
         glDisable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT);
         glClearColor(0.0, 0.0, 0.0, 1.0);
+
+        // Imgui Dynamics
+        fbShader.Use();
+        fbShader.setBool("Grayscale", grayscale);
+        fbShader.setBool("Inversion", inversion);
+        fbShader.setInt("KernelIndex", kernel);
 
         fbShader.Use();
         glBindTexture(GL_TEXTURE_2D, fb.MultiSampledTexture2D());
