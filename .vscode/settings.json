@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "*.rh": "cpp"
+        "*.rh": "cpp",
+        "string": "cpp"
     }
 }

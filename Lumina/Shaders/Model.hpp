@@ -149,7 +149,6 @@ private:
 
     std::vector<Texture> loadMaterialTexture(aiMaterial *material, aiTextureType type, std::string typeName)
     {
-        // stbi_set_flip_vertically_on_load(true);
         std::vector<Texture> textures;
         for (unsigned int i = 0; i < material->GetTextureCount(type); ++i)
         {

@@ -75,6 +75,6 @@ void Light::updateSpotlight(unsigned int slot, glm::vec3 direction, glm::vec3 po
     this->shader->setFloat("spotlights[" + std::to_string(slot) + "].quadratic", quadratic);
 
     this->shader->setFloat("spotlights[" + std::to_string(slot) +"].cutoff", glm::cos(glm::radians(cutoff)));
-    this->shader->setFloat("spotlights[" + std::to_string(slot) +"].outercutoff", glm::cos(glm::radians(outercutoff)));
+    this->shader->setFloat("spotlights[" + std::to_string(slot) +"].outer_cutoff", glm::cos(glm::radians(outercutoff)));
     update();
 }

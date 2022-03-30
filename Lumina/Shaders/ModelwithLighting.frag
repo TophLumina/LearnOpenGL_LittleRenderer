@@ -50,6 +50,7 @@ struct SpotLight {
 in vec3 normal;
 in vec3 fragPos;
 in vec2 texCoords;
+in mat4 out_view;
 
 #define POINT_LIGHTS_LIMITATION 16
 #define OTHER_LIMITATION 2
@@ -84,14 +85,14 @@ void main() {
     // for(int i = 0; i < num_spotlight; ++i)
     //     result += CalculateSpotlight(spotlights[i], norm, fragPos, viewDir);
 
-    for(int i = 0; i < num_dirlight; ++i)
+    for (int i = 0; i < num_dirlight; ++i)
         result += ComicLikeDirLight(dirlights[i], norm, viewDir);
 
     FragColor = vec4(result, 1.0);
 }
 
 vec3 CalculateDirlight(Dirlight light, vec3 normal, vec3 viewDir) {
-    vec3 lightDir = normalize(-light.direction);
+    vec3 lightDir = normalize(-vec3(mat4(mat3(out_view)) * vec4(light.direction, 1.0)));
     float diff = max(dot(lightDir, normal), 0.0);
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(reflectDir, viewDir), 0.0), shininess);
@@ -138,7 +139,7 @@ vec3 CalculateSpotlight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir
 }
 
 vec3 ComicLikeDirLight(Dirlight light, vec3 normal, vec3 viewDir) {
-    vec3 lightDir = -light.direction;
+    vec3 lightDir = normalize(-vec3(mat4(mat3(out_view)) * vec4(light.direction, 1.0)));
     bool bright = dot(lightDir, normal) > 0.2 ? true : false;
 
     vec3 ambient = 0.4 * vec3(texture(material.texture_diffuse1, texCoords));

@@ -34,27 +34,7 @@ public:
     }
 
     void Draw(Shader *shader) {
-        // the naming rule should fellows texture_ + diffuse/specular/*** + 1/2/3 <the numbers starts from 1>
-        // Sample: texture_diffuse1; texture_specular2;
-        unsigned int diffuseIndex = 1;
-        unsigned int specularIndex = 1;
-        for (unsigned int i = 0; i < textures.size(); ++i) {
-            // before binding the texture we need to make it active first
-
-            // The order of the Sampler index has changed for Environment Mapping.
-            // GL_TEXTURE0 is reserved for extera texture.
-            glActiveTexture(GL_TEXTURE1 + i);
-            // then get its Index number
-            std::string number;
-            std::string name = textures[i].type;
-            if(name == "texture_diffuse")
-                number = std::to_string(diffuseIndex++);
-            else if(name == "texture_specular")
-                number = std::to_string(specularIndex++);
-
-            shader->setInt(("material." + name + number), i + 1);
-            glBindTexture(GL_TEXTURE_2D, textures[i].id);
-        }
+        loadTextures(shader);
 
         // draw Mesh
         glBindVertexArray(VAO);
@@ -66,22 +46,7 @@ public:
     }
 
     void DrawbyInstance(Shader *shader, unsigned int num) {
-        // the naming rule should fellows texture_ + diffuse/specular/*** + 1/2/3 <the numbers starts from 1>
-        // Sample: texture_diffuse1; texture_specular2;
-        unsigned int diffuseIndex = 1;
-        unsigned int specularIndex = 1;
-        for (unsigned int i = 0; i < textures.size(); ++i) {
-            glActiveTexture(GL_TEXTURE1 + i);
-            std::string number;
-            std::string name = textures[i].type;
-            if(name == "texture_diffuse")
-                number = std::to_string(diffuseIndex++);
-            else if(name == "texture_specular")
-                number = std::to_string(specularIndex++);
-
-            shader->setInt(("material." + name + number), i + 1);
-            glBindTexture(GL_TEXTURE_2D, textures[i].id);
-        }
+        loadTextures(shader);
 
         glBindVertexArray(VAO);
         // glDrawElements(GL_TRIANGLES, (unsigned int)indices.size(), GL_UNSIGNED_INT, 0);
@@ -127,5 +92,29 @@ private:
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, Texcoords));
 
         glBindVertexArray(0);
+    }
+
+    void loadTextures(Shader *shader) {
+        // the naming rule should fellows texture_ + diffuse/specular/*** + 1/2/3   <the numbers starts from 1>
+        // Sample: texture_diffuse1; texture_specular2;
+        unsigned int diffuseIndex = 1;
+        unsigned int specularIndex = 1;
+        for (unsigned int i = 0; i < textures.size(); ++i) {
+            // before binding the texture we need to make it active first
+
+            // The order of the Sampler index has changed for Environment Mapping.
+            // GL_TEXTURE0 is reserved for extera texture.
+            glActiveTexture(GL_TEXTURE1 + i);
+            // then get its Index number
+            std::string number;
+            std::string name = textures[i].type;
+            if(name == "texture_diffuse")
+                number = std::to_string(diffuseIndex++);
+            else if(name == "texture_specular")
+                number = std::to_string(specularIndex++);
+
+            shader->setInt(("material." + name + number), i + 1);
+            glBindTexture(GL_TEXTURE_2D, textures[i].id);
+        }
     }
 };
