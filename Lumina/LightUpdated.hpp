@@ -52,7 +52,7 @@ public:
         this->shader->setVec3("pointlights[" + std::to_string(slot) + "].attrib.specular", specular);
         this->shader->setFloat("pointlights[" + std::to_string(slot) + "].attenuation.constant", constant);
         this->shader->setFloat("pointlights[" + std::to_string(slot) + "].attenuation.linear", linear);
-        this->shader->setFloat("pointlights[" + std::to_string(slot) + "].attenuation.quadratic", quadratic);
+        // this->shader->setFloat("pointlights[" + std::to_string(slot) + "].attenuation.quadratic", quadratic);
         update();
     }
 
@@ -66,7 +66,7 @@ public:
         this->shader->setVec3("spotlights[" + std::to_string(slot) + "].attrib.specular", specular);
         this->shader->setFloat("spotlights[" + std::to_string(slot) + "].attenuation.constant", constant);
         this->shader->setFloat("spotlights[" + std::to_string(slot) + "].attenuation.linear", linear);
-        this->shader->setFloat("spotlights[" + std::to_string(slot) + "].attenuation.quadratic", quadratic);
+        // this->shader->setFloat("spotlights[" + std::to_string(slot) + "].attenuation.quadratic", quadratic);
 
         this->shader->setFloat("spotlights[" + std::to_string(slot) + "].cutoff", glm::cos(glm::radians(cutoff)));
         this->shader->setFloat("spotlights[" + std::to_string(slot) + "].outer_cutoff", glm::cos(glm::radians(outercutoff)));

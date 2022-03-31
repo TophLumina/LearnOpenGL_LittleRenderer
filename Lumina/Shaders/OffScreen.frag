@@ -25,6 +25,10 @@ vec4 grayscale(vec4 color) {
 // Kernels
 const float offset = 0.0025;
 
+// Gamma Correction
+const float Gamma = 2.2;
+uniform bool GammaCorrection;
+
 vec2 offsets[9] = vec2[] (
     vec2(-offset, -offset), // left-up
     vec2(-offset, 0.0),     // left
@@ -98,6 +102,9 @@ void main() {
 
     if(Grayscale)
         result = grayscale(result);
+
+    //Gamma
+    result.rgb = GammaCorrection ? pow(result.rgb, vec3(1.0 / Gamma)) : result.rgb;
     
     FragColor = result;
 }

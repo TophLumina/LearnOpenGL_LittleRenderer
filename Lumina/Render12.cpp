@@ -97,7 +97,7 @@ int main()
     // This Func Should be Called before the Window being Created
     glfwWindowHint(GLFW_SAMPLES, multisample);
 
-    GLFWwindow *window = glfwCreateWindow(ScreenWidth, ScreenHeight, "Instance Rendering Application", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(ScreenWidth, ScreenHeight, "Blinn_Phong Shading", NULL, NULL);
     if(window == NULL)
     {
         std::cout << "Failed to Create GLFW window" << std::endl;
@@ -281,6 +281,7 @@ int main()
     bool grayscale = false;
     bool inversion = false;
     int kernel = 0;
+    bool gammacorrection = false;
 
     // Lights configs
     Light light(&HakuShader);
@@ -308,10 +309,12 @@ int main()
             ImGui::NewLine();
             ImGui::BulletText("Instance Items Rendered: %i", num);
 
-            ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "PostEffects:");
             ImGui::NewLine();
+            ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "PostEffects:");
+            
             ImGui::Checkbox("Grayscale", &grayscale);
             ImGui::Checkbox("Inversion", &inversion);
+            ImGui::Checkbox("Gamma Correction", &gammacorrection);
             ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Kernels Available:\n0::NoEffect\t1::Sharpen\t2::Blur\t3::EdgeDetection");
             ImGui::SliderInt("Kernel Selector", &kernel, 0, 3);
 
@@ -345,11 +348,12 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
         glClearColor(0.0, 0.0, 0.0, 1.0);
 
-        // Imgui Dynamics
+        // Imgui Post Effects Dynamics
         fbShader.Use();
         fbShader.setBool("Grayscale", grayscale);
         fbShader.setBool("Inversion", inversion);
         fbShader.setInt("KernelIndex", kernel);
+        fbShader.setBool("GammaCorrection", gammacorrection);
 
         fbShader.Use();
         glBindTexture(GL_TEXTURE_2D, fb.MultiSampledTexture2D());

@@ -15,7 +15,8 @@ struct LightAttrib {
 struct Attenuation {
     float constant;
     float linear;
-    float quadratic;
+
+    // float quadratic;
 };
 
 struct Dirlight {
@@ -70,6 +71,8 @@ vec3 FlatDirlight(Dirlight light, vec3 normal, vec3 viewDir);
 // vec3 CalculatePointlight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 // vec3 CalculateSpotlight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 
+uniform bool GammaCorrection;
+
 out vec4 FragColor;
 
 void main() {
@@ -81,6 +84,7 @@ void main() {
     vec3 result = vec3(0.0, 0.0, 0.0);
 
     for (int i = 0; i < num_dirlight; ++i)
+        // result += CalculateDirlight(dirlights[i], norm, viewDir);
         result += FlatDirlight(dirlights[i], norm, viewDir);
 
     FragColor = vec4(result, 1.0);
@@ -91,7 +95,7 @@ bool FragmentVisibility() {
 }
 
 vec3 CalculateDirlight(Dirlight light, vec3 normal, vec3 viewDir) {
-    vec3 lightDir = normalize(-light.direction);
+    vec3 lightDir = normalize(-vec3(mat4(mat3(fs_in.view)) * vec4(light.direction, 1.0)));
     float diff = max(dot(lightDir, normal), 0.0);
     vec3 half = normalize(lightDir + viewDir);
     float spec = pow(max(dot(half, normal), 0.0), shininess);

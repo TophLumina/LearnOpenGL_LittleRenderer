@@ -11,7 +11,7 @@
 #include "../Shader.hpp"
 #include "Mesh.hpp"
 
-unsigned int TextureFromFile(const char *path, const std::string directory);
+unsigned int TextureFromFile(const char *path, const std::string directory, bool needGammacorrection);
 
 class Model
 {
@@ -127,10 +127,10 @@ private:
         {
             aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
 
-            std::vector<Texture> diffuseMaps = loadMaterialTexture(material, aiTextureType_DIFFUSE, "texture_diffuse");
+            std::vector<Texture> diffuseMaps = loadMaterialTexture(material, aiTextureType_DIFFUSE, "texture_diffuse", true);
             textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-            std::vector<Texture> specularMaps = loadMaterialTexture(material, aiTextureType_SPECULAR, "texture_specular");
+            std::vector<Texture> specularMaps = loadMaterialTexture(material, aiTextureType_SPECULAR, "texture_specular", false);
             textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
         }
 
@@ -147,7 +147,7 @@ private:
         return Mesh(vertices, indices, textures);
     }
 
-    std::vector<Texture> loadMaterialTexture(aiMaterial *material, aiTextureType type, std::string typeName)
+    std::vector<Texture> loadMaterialTexture(aiMaterial *material, aiTextureType type, std::string typeName, bool needGammacorrection)
     {
         std::vector<Texture> textures;
         for (unsigned int i = 0; i < material->GetTextureCount(type); ++i)
@@ -169,7 +169,7 @@ private:
             if (!skip)
             {
                 Texture texture;
-                texture.id = TextureFromFile(texturePath.C_Str(), directory);
+                texture.id = TextureFromFile(texturePath.C_Str(), directory, needGammacorrection);
                 texture.type = typeName;
                 texture.path = texturePath;
                 textures.push_back(texture);
