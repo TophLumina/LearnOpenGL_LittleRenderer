@@ -97,7 +97,7 @@ int main()
     // This Func Should be Called before the Window being Created
     glfwWindowHint(GLFW_SAMPLES, multisample);
 
-    GLFWwindow *window = glfwCreateWindow(ScreenWidth, ScreenHeight, "Blinn_Phong Shading", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(ScreenWidth, ScreenHeight, "Shadow Mapping", NULL, NULL);
     if(window == NULL)
     {
         std::cout << "Failed to Create GLFW window" << std::endl;
@@ -146,14 +146,18 @@ int main()
 
     // FrameBuffer
     FrameBuffer usualfb(ScreenWidth, ScreenHeight, 8);
-    Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/OffScreen.frag");
+
+    // Test Shader
+    Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/offscreen_ForTesting.frag");
+    // Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/OffScreen.frag");
 
     // Models and Shaders
     Model Haku("./Model/Haku/TDA Lacy Haku.pmx");
-    Shader HakuShader("./Shaders/Blinn_Phong.vert", "./Shaders/Blinn_Phong.frag");
+    // Shader HakuShader("./Shaders/Blinn_Phong.vert", "./Shaders/Blinn_Phong.frag");
+    Shader HakuShader("./Shaders/ModelwithShadow.vert", "./Shaders/ModelwithShadow.frag");
 
     Model Cube("./Model/JustCube/untitled.fbx");
-    Shader CubeShader("./Shaders/instanceCube.vert", "./Shaders/InstanceCube.frag");
+    Shader CubeShader("./Shaders/instanceCube.vert", "./Shaders/instanceCube.frag");
 
     glm::mat4 model(1.0f);
     HakuShader.Use();
@@ -277,16 +281,6 @@ int main()
     }
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    // TODO::Add Shadow Mapping to the Scene
-    // Create a DepthMask
-    unsigned int DepthMapfbo;
-    glGenFramebuffers(1, &DepthMapfbo);
-
-    // Depth Map Texture Attachment
-    // Shadow Map Resolution = 1024
-    const unsigned int Shadow_Resolution = 1024;
-
-
     // Vars used for imgui
     bool grayscale = false;
     bool inversion = false;
@@ -300,6 +294,80 @@ int main()
     glm::vec3 lightdir(-1.0f, -1.0f, -1.0f);
     HakuShader.Use();
     light.updateDirlight(0, lightdir, 0.6f * lightcol, 0.4f * lightcol, 0.6f * lightcol);
+
+    // TODO::Add Shadow to the Scene
+    // Create a DepthMask
+    unsigned int DepthMapfbo;
+    glGenFramebuffers(1, &DepthMapfbo);
+
+    // Depth Map Texture Attachment
+    // Shadow Map Resolution = 1024
+    const unsigned int Shadow_Resolution = 1024;
+
+    unsigned int Depth_Map;
+    glGenTextures(1, &Depth_Map);
+    glBindTexture(GL_TEXTURE_2D, Depth_Map);
+
+    // Use the Depth Texture as a normal Texture and Sampling it
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, Shadow_Resolution, Shadow_Resolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    // Binding
+    glBindFramebuffer(GL_FRAMEBUFFER, DepthMapfbo);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, Depth_Map, 0);
+
+    // and we don't need color attachment this time so disable the coloroutput of the framebuffer by setting its read/write buffer to NULL(GL_NONE aka 0)
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "ERROR::FRAMEBUFFER::SHADOWMAPPING:: FrameBuffer is NOT Compelete." << std::endl;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // Matrices for Light Space Transform <only used for DirLight>
+    // All Objects should be in the Space between far_plane and near_plane <Might need Refinements Here>
+    const float near_plane = 30.0f;
+    const float far_plane = 60.0f;
+    float OrthoBorder = 10.0f;
+    glm::mat4 Light_projection = glm::ortho(-OrthoBorder, OrthoBorder, -OrthoBorder, OrthoBorder, near_plane, far_plane);
+    glm::vec3 DirLight_Pos = -25.0f * lightdir + 10.0f * camup;
+    glm::mat4 Light_view = glm::lookAt(DirLight_Pos, DirLight_Pos + lightdir, camup);
+    glm::mat4 Light_Space_Transform = Light_projection * Light_view;
+    
+    // Shadow Shader
+    Shader ShadowShader("./Shaders/SimpleDepth.vert", "./Shaders/SimpleDepth.frag");
+    ShadowShader.Use();
+    ShadowShader.setMat4("LightSpaceTransform", Light_Space_Transform);
+
+    // Static Lighting's Shadow Mapping
+    glViewport(0, 0, Shadow_Resolution, Shadow_Resolution); // Shadow Map Resolution
+    glBindFramebuffer(GL_FRAMEBUFFER, DepthMapfbo);
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    // Pre-Render
+    ShadowShader.Use();
+    ShadowShader.setMat4("model", model);
+    ShadowShader.setBool("useInstance", false);
+    Haku.Draw(&ShadowShader);
+
+    // Disable Cube Ring for Testing
+    // ShadowShader.setBool("useInstance", true);
+    // Cube.DrawbyInstance(&ShadowShader, num);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // Model Shader Confirm
+    HakuShader.Use();
+    HakuShader.setMat4("LightSpaceTransform", Light_Space_Transform);
+    glActiveTexture(GL_TEXTURE0);
+    HakuShader.setInt("shadow_map", 0);
+    glBindTexture(GL_TEXTURE_2D, Depth_Map);
+
+    // Viewport Settings
+    glViewport(0, 0, ScreenWidth, ScreenHeight);
 
     while(!glfwWindowShouldClose(window))
     {
@@ -366,7 +434,10 @@ int main()
         fbShader.setBool("GammaCorrection", gammacorrection);
 
         fbShader.Use();
-        glBindTexture(GL_TEXTURE_2D, usualfb.MultiSampledTexture2D());
+
+        // Test Texture
+        // glBindTexture(GL_TEXTURE_2D, usualfb.MultiSampledTexture2D());
+        glBindTexture(GL_TEXTURE_2D, Depth_Map);
         glBindVertexArray(usualfb.VAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 

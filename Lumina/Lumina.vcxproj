@@ -233,9 +233,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Render12.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Render13.cpp" />
     <ClCompile Include="Render2.1.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -422,8 +423,11 @@
     <None Include="Shaders\materializedVex.shader" />
     <None Include="Shaders\ModelwithLighting.frag" />
     <None Include="Shaders\ModelwithLighting.vert" />
+    <None Include="Shaders\ModelwithShadow.frag" />
+    <None Include="Shaders\ModelwithShadow.vert" />
     <None Include="Shaders\OffScreen.frag" />
     <None Include="Shaders\OffScreen.vert" />
+    <None Include="Shaders\offscreen_ForTesting.frag" />
     <None Include="Shaders\PhongFag.shader" />
     <None Include="Shaders\PhongVex.shader" />
     <None Include="Shaders\lightFag.shader" />
@@ -434,6 +438,8 @@
     <None Include="Shaders\Geo_test.frag" />
     <None Include="Shaders\Geo_test.geom" />
     <None Include="Shaders\Geo_test.vert" />
+    <None Include="Shaders\SimpleDepth.frag" />
+    <None Include="Shaders\SimpleDepth.vert" />
     <None Include="Shaders\SingleColor.frag" />
     <None Include="Shaders\SkyBox.frag" />
     <None Include="Shaders\SkyBox.vert" />
