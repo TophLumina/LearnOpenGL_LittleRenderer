@@ -145,7 +145,7 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // FrameBuffer
-    FrameBuffer fb(ScreenWidth, ScreenHeight, 8);
+    FrameBuffer usualfb(ScreenWidth, ScreenHeight, 8);
     Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/OffScreen.frag");
 
     // Models and Shaders
@@ -277,6 +277,16 @@ int main()
     }
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+    // TODO::Add Shadow Mapping to the Scene
+    // Create a DepthMask
+    unsigned int DepthMapfbo;
+    glGenFramebuffers(1, &DepthMapfbo);
+
+    // Depth Map Texture Attachment
+    // Shadow Map Resolution = 1024
+    const unsigned int Shadow_Resolution = 1024;
+
+
     // Vars used for imgui
     bool grayscale = false;
     bool inversion = false;
@@ -330,7 +340,7 @@ int main()
         glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(view));
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, fb.ID);
+        glBindFramebuffer(GL_FRAMEBUFFER, usualfb.ID);
         glEnable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -356,14 +366,14 @@ int main()
         fbShader.setBool("GammaCorrection", gammacorrection);
 
         fbShader.Use();
-        glBindTexture(GL_TEXTURE_2D, fb.MultiSampledTexture2D());
-        glBindVertexArray(fb.VAO);
+        glBindTexture(GL_TEXTURE_2D, usualfb.MultiSampledTexture2D());
+        glBindVertexArray(usualfb.VAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
     }
-    fb.Delete();
+    usualfb.Delete();
     glDeleteBuffers(1, &InstanceMatrices);
     glDeleteBuffers(1, &InstacnceColor);
     delete (Instancemodel);
