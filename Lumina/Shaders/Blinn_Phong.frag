@@ -97,8 +97,8 @@ bool FragmentVisibility() {
 vec3 CalculateDirlight(Dirlight light, vec3 normal, vec3 viewDir) {
     vec3 lightDir = normalize(-vec3(mat4(mat3(fs_in.view)) * vec4(light.direction, 1.0)));
     float diff = max(dot(lightDir, normal), 0.0);
-    vec3 half = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(half, normal), 0.0), shininess);
+    vec3 half_vec = normalize(lightDir + viewDir);
+    float spec = pow(max(dot(half_vec, normal), 0.0), shininess);
 
     vec3 ambient = light.attrib.ambient * vec3(texture(material.texture_diffuse1, fs_in.texCoords));
     vec3 diffuse = light.attrib.diffuse * diff * vec3(texture(material.texture_diffuse1, fs_in.texCoords));
@@ -111,8 +111,8 @@ vec3 FlatDirlight(Dirlight light, vec3 normal, vec3 viewDir) {
     // for lightDir, we want to keep its position but change its direction
     vec3 lightDir = normalize(-vec3(mat4(mat3(fs_in.view)) * vec4(light.direction, 1.0)));
     bool isbright = dot(lightDir, normal) > 0;
-    vec3 half = normalize(lightDir + viewDir);
-    bool ishighlight = pow(max(dot(half, normal), 0.0), shininess) > 0.95;
+    vec3 half_vec = normalize(lightDir + viewDir);
+    bool ishighlight = pow(max(dot(half_vec, normal), 0.0), shininess) > 0.95;
 
     vec3 ambient = light.attrib.ambient * vec3(texture(material.texture_diffuse1, fs_in.texCoords));
     vec3 diffuse = light.attrib.diffuse * vec3(texture(material.texture_diffuse1, fs_in.texCoords));

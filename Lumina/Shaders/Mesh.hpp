@@ -103,7 +103,8 @@ private:
             // before binding the texture we need to make it active first
 
             // The order of the Sampler index has changed for Environment Mapping.
-            // GL_TEXTURE0 ~ 4 is reserved for extera textures.
+            // GL_TEXTURE1 ~ 4 is reserved for extera textures.
+            // Usually Keep GL_TEXTURE0 reserved. <Almost Fucked up my Entire Project Once>
             glActiveTexture(GL_TEXTURE5 + i);
             // then get its Index number
             std::string number;
@@ -113,7 +114,7 @@ private:
             else if(name == "texture_specular")
                 number = std::to_string(specularIndex++);
 
-            shader->setInt(("material." + name + number), i + 5);
+            shader->setInt(("material." + name + number), 5 + i);
             glBindTexture(GL_TEXTURE_2D, textures[i].id);
         }
     }

@@ -23,7 +23,7 @@ out VS_OUT {
 void main() {
     vs_out.normal = mat3(transpose(inverse(model * view))) * aNormal;
     vs_out.viewspace_fragPos = vec3(view * model * vec4(aPosition, 1.0));
-    vs_out.lightspace_fragPos = LightSpaceTransform * vec4(aPosition, 1.0);
+    vs_out.lightspace_fragPos = LightSpaceTransform * vec4(vec3(model * vec4(aPosition, 1.0)), 1.0);
     vs_out.texCoords = aTexCoords;
     vs_out.view = view;
 

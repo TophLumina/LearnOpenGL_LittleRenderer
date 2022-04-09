@@ -148,8 +148,8 @@ int main()
     FrameBuffer usualfb(ScreenWidth, ScreenHeight, 8);
 
     // Test Shader
-    Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/offscreen_ForTesting.frag");
-    // Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/OffScreen.frag");
+    // Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/offscreen_ForTesting.frag");
+    Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/OffScreen.frag");
 
     // Models and Shaders
     Model Haku("./Model/Haku/TDA Lacy Haku.pmx");
@@ -362,8 +362,9 @@ int main()
     // Model Shader Confirm
     HakuShader.Use();
     HakuShader.setMat4("LightSpaceTransform", Light_Space_Transform);
-    glActiveTexture(GL_TEXTURE0);
-    HakuShader.setInt("shadow_map", 0);
+    // Unkown stuff :: GL_TEXTURE0 occupied?
+    glActiveTexture(GL_TEXTURE1);
+    HakuShader.setInt("Shadow_Map", 1);
     glBindTexture(GL_TEXTURE_2D, Depth_Map);
 
     // Viewport Settings
@@ -436,8 +437,8 @@ int main()
         fbShader.Use();
 
         // Test Texture
-        // glBindTexture(GL_TEXTURE_2D, usualfb.MultiSampledTexture2D());
-        glBindTexture(GL_TEXTURE_2D, Depth_Map);
+        glBindTexture(GL_TEXTURE_2D, usualfb.MultiSampledTexture2D());
+        // glBindTexture(GL_TEXTURE_2D, Depth_Map);
         glBindVertexArray(usualfb.VAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
