@@ -85,23 +85,22 @@ void main() {
     if(!FragmentVisibility())
         discard;
 
-    // vec3 norm = normalize(fs_in.normal);
-    // vec3 viewDir = normalize(-fs_in.viewspace_fragPos);
-    // vec3 result = vec3(0.0, 0.0, 0.0);
+    vec3 norm = normalize(fs_in.normal);
+    vec3 viewDir = normalize(-fs_in.viewspace_fragPos);
+    vec3 result = vec3(0.0, 0.0, 0.0);
 
     // for (int i = 0; i < num_dirlight; ++i)
     //     // result += CalculateDirlight(dirlights[i], norm, viewDir);
     //     result += FlatDirlight(dirlights[i], norm, viewDir);
 
-    // FragColor = vec4(result, 1.0);
-
     FragColor = vec4(DirColor(), 1.0);
+
+    // Shadow Mapping Debug Code
+    // Shadow_Map missing?
 
     // vec3 projCoords = fs_in.lightspace_fragPos.xyz / fs_in.lightspace_fragPos.w;
     // projCoords = projCoords * 0.5 + 0.5;
     // FragColor = vec4(texture(Shadow_Map, projCoords.xy).rrr, 1.0);
-
-    // Shadow_Map missing?
 }
 
 
@@ -119,12 +118,16 @@ bool inShadow(vec4 light_frag_pos) {
     float StoppingDepth = texture(Shadow_Map, projCoords.xy).r;
     float CurrentDepth = projCoords.z;
 
+    // Refinements
+    float adjust = max(0.02 * (1.0 - dot(normalize(fs_in.normal), normalize(-vec3(mat4(mat3(fs_in.view)) * vec4(dirlights[0].direction, 1.0))))), 0.01);
+    StoppingDepth += adjust;
+
     return CurrentDepth > StoppingDepth;
 }
 
 vec3 DirColor() {
     vec3 result = vec3(texture(material.texture_diffuse1, fs_in.texCoords));
-    return inShadow(fs_in.lightspace_fragPos) ? vec3(1.0, 0.0, 0.0) : 1.0 * result;
+    return (inShadow(fs_in.lightspace_fragPos) ? 0.4 : 1.0) * result;
 }
 
 vec3 CalculateDirlight(Dirlight light, vec3 normal, vec3 viewDir) {
@@ -151,5 +154,5 @@ vec3 FlatDirlight(Dirlight light, vec3 normal, vec3 viewDir) {
     vec3 diffuse = light.attrib.diffuse * vec3(texture(material.texture_diffuse1, fs_in.texCoords));
     vec3 specular = light.attrib.specular * vec3(texture(material.texture_specular1, fs_in.texCoords));
 
-    return (isbright && !inShadow()) ? (ishighlight ? ambient + diffuse + specular : ambient + diffuse) : ambient;
+    return (isbright && !inShadow(fs_in.lightspace_fragPos)) ? (ishighlight ? ambient + diffuse + specular : ambient + diffuse) : ambient;
 }
