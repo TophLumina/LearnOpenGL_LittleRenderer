@@ -100,7 +100,7 @@ void main() {
 
     // vec3 projCoords = fs_in.lightspace_fragPos.xyz / fs_in.lightspace_fragPos.w;
     // projCoords = projCoords * 0.5 + 0.5;
-    // FragColor = vec4(texture(Shadow_Map, projCoords.xy).rrr, 1.0);
+    // FragColor = projCoords.z > 1.0 ? vec4(1.0, 0.0, 0.0, 1.0) : vec4(texture(Shadow_Map, projCoords.xy).rrr, 1.0);
 }
 
 
@@ -119,15 +119,17 @@ bool inShadow(vec4 light_frag_pos) {
     float CurrentDepth = projCoords.z;
 
     // Refinements
-    float adjust = max(0.02 * (1.0 - dot(normalize(fs_in.normal), normalize(-vec3(mat4(mat3(fs_in.view)) * vec4(dirlights[0].direction, 1.0))))), 0.01);
+    float adjust = max(0.01 * (1.0 - dot(normalize(fs_in.normal), normalize(-vec3(mat4(mat3(fs_in.view)) * vec4(dirlights[0].direction, 1.0))))), 0.005);
     StoppingDepth += adjust;
 
-    return CurrentDepth > StoppingDepth;
+    return (CurrentDepth > StoppingDepth);
 }
 
 vec3 DirColor() {
+    bool isbright = dot(normalize(-vec3(mat4(mat3(fs_in.view)) * vec4(dirlights[0].direction, 1.0))), normalize(fs_in.normal)) > 0;
+
     vec3 result = vec3(texture(material.texture_diffuse1, fs_in.texCoords));
-    return (inShadow(fs_in.lightspace_fragPos) ? 0.4 : 1.0) * result;
+    return ((inShadow(fs_in.lightspace_fragPos) || !isbright) ? 0.4 : 1.0) * result;
 }
 
 vec3 CalculateDirlight(Dirlight light, vec3 normal, vec3 viewDir) {
@@ -140,7 +142,7 @@ vec3 CalculateDirlight(Dirlight light, vec3 normal, vec3 viewDir) {
     vec3 diffuse = light.attrib.diffuse * diff * vec3(texture(material.texture_diffuse1, fs_in.texCoords));
     vec3 specular = light.attrib.specular * spec * vec3(texture(material.texture_specular1, fs_in.texCoords));
 
-    return inShadow() ? ambient : (ambient + diffuse + specular);
+    return inShadow(fs_in.lightspace_fragPos) ? ambient : (ambient + diffuse + specular);
 }
 
 vec3 FlatDirlight(Dirlight light, vec3 normal, vec3 viewDir) {

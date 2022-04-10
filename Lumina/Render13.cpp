@@ -156,12 +156,17 @@ int main()
     // Shader HakuShader("./Shaders/Blinn_Phong.vert", "./Shaders/Blinn_Phong.frag");
     Shader HakuShader("./Shaders/ModelwithShadow.vert", "./Shaders/ModelwithShadow.frag");
 
+    Model Floor("./Model/Floor/floor.fbx");
+    Shader FloorShader("./Shaders/ModelwithShadow.vert", "./Shaders/ModelwithShadow.frag");
+
     Model Cube("./Model/JustCube/untitled.fbx");
     Shader CubeShader("./Shaders/instanceCube.vert", "./Shaders/instanceCube.frag");
 
     glm::mat4 model(1.0f);
     HakuShader.Use();
     HakuShader.setMat4("model", model);
+    FloorShader.Use();
+    FloorShader.setMat4("model", model);
 
     // UniformBuffer
     unsigned int MatricesBlock;
@@ -180,6 +185,10 @@ int main()
     CubeShader.Use();
     unsigned int CUBE_Matrices_Index = glGetUniformBlockIndex(CubeShader.ID, "Matrices");
     glUniformBlockBinding(CubeShader.ID, CUBE_Matrices_Index, 0);
+
+    FloorShader.Use();
+    unsigned int FLOOR_Matrices_Index = glGetUniformBlockIndex(FloorShader.ID, "Matrices");
+    glUniformBlockBinding(FloorShader.ID, FLOOR_Matrices_Index, 0);
 
     // UniformbLock Slot Binding
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, MatricesBlock);
@@ -310,10 +319,13 @@ int main()
 
     // Use the Depth Texture as a normal Texture and Sampling it
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, Shadow_Resolution, Shadow_Resolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    // Remove overborder samples
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    float bordercolor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, bordercolor);
     glBindTexture(GL_TEXTURE_2D, 0);
 
     // Binding
@@ -347,11 +359,18 @@ int main()
     glBindFramebuffer(GL_FRAMEBUFFER, DepthMapfbo);
     glClear(GL_DEPTH_BUFFER_BIT);
 
+    // Peter Panning Fixed
+    glCullFace(GL_FRONT);
+
     // Pre-Render
     ShadowShader.Use();
     ShadowShader.setMat4("model", model);
     ShadowShader.setBool("useInstance", false);
+    Floor.Draw(&ShadowShader);
     Haku.Draw(&ShadowShader);
+
+    // Set Culling Back
+    glCullFace(GL_BACK);
 
     // Disable Cube Ring for Testing
     // ShadowShader.setBool("useInstance", true);
@@ -366,6 +385,15 @@ int main()
     glActiveTexture(GL_TEXTURE1);
     HakuShader.setInt("Shadow_Map", 1);
     glBindTexture(GL_TEXTURE_2D, Depth_Map);
+
+    FloorShader.Use();
+    FloorShader.setMat4("LightSpaceTransform", Light_Space_Transform);
+    glActiveTexture(GL_TEXTURE1);
+    FloorShader.setInt("Shadow_Map", 1);
+    glBindTexture(GL_TEXTURE_2D, Depth_Map);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     // Viewport Settings
     glViewport(0, 0, ScreenWidth, ScreenHeight);
@@ -417,6 +445,9 @@ int main()
         // Render Code
         HakuShader.Use();
         Haku.Draw(&HakuShader);
+
+        FloorShader.Use();
+        Floor.Draw(&FloorShader);
 
         // Instance Rendering Code Here
         CubeShader.Use();

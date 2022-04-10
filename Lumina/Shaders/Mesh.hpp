@@ -104,7 +104,7 @@ private:
 
             // The order of the Sampler index has changed for Environment Mapping.
             // GL_TEXTURE1 ~ 4 is reserved for extera textures.
-            // Usually Keep GL_TEXTURE0 reserved. <Almost Fucked up my Entire Project Once>
+            // Usually Keep GL_TEXTURE0 reserved.
             glActiveTexture(GL_TEXTURE5 + i);
             // then get its Index number
             std::string number;
