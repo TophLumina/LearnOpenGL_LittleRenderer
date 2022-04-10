@@ -297,12 +297,17 @@ int main()
     bool gammacorrection = true;
 
     // Lights configs
-    Light light(&HakuShader);
     glm::vec3 lightcol(1.0f, 1.0f, 1.0f);
-    light.num_Dirlight += 1;
     glm::vec3 lightdir(-1.0f, -1.0f, -1.0f);
+    Light Hakulight(&HakuShader);
+    Hakulight.num_Dirlight += 1;
     HakuShader.Use();
-    light.updateDirlight(0, lightdir, 0.6f * lightcol, 0.4f * lightcol, 0.6f * lightcol);
+    Hakulight.updateDirlight(0, lightdir, 0.6f * lightcol, 0.4f * lightcol, 0.6f * lightcol);
+
+    Light Floorlight(&FloorShader);
+    Floorlight.num_Dirlight += 1;
+    FloorShader.Use();
+    Floorlight.updateDirlight(0, lightdir, 0.6f * lightcol, 0.4f * lightcol, 0.6f * lightcol);
 
     // TODO::Add Shadow to the Scene
     // Create a DepthMask
@@ -310,8 +315,8 @@ int main()
     glGenFramebuffers(1, &DepthMapfbo);
 
     // Depth Map Texture Attachment
-    // Shadow Map Resolution = 1024
-    const unsigned int Shadow_Resolution = 1024;
+    // High Shadow Map Resolution means High Quality Shadow
+    const unsigned int Shadow_Resolution = 8192;
 
     unsigned int Depth_Map;
     glGenTextures(1, &Depth_Map);
@@ -342,7 +347,7 @@ int main()
     // Matrices for Light Space Transform <only used for DirLight>
     // All Objects should be in the Space between far_plane and near_plane <Might need Refinements Here>
     const float near_plane = 30.0f;
-    const float far_plane = 60.0f;
+    const float far_plane = 120.0f;
     float OrthoBorder = 10.0f;
     glm::mat4 Light_projection = glm::ortho(-OrthoBorder, OrthoBorder, -OrthoBorder, OrthoBorder, near_plane, far_plane);
     glm::vec3 DirLight_Pos = -25.0f * lightdir + 10.0f * camup;
