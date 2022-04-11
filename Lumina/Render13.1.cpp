@@ -16,7 +16,7 @@
 #include "./Shaders/Model.hpp"
 #include "./Shaders/FrameBuffer.hpp"
 
-#include "./LightUpdated.hpp"
+#include "./Lights/LightingManager.hpp"
 
 glm::vec3 campos(0.0, 0.0, 0.0);
 glm::vec3 camup(0.0, 1.0, 0.0);
@@ -296,20 +296,15 @@ int main()
     int kernel = 0;
     bool gammacorrection = true;
 
-    // Lights configs
+    // Lights Updated
     glm::vec3 lightcol(1.0f, 1.0f, 1.0f);
     glm::vec3 lightdir(-1.0f, -1.0f, -1.0f);
-    Light Hakulight(&HakuShader);
-    Hakulight.num_Dirlight += 1;
-    HakuShader.Use();
-    Hakulight.updateDirlight(0, lightdir, 0.6f * lightcol, 0.4f * lightcol, 0.6f * lightcol);
+    LightAttrib dirattrib(lightcol, lightcol, lightcol);
+    LightManager LM;
+    LM.dirlights.push_back(DirLight(dirattrib, lightdir));
+    LM.ShaderConfig(&HakuShader);
+    LM.ShaderConfig(&FloorShader);
 
-    Light Floorlight(&FloorShader);
-    Floorlight.num_Dirlight += 1;
-    FloorShader.Use();
-    Floorlight.updateDirlight(0, lightdir, 0.6f * lightcol, 0.4f * lightcol, 0.6f * lightcol);
-
-    // TODO::Add Shadow to the Scene
     // Create a DepthMask
     unsigned int DepthMapfbo;
     glGenFramebuffers(1, &DepthMapfbo);

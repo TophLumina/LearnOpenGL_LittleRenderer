@@ -42,6 +42,9 @@
     <Filter Include="Shaders\Instance">
       <UniqueIdentifier>{0167c118-94d8-462d-abfa-9ddcc4e2d23c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\LightManager">
+      <UniqueIdentifier>{fe9b8809-2cbb-40d1-9ba9-7ddd3311ddf4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -179,6 +182,9 @@
     <ClCompile Include="Render13.cpp">
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
+    <ClCompile Include="Render13.1.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rectangle.hpp">
@@ -270,6 +276,21 @@
     </ClInclude>
     <ClInclude Include="LightUpdated.hpp">
       <Filter>Lazy</Filter>
+    </ClInclude>
+    <ClInclude Include="Lights\Attachments.hpp">
+      <Filter>Shaders\LightManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Lights\DirLight.hpp">
+      <Filter>Shaders\LightManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Lights\LightingManager.hpp">
+      <Filter>Shaders\LightManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Lights\PointLight.hpp">
+      <Filter>Shaders\LightManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Lights\SpotLight.hpp">
+      <Filter>Shaders\LightManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -120,18 +120,17 @@ float ShadowFactor(vec4 light_frag_pos) {
     float CurrentDepth = projCoords.z;
     float shadow = 0.0;
 
-    // 81 * Multi Sampling
-    vec2 pixeloffset = 0.2 / textureSize(Shadow_Map, 0);
-    for (int x = -4; x <= 4; ++x) {
-        for (int y = -4; y <= 4; ++y) {
+    // 25 * Multi Sampling
+    vec2 pixeloffset = 0.3 / textureSize(Shadow_Map, 0);
+    for (int x = -2; x <= 2; ++x) {
+        for (int y = -2; y <= 2; ++y) {
             float subdepth = texture(Shadow_Map, projCoords.xy + pixeloffset * vec2(x, y)).r;
             shadow += CurrentDepth > subdepth + adjust ? 1.0 : 0.0;
         }
     }
 
-    shadow /= 81;
+    shadow /= 25;
 
-    // Need Debug
     if(CurrentDepth > 1.0)
         return 1.0;
 
