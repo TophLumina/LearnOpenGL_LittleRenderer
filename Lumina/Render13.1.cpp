@@ -177,7 +177,7 @@ int main()
     glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-    // Shader UniformBlock Binding
+    // Shader UniformBlock Bindings
     HakuShader.Use();
     unsigned int HAKU_Matrices_Index = glGetUniformBlockIndex(HakuShader.ID, "Matrices");
     glUniformBlockBinding(HakuShader.ID, HAKU_Matrices_Index, 0);
@@ -306,16 +306,16 @@ int main()
     LM.ShaderConfig(&FloorShader);
 
     // Create a DepthMask
-    unsigned int DepthMapfbo;
-    glGenFramebuffers(1, &DepthMapfbo);
+    unsigned int ShadowMapfbo;
+    glGenFramebuffers(1, &ShadowMapfbo);
 
     // Depth Map Texture Attachment
     // High Shadow Map Resolution means High Quality Shadow
-    const unsigned int Shadow_Resolution = 4096;
+    const unsigned int Shadow_Resolution = 8192;
 
-    unsigned int Depth_Map;
-    glGenTextures(1, &Depth_Map);
-    glBindTexture(GL_TEXTURE_2D, Depth_Map);
+    unsigned int DirLightShadow_Map;
+    glGenTextures(1, &DirLightShadow_Map);
+    glBindTexture(GL_TEXTURE_2D, DirLightShadow_Map);
 
     // Use the Depth Texture as a normal Texture and Sampling it
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, Shadow_Resolution, Shadow_Resolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -329,8 +329,8 @@ int main()
     glBindTexture(GL_TEXTURE_2D, 0);
 
     // Binding
-    glBindFramebuffer(GL_FRAMEBUFFER, DepthMapfbo);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, Depth_Map, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapfbo);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, DirLightShadow_Map, 0);
 
     // and we don't need color attachment this time so disable the coloroutput of the framebuffer by setting its read/write buffer to NULL(GL_NONE aka 0)
     glDrawBuffer(GL_NONE);
@@ -341,59 +341,70 @@ int main()
 
     // Matrices for Light Space Transform <only used for DirLight>
     // All Objects should be in the Space between far_plane and near_plane <Might need Refinements Here>
-    const float near_plane = 30.0f;
-    const float far_plane = 120.0f;
+    float near_plane = 30.0f;
+    float far_plane = 120.0f;
     float OrthoBorder = 10.0f;
-    glm::mat4 Light_projection = glm::ortho(-OrthoBorder, OrthoBorder, -OrthoBorder, OrthoBorder, near_plane, far_plane);
+    glm::mat4 DirLight_projection = glm::ortho(-OrthoBorder, OrthoBorder, -OrthoBorder, OrthoBorder, near_plane, far_plane);
     glm::vec3 DirLight_Pos = -25.0f * lightdir + 10.0f * camup;
-    glm::mat4 Light_view = glm::lookAt(DirLight_Pos, DirLight_Pos + lightdir, camup);
-    glm::mat4 Light_Space_Transform = Light_projection * Light_view;
+    glm::mat4 DirLight_view = glm::lookAt(DirLight_Pos, DirLight_Pos + lightdir, camup);
+    glm::mat4 DirLight_Space_Transform = DirLight_projection * DirLight_view;
     
     // Shadow Shader
-    Shader ShadowShader("./Shaders/SimpleDepth.vert", "./Shaders/SimpleDepth.frag");
-    ShadowShader.Use();
-    ShadowShader.setMat4("LightSpaceTransform", Light_Space_Transform);
+    Shader DirLightShadowShader("./Shaders/SimpleDepth.vert", "./Shaders/SimpleDepth.frag");
+    DirLightShadowShader.Use();
+    DirLightShadowShader.setMat4("LightSpaceTransform", DirLight_Space_Transform);
 
     // Static Lighting's Shadow Mapping
     glViewport(0, 0, Shadow_Resolution, Shadow_Resolution); // Shadow Map Resolution
-    glBindFramebuffer(GL_FRAMEBUFFER, DepthMapfbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapfbo);
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    // Peter Panning Fixed
-
-    glCullFace(GL_FRONT);
-
     // Pre-Render
-    ShadowShader.Use();
-    ShadowShader.setMat4("model", model);
-    ShadowShader.setBool("useInstance", false);
-    Floor.Draw(&ShadowShader);
-    Haku.Draw(&ShadowShader);
-
-    // Set Culling Back
-    // Need more complex logics to compute better shadow
-    // glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
+    DirLightShadowShader.Use();
+    DirLightShadowShader.setMat4("model", model);
+    DirLightShadowShader.setBool("useInstance", false);
+    Floor.Draw(&DirLightShadowShader);
+    Haku.Draw(&DirLightShadowShader);
 
     // Disable Cube Ring for Testing
-    // ShadowShader.setBool("useInstance", true);
-    // Cube.DrawbyInstance(&ShadowShader, num);
+    // DirLightShadowShader.setBool("useInstance", true);
+    // Cube.DrawbyInstance(&DirLightShadowShader, num);
 
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // PointLight ShadowMap
+    unsigned int CubeShadowMap;
+    glGenTextures(1, &CubeShadowMap);
+    glBindTexture(GL_TEXTURE_CUBE_MAP,CubeShadowMap);
+    for (unsigned int i = 0; i < 6; ++i)
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, Shadow_Resolution, Shadow_Resolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    // FrameBuffer Config
+    glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapfbo);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, CubeShadowMap, 0);
+    glDrawBuffer(NULL);
+    glReadBuffer(NULL);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // Model Shader Confirm
     HakuShader.Use();
-    HakuShader.setMat4("LightSpaceTransform", Light_Space_Transform);
+    HakuShader.setMat4("LightSpaceTransform", DirLight_Space_Transform);
     // Unkown stuff :: GL_TEXTURE0 occupied?
     glActiveTexture(GL_TEXTURE1);
     HakuShader.setInt("Shadow_Map", 1);
-    glBindTexture(GL_TEXTURE_2D, Depth_Map);
+    glBindTexture(GL_TEXTURE_2D, DirLightShadow_Map);
 
     FloorShader.Use();
-    FloorShader.setMat4("LightSpaceTransform", Light_Space_Transform);
+    FloorShader.setMat4("LightSpaceTransform", DirLight_Space_Transform);
     glActiveTexture(GL_TEXTURE1);
     FloorShader.setInt("Shadow_Map", 1);
-    glBindTexture(GL_TEXTURE_2D, Depth_Map);
+    glBindTexture(GL_TEXTURE_2D, DirLightShadow_Map);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -472,7 +483,7 @@ int main()
 
         // Test Texture
         glBindTexture(GL_TEXTURE_2D, usualfb.MultiSampledTexture2D());
-        // glBindTexture(GL_TEXTURE_2D, Depth_Map);
+        // glBindTexture(GL_TEXTURE_2D, DirLightShadow_Map);
         glBindVertexArray(usualfb.VAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
