@@ -193,6 +193,7 @@ int main()
     // UniformbLock Slot Binding
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, MatricesBlock);
 
+
     // Ring Positioning Vars
     unsigned int num = 15000;
     glm::mat4 *Instancemodel;
@@ -290,29 +291,21 @@ int main()
     }
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    // Vars used for imgui
-    bool grayscale = false;
-    bool inversion = false;
-    int kernel = 0;
-    bool gammacorrection = true;
-
-    // Lights Updated
-    glm::vec3 lightcol(1.0f, 1.0f, 1.0f);
-    glm::vec3 lightdir(-1.0f, -1.0f, -1.0f);
-    LightAttrib dirattrib(lightcol, lightcol, lightcol);
-    LightManager LM;
-    LM.dirlights.push_back(DirLight(dirattrib, lightdir));
-    LM.ShaderConfig(&HakuShader);
-    LM.ShaderConfig(&FloorShader);
-
-    // Create a DepthMask
+    // Shadow FrameBuffer
     unsigned int ShadowMapfbo;
     glGenFramebuffers(1, &ShadowMapfbo);
 
     // Depth Map Texture Attachment
-    // High Shadow Map Resolution means High Quality Shadow
+    // High Quality Shadow
     const unsigned int Shadow_Resolution = 8192;
 
+    LightManager LM;
+
+    glm::vec3 lightcol(1.0f, 1.0f, 1.0f);
+    glm::vec3 lightdir(-1.0f, -1.0f, -1.0f);
+    LightAttrib dirattrib(lightcol, lightcol, lightcol);
+
+    // DirLight Depth Map Texture
     unsigned int DirLightShadow_Map;
     glGenTextures(1, &DirLightShadow_Map);
     glBindTexture(GL_TEXTURE_2D, DirLightShadow_Map);
@@ -348,10 +341,10 @@ int main()
     glm::vec3 DirLight_Pos = -25.0f * lightdir + 10.0f * camup;
     glm::mat4 DirLight_view = glm::lookAt(DirLight_Pos, DirLight_Pos + lightdir, camup);
     glm::mat4 DirLight_Transform = DirLight_projection * DirLight_view;
-    
+
+
     // Shadow Shader
     Shader DirLightShadowShader("./Shaders/SimpleDepth.vert", "./Shaders/SimpleDepth.frag");
-    DirLightShadowShader.Use();
     DirLightShadowShader.setMat4("LightSpaceTransform", DirLight_Transform);
 
     // Static Lighting's Shadow Mapping
@@ -370,67 +363,60 @@ int main()
     // DirLightShadowShader.setBool("useInstance", true);
     // Cube.DrawbyInstance(&DirLightShadowShader, num);
 
+    // Lighting Management and Shadow Shader Config
+    LM.dirlights.push_back(DirLight(dirattrib, lightdir, DirLight_Transform, DirLightShadow_Map));
+    DirLightShadowShader.Use();
+    LM.ShaderConfig(&HakuShader);
+    LM.ShaderConfig(&FloorShader);
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // PointLight ShadowMap
-    unsigned int CubeShadowMap;
-    glGenTextures(1, &CubeShadowMap);
-    glBindTexture(GL_TEXTURE_CUBE_MAP,CubeShadowMap);
-    for (unsigned int i = 0; i < 6; ++i)
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, Shadow_Resolution, Shadow_Resolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    // // PointLight ShadowMap
+    // unsigned int CubeShadowMap;
+    // glGenTextures(1, &CubeShadowMap);
+    // glBindTexture(GL_TEXTURE_CUBE_MAP,CubeShadowMap);
+    // for (unsigned int i = 0; i < 6; ++i)
+    //     glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, Shadow_Resolution, Shadow_Resolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-    // FrameBuffer Config <For PointLight Usage>
-    glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapfbo);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, CubeShadowMap, 0);
-    glDrawBuffer(NULL);
-    glReadBuffer(NULL);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // // FrameBuffer Config <For PointLight Usage>
+    // glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapfbo);
+    // glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, CubeShadowMap, 0);
+    // glDrawBuffer(NULL);
+    // glReadBuffer(NULL);
+    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // Matrices and Shaders for CubeDepthMap Usage
-    float aspect_ratio = 1.0f;
-    float near = 1.0f;
-    float far = 60.0f;
-    glm::vec3 PointLight_Pos(0.0f, 0.0f, 0.0f);
-    glm::mat4 PointLight_projection = glm::perspective(glm::radians(90.0f), aspect_ratio, near, far);
-    std::vector<glm::mat4> PointLight_Transform;
-    PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(1.0f, 0.0f, 0.0), glm::vec3(0.0f, -1.0f, 0.0f)));
-    PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(-1.0f, 0.0f, 0.0), glm::vec3(0.0f, -1.0f, 0.0f)));
-    PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, 1.0f, 0.0), glm::vec3(0.0f, 0.0f, 1.0f)));
-    PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, -1.0f, 0.0), glm::vec3(0.0f, 0.0f, -1.0f)));
-    PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, 0.0f, 1.0), glm::vec3(0.0f, -1.0f, 0.0f)));
-    PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, 0.0f, -1.0), glm::vec3(0.0f, -1.0f, 0.0f)));
+    // // Matrices and Shaders for CubeDepthMap Usage
+    // float aspect_ratio = 1.0f;
+    // float near = 1.0f;
+    // float far = 60.0f;
+    // glm::vec3 PointLight_Pos(0.0f, 0.0f, 0.0f);
+    // glm::mat4 PointLight_projection = glm::perspective(glm::radians(90.0f), aspect_ratio, near, far);
+    // std::vector<glm::mat4> PointLight_Transform;
+    // PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(1.0f, 0.0f, 0.0), glm::vec3(0.0f, -1.0f, 0.0f)));
+    // PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(-1.0f, 0.0f, 0.0), glm::vec3(0.0f, -1.0f, 0.0f)));
+    // PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, 1.0f, 0.0), glm::vec3(0.0f, 0.0f, 1.0f)));
+    // PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, -1.0f, 0.0), glm::vec3(0.0f, 0.0f, -1.0f)));
+    // PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, 0.0f, 1.0), glm::vec3(0.0f, -1.0f, 0.0f)));
+    // PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, 0.0f, -1.0), glm::vec3(0.0f, -1.0f, 0.0f)));
     
-    // Cube Shadow Map Shader Config
-    Shader PointLightShader("./Shaders/CubeDepth.vert", "./Shaders/CubeDepth.geom", "./Shaders/CubeDepth.frag");
+    // // Cube Shadow Map Shader Config
+    // Shader PointLightShader("./Shaders/CubeDepth.vert", "./Shaders/CubeDepth.geom", "./Shaders/CubeDepth.frag");
 
-
-
-
-    // Model Shader Config
-    HakuShader.Use();
-    HakuShader.setMat4("LightSpaceTransform", DirLight_Transform);
-    // Unkown stuff :: GL_TEXTURE0 occupied?
-    glActiveTexture(GL_TEXTURE1);
-    HakuShader.setInt("Shadow_Map", 1);
-    glBindTexture(GL_TEXTURE_2D, DirLightShadow_Map);
-
-    FloorShader.Use();
-    FloorShader.setMat4("LightSpaceTransform", DirLight_Transform);
-    glActiveTexture(GL_TEXTURE1);
-    FloorShader.setInt("Shadow_Map", 1);
-    glBindTexture(GL_TEXTURE_2D, DirLightShadow_Map);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, 0);
 
     // Viewport Settings
     glViewport(0, 0, ScreenWidth, ScreenHeight);
+
+    // Vars used for imgui
+    bool grayscale = false;
+    bool inversion = false;
+    int kernel = 0;
+    bool gammacorrection = true;
 
     while(!glfwWindowShouldClose(window))
     {

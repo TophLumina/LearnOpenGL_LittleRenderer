@@ -33,9 +33,10 @@ out VS_OUT {
     vec2 texCoords;
     mat4 view;
 
-    int num_dirlight;
-    int num_pointlight;
-    int num_spotlight;
+    flat int num_dirlight;
+    flat int num_pointlight;
+    flat int num_spotlight;
+
     vec4 dirlight_fragPos[OTHER_LIMITATION];
     vec4 pointlight_fragPos[POINT_LIGHTS_LIMITATION];
 } vs_out;
@@ -44,6 +45,10 @@ void main() {
     vs_out.normal = mat3(transpose(inverse(model * view))) * aNormal;
     vs_out.viewspace_fragPos = vec3(view * model * vec4(aPosition, 1.0));
     // vs_out.lightspace_fragPos = LightSpaceTransform * vec4(vec3(model * vec4(aPosition, 1.0)), 1.0);
+
+    vs_out.num_dirlight = lightinfo.num_dirlight;
+    vs_out.num_pointlight = lightinfo.num_pointlight;
+    vs_out.num_spotlight = lightinfo.num_spotlight;
 
     // DirLights
     for (int i = 0; i < lightinfo.num_dirlight; ++i)
