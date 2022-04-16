@@ -153,7 +153,6 @@ int main()
 
     // Models and Shaders
     Model Haku("./Model/Haku/TDA Lacy Haku.pmx");
-    // Shader HakuShader("./Shaders/Blinn_Phong.vert", "./Shaders/Blinn_Phong.frag");
     Shader HakuShader("./Shaders/ModelwithShadow.vert", "./Shaders/ModelwithShadow.frag");
 
     Model Floor("./Model/Floor/floor.fbx");
@@ -345,7 +344,10 @@ int main()
 
     // Shadow Shader
     Shader DirLightShadowShader("./Shaders/SimpleDepth.vert", "./Shaders/SimpleDepth.frag");
+    DirLightShadowShader.Use();
     DirLightShadowShader.setMat4("LightSpaceTransform", DirLight_Transform);
+    DirLightShadowShader.setMat4("model", model);
+    DirLightShadowShader.setBool("useInstance", false);
 
     // Static Lighting's Shadow Mapping
     glViewport(0, 0, Shadow_Resolution, Shadow_Resolution); // Shadow Map Resolution
@@ -353,9 +355,6 @@ int main()
     glClear(GL_DEPTH_BUFFER_BIT);
 
     // Pre-Render
-    DirLightShadowShader.Use();
-    DirLightShadowShader.setMat4("model", model);
-    DirLightShadowShader.setBool("useInstance", false);
     Floor.Draw(&DirLightShadowShader);
     Haku.Draw(&DirLightShadowShader);
 

@@ -71,10 +71,6 @@ uniform Dirlight dirlights[OTHER_LIMITATION];
 uniform PointLight pointlights[POINT_LIGHTS_LIMITATION];
 uniform SpotLight spotlights[OTHER_LIMITATION];
 
-// Shadow Map Texture(s)
-uniform sampler2D dirShadowMap[OTHER_LIMITATION];
-uniform samplerCube pointShadowMap[POINT_LIGHTS_LIMITATION];
-
 bool FragmentVisibility();
 float ShadowFactor(Dirlight, vec4);
 
@@ -91,8 +87,7 @@ void main() {
     vec3 result = vec3(0.0, 0.0, 0.0);
 
     // Test Code
-    for (int i = 0; i < fs_in.num_dirlight; ++i)
-        result += ShadowFactor(dirlights[i], fs_in.dirlight_fragPos[i]);
+    result += ShadowFactor(dirlights[0], fs_in.dirlight_fragPos[0]);
     FragColor = vec4(result, 1.0);
 
     // FragColor = vec4(texture(material.texture_diffuse1, fs_in.texCoords));

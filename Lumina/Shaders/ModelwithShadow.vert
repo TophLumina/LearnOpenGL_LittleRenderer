@@ -10,7 +10,7 @@ layout (std140) uniform Matrices {
     mat4 projection;
 };
 
-// Light Setting
+// Limitations
 const int POINT_LIGHTS_LIMITATION = 8;
 const int OTHER_LIMITATION = 2;
 
