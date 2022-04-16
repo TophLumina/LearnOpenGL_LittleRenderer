@@ -347,12 +347,12 @@ int main()
     glm::mat4 DirLight_projection = glm::ortho(-OrthoBorder, OrthoBorder, -OrthoBorder, OrthoBorder, near_plane, far_plane);
     glm::vec3 DirLight_Pos = -25.0f * lightdir + 10.0f * camup;
     glm::mat4 DirLight_view = glm::lookAt(DirLight_Pos, DirLight_Pos + lightdir, camup);
-    glm::mat4 DirLight_Space_Transform = DirLight_projection * DirLight_view;
+    glm::mat4 DirLight_Transform = DirLight_projection * DirLight_view;
     
     // Shadow Shader
     Shader DirLightShadowShader("./Shaders/SimpleDepth.vert", "./Shaders/SimpleDepth.frag");
     DirLightShadowShader.Use();
-    DirLightShadowShader.setMat4("LightSpaceTransform", DirLight_Space_Transform);
+    DirLightShadowShader.setMat4("LightSpaceTransform", DirLight_Transform);
 
     // Static Lighting's Shadow Mapping
     glViewport(0, 0, Shadow_Resolution, Shadow_Resolution); // Shadow Map Resolution
@@ -385,23 +385,43 @@ int main()
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-    // FrameBuffer Config
+    // FrameBuffer Config <For PointLight Usage>
     glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapfbo);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, CubeShadowMap, 0);
     glDrawBuffer(NULL);
     glReadBuffer(NULL);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // Model Shader Confirm
+    // Matrices and Shaders for CubeDepthMap Usage
+    float aspect_ratio = 1.0f;
+    float near = 1.0f;
+    float far = 60.0f;
+    glm::vec3 PointLight_Pos(0.0f, 0.0f, 0.0f);
+    glm::mat4 PointLight_projection = glm::perspective(glm::radians(90.0f), aspect_ratio, near, far);
+    std::vector<glm::mat4> PointLight_Transform;
+    PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(1.0f, 0.0f, 0.0), glm::vec3(0.0f, -1.0f, 0.0f)));
+    PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(-1.0f, 0.0f, 0.0), glm::vec3(0.0f, -1.0f, 0.0f)));
+    PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, 1.0f, 0.0), glm::vec3(0.0f, 0.0f, 1.0f)));
+    PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, -1.0f, 0.0), glm::vec3(0.0f, 0.0f, -1.0f)));
+    PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, 0.0f, 1.0), glm::vec3(0.0f, -1.0f, 0.0f)));
+    PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, 0.0f, -1.0), glm::vec3(0.0f, -1.0f, 0.0f)));
+    
+    // Cube Shadow Map Shader Config
+    Shader PointLightShader("./Shaders/CubeDepth.vert", "./Shaders/CubeDepth.geom", "./Shaders/CubeDepth.frag");
+
+
+
+
+    // Model Shader Config
     HakuShader.Use();
-    HakuShader.setMat4("LightSpaceTransform", DirLight_Space_Transform);
+    HakuShader.setMat4("LightSpaceTransform", DirLight_Transform);
     // Unkown stuff :: GL_TEXTURE0 occupied?
     glActiveTexture(GL_TEXTURE1);
     HakuShader.setInt("Shadow_Map", 1);
     glBindTexture(GL_TEXTURE_2D, DirLightShadow_Map);
 
     FloorShader.Use();
-    FloorShader.setMat4("LightSpaceTransform", DirLight_Space_Transform);
+    FloorShader.setMat4("LightSpaceTransform", DirLight_Transform);
     glActiveTexture(GL_TEXTURE1);
     FloorShader.setInt("Shadow_Map", 1);
     glBindTexture(GL_TEXTURE_2D, DirLightShadow_Map);

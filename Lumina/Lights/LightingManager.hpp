@@ -22,8 +22,18 @@ public:
     void ShaderConfig(Shader *shader) {
         Tools::ShaderCheck(shader);
 
+        // LightInfo Block
+        shader->setInt("lightinfo.num_dirlight", dirlights.size());
+        shader->setInt("lightinfo.num_pointlight", pointlights.size());
+        shader->setInt("lightinfo.num_num_spotlight", spotlights.size());
+
+        for (int slot = 0; slot < dirlights.size(); ++slot)
+            shader->setMat4("lightinfo.DirLight_Transform[" + std::to_string(slot) + "]", dirlights.at(slot).lightMatrix);
+
+        for (int slot = 0; slot < pointlights.size(); ++slot)
+            shader->setMat4("lightinfo.PointLight_Transform[" + std::to_string(slot) + "]", pointlights.at(slot).lightMatrix);
+
         // DirLights
-        shader->setInt("num_dirlight", dirlights.size());
         for (int slot = 0; slot < dirlights.size(); ++slot) {
             shader->setVec3("dirlights[" + std::to_string(slot) + "].direction", dirlights.at(slot).direction);
             shader->setVec3("dirlights[" + std::to_string(slot) + "].attrib.ambient", dirlights.at(slot).attrib.ambient);
@@ -32,7 +42,6 @@ public:
         }
 
         // PointLights
-        shader->setInt("num_pointlight", pointlights.size());
         for (int slot = 0; slot < pointlights.size(); ++slot) {
             shader->setVec3("pointlights[" + std::to_string(slot) + "].position", pointlights.at(slot).position);
             shader->setVec3("pointlights[" + std::to_string(slot) + "].attrib.ambient", pointlights.at(slot).attrib.ambient);
@@ -43,7 +52,6 @@ public:
         }
 
         // SpotLight
-        shader->setInt("num_spotlight", spotlights.size());
         for (int slot = 0; slot < spotlights.size(); ++slot) {
             shader->setVec3("spotlights[" + std::to_string(slot) + "].direction", spotlights.at(slot).direction);
             shader->setVec3("spotlights[" + std::to_string(slot) + "].position", spotlights.at(slot).position);
@@ -56,5 +64,21 @@ public:
             shader->setFloat("spotlights[" + std::to_string(slot) + "].cutoff", glm::cos(glm::radians(spotlights.at(slot).cutoff)));
             shader->setFloat("spotlights[" + std::to_string(slot) + "].outer_cutoff", glm::cos(glm::radians(spotlights.at(slot).outtercutoff)));
         }
+
+        // Shadow Maps Bindings
+        shader->Use();
+        int slot = 0;
+        for (int i = 0; i < dirlights.size(); ++i) {
+            ++slot;
+            glActiveTexture(GL_TEXTURE0 + slot);
+            glBindTexture(GL_TEXTURE_2D, dirlights.at(i).depthmap);
+        }
+        for (int i = 0; i < pointlights.size(); ++i) {
+            ++slot;
+            glActiveTexture(GL_TEXTURE0 + slot);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, pointlights.at(i).depthmap);
+        }
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 };
