@@ -72,7 +72,8 @@ uniform PointLight pointlights[POINT_LIGHTS_LIMITATION];
 uniform SpotLight spotlights[OTHER_LIMITATION];
 
 bool FragmentVisibility();
-float ShadowFactor(Dirlight, vec4);
+bool IsBright(vec3 lightdir, vec3 norm);
+float ShadowFactor(Dirlight light, vec4 light_frag_pos);
 
 uniform bool GammaCorrection;
 
@@ -86,16 +87,24 @@ void main() {
     vec3 viewDir = normalize(-fs_in.viewspace_fragPos);
     vec3 result = vec3(0.0, 0.0, 0.0);
 
-    // Test Code
-    result += ShadowFactor(dirlights[0], fs_in.dirlight_fragPos[0]);
-    FragColor = vec4(result, 1.0);
+    float imp = IsBright(dirlights[0].direction, norm) ? ShadowFactor(dirlights[0], fs_in.dirlight_fragPos[0]) : 0.0;
+    imp = imp * 0.6 + 0.4;
+    
+    // // Shadow Test Code
+    // FragColor = vec4(result + imp, 1.0);
 
-    // FragColor = vec4(texture(material.texture_diffuse1, fs_in.texCoords));
+    result += vec3(imp * texture(material.texture_diffuse1, fs_in.texCoords));
+    FragColor = vec4(result, 1.0);
 }
 
 
 bool FragmentVisibility() {
     return texture(material.texture_diffuse1, fs_in.texCoords).a > 0.05;
+}
+
+bool IsBright(vec3 lightdir, vec3 norm) {
+    vec3 dir = -normalize(mat3(fs_in.view) * lightdir);
+    return dot(norm, dir) > 0;
 }
 
 float ShadowFactor(Dirlight light, vec4 light_frag_pos) {
@@ -105,7 +114,7 @@ float ShadowFactor(Dirlight light, vec4 light_frag_pos) {
     projCoords = projCoords * 0.5 + 0.5;
 
     // Refinements
-    float adjust = max(0.01 * (1.0 - dot(normalize(fs_in.normal), normalize(-vec3(mat4(mat3(fs_in.view)) * vec4(light.direction, 1.0))))), 0.005);
+    float adjust = max(0.005 * (1.0 - max(dot(normalize(fs_in.normal), normalize(-vec3(mat4(mat3(fs_in.view)) * vec4(light.direction, 1.0)))), 0.0)), 0.001);
 
     float CurrentDepth = projCoords.z;
     float shadow = 0.0;

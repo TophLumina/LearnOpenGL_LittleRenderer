@@ -22,6 +22,8 @@ public:
     void ShaderConfig(Shader *shader) {
         Tools::ShaderCheck(shader);
 
+        shader->Use();
+
         // LightInfo Block
         shader->setInt("lightinfo.num_dirlight", dirlights.size());
         shader->setInt("lightinfo.num_pointlight", pointlights.size());
@@ -66,27 +68,27 @@ public:
         }
 
         // Shadow Maps Bindings
-        // int slot = 0;
-        // for (int i = 0; i < dirlights.size(); ++i) {
-        //     ++slot;
-        //     shader->setInt("dirlights[" + std::to_string(i) + "].shadowmap", slot);
-        //     glActiveTexture(GL_TEXTURE0 + slot);
-        //     glBindTexture(GL_TEXTURE_2D, dirlights.at(i).depthmap);
-        // }
-        // for (int i = 0; i < pointlights.size(); ++i) {
-        //     ++slot;
-        //     shader->setInt("pointlights[" + std::to_string(i) + "].shadowmap", slot);
-        //     glActiveTexture(GL_TEXTURE0 + slot);
-        //     glBindTexture(GL_TEXTURE_CUBE_MAP, pointlights.at(i).depthmap);
-        // }
-        // glActiveTexture(GL_TEXTURE0);
-        // glBindTexture(GL_TEXTURE_2D, 0);
-
-        shader->setInt("dirlights[0].shadowmap", 1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, dirlights.at(0).depthmap);
-
+        int slot = 0;
+        for (int i = 0; i < dirlights.size(); ++i) {
+            ++slot;
+            shader->setInt("dirlights[" + std::to_string(i) + "].shadowmap", slot);
+            glActiveTexture(GL_TEXTURE0 + slot);
+            glBindTexture(GL_TEXTURE_2D, dirlights.at(i).depthmap);
+        }
+        for (int i = 0; i < pointlights.size(); ++i) {
+            ++slot;
+            shader->setInt("pointlights[" + std::to_string(i) + "].shadowmap", slot);
+            glActiveTexture(GL_TEXTURE0 + slot);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, pointlights.at(i).depthmap);
+        }
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, 0);
+
+        // shader->setInt("dirlights[0].shadowmap", 1);
+        // glActiveTexture(GL_TEXTURE1);
+        // glBindTexture(GL_TEXTURE_2D, dirlights.at(0).depthmap);
+
+        // glActiveTexture(GL_TEXTURE0);
+        // glBindTexture(GL_TEXTURE_2D, 0);
     }
 };
