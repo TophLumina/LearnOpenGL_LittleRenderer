@@ -22,7 +22,6 @@ struct LightInfo {
 
     // Transform Matrices
     mat4 DirLight_Transform[OTHER_LIMITATION];
-    mat4 PointLight_Transform[POINT_LIGHTS_LIMITATION];
 };
 
 uniform LightInfo lightinfo;
@@ -30,6 +29,7 @@ uniform LightInfo lightinfo;
 out VS_OUT {
     vec3 normal;
     vec3 viewspace_fragPos;
+    vec3 worldspace_fragpos;
     vec2 texCoords;
     mat4 view;
 
@@ -38,13 +38,13 @@ out VS_OUT {
     flat int num_spotlight;
 
     vec4 dirlight_fragPos[OTHER_LIMITATION];
-    vec4 pointlight_fragPos[POINT_LIGHTS_LIMITATION];
+    float pointlight_far[POINT_LIGHTS_LIMITATION];
 } vs_out;
 
 void main() {
     vs_out.normal = mat3(transpose(inverse(model * view))) * aNormal;
     vs_out.viewspace_fragPos = vec3(view * model * vec4(aPosition, 1.0));
-    // vs_out.lightspace_fragPos = LightSpaceTransform * vec4(vec3(model * vec4(aPosition, 1.0)), 1.0);
+    vs_out.worldspace_fragpos = vec3(model * vec4(aPosition, 1.0));
 
     vs_out.num_dirlight = lightinfo.num_dirlight;
     vs_out.num_pointlight = lightinfo.num_pointlight;
@@ -53,10 +53,6 @@ void main() {
     // DirLights
     for (int i = 0; i < lightinfo.num_dirlight; ++i)
         vs_out.dirlight_fragPos[i] = lightinfo.DirLight_Transform[i] * model * vec4(aPosition, 1.0);
-    
-    // PointLights
-    // for (int i = 0; i < lightinfo.num_pointlight; ++i)
-    //     vs_out.pointlight_fragPos[i] = lightinfo.PointLight_Transform[i] * model * vec4(aPosition, 1.0);
 
     vs_out.texCoords = aTexCoords;
     vs_out.view = view;

@@ -7,7 +7,7 @@ uniform float Far;
 
 void main() {
     // Caculate Depth Manually
-    float light2frag = length(FragPos.xyz, LightPos);
+    float light2frag = length(FragPos.xyz - LightPos);
 
     // Trans to Depth
     light2frag /= Far;

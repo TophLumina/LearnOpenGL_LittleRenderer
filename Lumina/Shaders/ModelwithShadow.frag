@@ -29,6 +29,7 @@ struct Dirlight {
 struct PointLight {
     vec3 position;
     samplerCube shadowmap;
+    float far;
 
     LightAttrib attrib;
     Attenuation attenuation;
@@ -51,6 +52,7 @@ const int OTHER_LIMITATION = 2;
 in VS_OUT {
     vec3 normal;
     vec3 viewspace_fragPos;
+    vec3 worldspace_fragpos;
     vec2 texCoords;
     mat4 view;
     // vec4 lightspace_fragPos;
@@ -60,7 +62,6 @@ in VS_OUT {
     flat int num_spotlight;
 
     vec4 dirlight_fragPos[OTHER_LIMITATION];
-    vec4 pointlight_fragPos[POINT_LIGHTS_LIMITATION];
 } fs_in;
 
 uniform Material material;
@@ -73,7 +74,9 @@ uniform SpotLight spotlights[OTHER_LIMITATION];
 
 bool FragmentVisibility();
 bool IsBright(vec3 lightdir, vec3 norm);
+float DepthAdjustment(vec3 lightdir);
 float ShadowFactor(Dirlight light, vec4 light_frag_pos);
+float ShadowFactor(PointLight light);
 
 uniform bool GammaCorrection;
 
@@ -107,6 +110,10 @@ bool IsBright(vec3 lightdir, vec3 norm) {
     return dot(norm, dir) > 0;
 }
 
+float DepthAdjustment(vec3 lightdir) {
+    return adjust = max(0.005 * (1.0 - max(dot(normalize(fs_in.normal), normalize(-vec3(mat4(mat3(fs_in.view)) * vec4(lightdir, 1.0)))), 0.0)), 0.001);
+}
+
 float ShadowFactor(Dirlight light, vec4 light_frag_pos) {
     // Perspective Projection
     vec3 projCoords = light_frag_pos.xyz / light_frag_pos.w;
@@ -114,7 +121,7 @@ float ShadowFactor(Dirlight light, vec4 light_frag_pos) {
     projCoords = projCoords * 0.5 + 0.5;
 
     // Refinements
-    float adjust = max(0.005 * (1.0 - max(dot(normalize(fs_in.normal), normalize(-vec3(mat4(mat3(fs_in.view)) * vec4(light.direction, 1.0)))), 0.0)), 0.001);
+    float adjust = DepthAdjustment(light.direction);
 
     float CurrentDepth = projCoords.z;
     float shadow = 0.0;
@@ -134,4 +141,18 @@ float ShadowFactor(Dirlight light, vec4 light_frag_pos) {
         return 1.0;
 
     return 1.0 - shadow;
+}
+
+float ShadowFactor(PointLight light) {
+    vec3 Frag2Light = fs_in.worldspace_fragpos - light.position;
+
+    vec3 FragDir = normalize(Frag2Light);
+    float StoppingDepth = texture(light.shadow, FragDir);
+    StoppingDepth *= light.far;
+
+    float CurrentDepth = length(Frag2Light);
+
+    float adjust = DepthAdjustment(Frag2Light);
+
+
 }

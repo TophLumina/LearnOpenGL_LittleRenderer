@@ -303,7 +303,7 @@ int main()
 
     glm::vec3 lightcol(1.0f, 1.0f, 1.0f);
     glm::vec3 lightdir(-1.0f, -1.0f, -1.0f);
-    LightAttrib dirattrib(lightcol, lightcol, lightcol);
+    LightAttrib attrib(lightcol, lightcol, lightcol);
 
     // DirLight Depth Map Texture
     unsigned int DirLightShadow_Map;
@@ -367,7 +367,7 @@ int main()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // Lighting Management and Shadow Shader Config
-    LM.dirlights.push_back(DirLight(dirattrib, lightdir, DirLight_Transform, DirLightShadow_Map));
+    LM.dirlights.push_back(DirLight(attrib, lightdir, DirLight_Transform, DirLightShadow_Map));
     LM.ShaderConfig(&HakuShader);
     LM.ShaderConfig(&FloorShader);
 
@@ -389,13 +389,15 @@ int main()
     glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, CubeShadowMap, 0);
     glDrawBuffer(NULL);
     glReadBuffer(NULL);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "ERROR::FRAMEBUFFER::SHADOWMAPPING:: FrameBuffer is NOT Compelete." << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // Matrices and Shaders for CubeDepthMap Usage
     float aspect_ratio = 1.0f;
     float near = 1.0f;
     float far = 60.0f;
-    glm::vec3 PointLight_Pos(0.0f, 0.0f, 0.0f);
+    glm::vec3 PointLight_Pos(5.0f, 0.0f, 5.0f);
     glm::mat4 PointLight_projection = glm::perspective(glm::radians(90.0f), aspect_ratio, near, far);
     std::vector<glm::mat4> PointLight_Transform;
     PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(1.0f, 0.0f, 0.0), glm::vec3(0.0f, -1.0f, 0.0f)));
@@ -405,11 +407,29 @@ int main()
     PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, 0.0f, 1.0), glm::vec3(0.0f, -1.0f, 0.0f)));
     PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, 0.0f, -1.0), glm::vec3(0.0f, -1.0f, 0.0f)));
     
-    // // Cube Shadow Map Shader Config
+    // Cube Shadow Map Shader Config
     Shader PointLightShader("./Shaders/CubeDepth.vert", "./Shaders/CubeDepth.geom", "./Shaders/CubeDepth.frag");
     PointLightShader.Use();
-    
+    PointLightShader.setMat4("model", model);
+    for (int i = 0; i < PointLight_Transform.size(); ++i)
+        PointLightShader.setMat4("Shadow_Matrices[" + std::to_string(i) + "]", PointLight_Transform.at(i));
+    PointLightShader.setVec3("LightPos", PointLight_Pos);
+    PointLightShader.setFloat("Far", far);
 
+    glViewport(0, 0, Shadow_Resolution, Shadow_Resolution);
+    glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapfbo);
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    // Pre-Rendering
+    PointLightShader.Use();
+    Haku.Draw(&PointLightShader);
+    Floor.Draw(&PointLightShader);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    LM.pointlights.push_back(PointLight(attrib, PointLight_Pos, Attenuation(), CubeShadowMap, far));
+    LM.ShaderConfig(&HakuShader);
+    LM.ShaderConfig(&FloorShader);
 
     // Viewport Settings
     glViewport(0, 0, ScreenWidth, ScreenHeight);
