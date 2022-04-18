@@ -90,16 +90,17 @@ void main() {
     vec3 viewDir = normalize(-fs_in.viewspace_fragPos);
     vec3 result = vec3(0.0, 0.0, 0.0);
 
-    // float imp = IsBright(dirlights[0].direction, norm) ? ShadowFactor(dirlights[0], fs_in.dirlight_fragPos[0]) : 0.0;
-    // float imp = IsBright(pointlights[0].position - fs_in.worldspace_fragpos, norm) ? ShadowFactor(pointlights[0]) : 0.0;
-    float imp = ShadowFactor(pointlights[0]);
+    // float imp = IsBright(-dirlights[0].direction, norm) ? ShadowFactor(dirlights[0], fs_in.dirlight_fragPos[0]) : 0.0;
+    float imp = IsBright(pointlights[0].position - fs_in.worldspace_fragpos, norm) ? ShadowFactor(pointlights[0]) : 0.0;
+    // float imp = ShadowFactor(pointlights[0]);
+    // float imp = ShadowFactor(dirlights[0], fs_in.dirlight_fragPos[0]);
     imp = imp * 0.6 + 0.4;
 
     result += vec3(imp * texture(material.texture_diffuse1, fs_in.texCoords));
     // FragColor = vec4(result, 1.0);
 
     // TEST CODE
-    FragColor = vec4(vec3(imp,imp,imp), 1.0);
+    FragColor = vec4(imp * texture(material.texture_diffuse1, fs_in.texCoords).rgb, 1.0);
 }
 
 
@@ -108,7 +109,7 @@ bool FragmentVisibility() {
 }
 
 bool IsBright(vec3 lightdir, vec3 norm) {
-    vec3 dir = -normalize(mat3(fs_in.view) * lightdir);
+    vec3 dir = normalize(mat3(fs_in.view) * lightdir);
     return dot(norm, dir) > 0;
 }
 
@@ -149,14 +150,32 @@ float ShadowFactor(PointLight light) {
     vec3 Light2Frag = fs_in.worldspace_fragpos - light.position;
 
     vec3 FragDir = normalize(Light2Frag);
-    float StoppingDepth = texture(light.shadowmap, FragDir).r;
-    StoppingDepth *= light.far;
 
     float CurrentDepth = length(Light2Frag);
 
     float adjust = DepthAdjustment(Light2Frag);
 
-    float shadow = CurrentDepth > StoppingDepth + 0.5 ? 1.0 : 0.0;
+    const int samples = 20;
+
+    vec3 offsets[samples] = vec3[] (
+        vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
+        vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
+        vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
+        vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
+        vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
+    );
+
+    float bias = 0.0001;
+
+    float shadow = 0.0;
+
+    for (int i = 0; i < samples; ++i) {
+        float subStoppingDepth = texture(light.shadowmap, FragDir + offsets[i] * bias).r;
+        subStoppingDepth *= light.far;
+        shadow += CurrentDepth > subStoppingDepth + adjust ? 1.0 : 0.0;
+    }
+
+    shadow /= samples;
 
     if(CurrentDepth > light.far)
         return 0.0;

@@ -307,13 +307,13 @@ int main()
     LightManager LM;
 
     glm::vec3 lightcol(1.0f, 1.0f, 1.0f);
-    glm::vec3 lightdir(-1.0f, -1.0f, -1.0f);
+    glm::vec3 lightdir(0.0f, -1.0f, -1.0f);
     LightAttrib attrib(lightcol, lightcol, lightcol);
 
     // DirLight Depth Map Texture
-    unsigned int DirLightShadow_Map;
-    glGenTextures(1, &DirLightShadow_Map);
-    glBindTexture(GL_TEXTURE_2D, DirLightShadow_Map);
+    unsigned int DirLightShadowMap;
+    glGenTextures(1, &DirLightShadowMap);
+    glBindTexture(GL_TEXTURE_2D, DirLightShadowMap);
 
     // Use the Depth Texture as a normal Texture and Sampling it
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, Shadow_Resolution, Shadow_Resolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -328,7 +328,7 @@ int main()
 
     // Binding
     glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapfbo);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, DirLightShadow_Map, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, DirLightShadowMap, 0);
 
     // and we don't need color attachment this time so disable the coloroutput of the framebuffer by setting its read/write buffer to NULL(GL_NONE aka 0)
     glDrawBuffer(GL_NONE);
@@ -372,7 +372,7 @@ int main()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // Lighting Management and Shadow Shader Config
-    LM.dirlights.push_back(DirLight(attrib, lightdir, DirLight_Transform, DirLightShadow_Map));
+    LM.dirlights.push_back(DirLight(attrib, lightdir, DirLight_Transform, DirLightShadowMap));
     LM.ShaderConfig(&HakuShader);
     LM.ShaderConfig(&FloorShader);
 
@@ -401,8 +401,8 @@ int main()
     // Matrices and Shaders for CubeDepthMap Usage
     float aspect_ratio = 1.0f;
     float near = 1.0f;
-    float far = 60.0f;
-    glm::vec3 PointLight_Pos(0.0f, 45.0f, 15.0f);
+    float far = 120.0f;
+    glm::vec3 PointLight_Pos(0.0f, 15.0f, 4.0f);
     glm::mat4 PointLight_projection = glm::perspective(glm::radians(90.0f), aspect_ratio, near, far);
     std::vector<glm::mat4> PointLight_Transform;
     PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(1.0f, 0.0f, 0.0), glm::vec3(0.0f, -1.0f, 0.0f)));
@@ -423,8 +423,8 @@ int main()
 
     // Light Cube Shader Config
     glm::mat4 lightcubemodel(1.0f);
-    lightcubemodel = glm::scale(lightcubemodel, glm::vec3(0.4f, 0.4f, 0.4f));
     lightcubemodel = glm::translate(lightcubemodel, PointLight_Pos);
+    lightcubemodel = glm::scale(lightcubemodel, glm::vec3(0.4f, 0.4f, 0.4f));
     LightCubeShader.Use();
     LightCubeShader.setMat4("model", lightcubemodel);
     LightCubeShader.setVec3("light_col", lightcol);
@@ -528,7 +528,7 @@ int main()
 
         // Test Texture
         glBindTexture(GL_TEXTURE_2D, usualfb.MultiSampledTexture2D());
-        // glBindTexture(GL_TEXTURE_2D, DirLightShadow_Map);
+        // glBindTexture(GL_TEXTURE_2D, DirLightShadowMap);
         glBindVertexArray(usualfb.VAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
