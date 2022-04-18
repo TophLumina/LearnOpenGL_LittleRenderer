@@ -160,6 +160,7 @@ int main()
 
     Model Cube("./Model/JustCube/untitled.fbx");
     Shader CubeShader("./Shaders/instanceCube.vert", "./Shaders/instanceCube.frag");
+    Shader LightCubeShader("./Shaders/LightCube.vert", "./Shaders/LightCube.frag");
 
     glm::mat4 model(1.0f);
     HakuShader.Use();
@@ -188,6 +189,10 @@ int main()
     FloorShader.Use();
     unsigned int FLOOR_Matrices_Index = glGetUniformBlockIndex(FloorShader.ID, "Matrices");
     glUniformBlockBinding(FloorShader.ID, FLOOR_Matrices_Index, 0);
+
+    LightCubeShader.Use();
+    unsigned int LightCube_Matrices_Index = glGetUniformBlockIndex(LightCubeShader.ID, "Matrices");
+    glUniformBlockBinding(LightCubeShader.ID, LightCube_Matrices_Index, 0);
 
     // UniformbLock Slot Binding
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, MatricesBlock);
@@ -397,7 +402,7 @@ int main()
     float aspect_ratio = 1.0f;
     float near = 1.0f;
     float far = 60.0f;
-    glm::vec3 PointLight_Pos(5.0f, 0.0f, 5.0f);
+    glm::vec3 PointLight_Pos(0.0f, 45.0f, 15.0f);
     glm::mat4 PointLight_projection = glm::perspective(glm::radians(90.0f), aspect_ratio, near, far);
     std::vector<glm::mat4> PointLight_Transform;
     PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(1.0f, 0.0f, 0.0), glm::vec3(0.0f, -1.0f, 0.0f)));
@@ -415,6 +420,14 @@ int main()
         PointLightShader.setMat4("Shadow_Matrices[" + std::to_string(i) + "]", PointLight_Transform.at(i));
     PointLightShader.setVec3("LightPos", PointLight_Pos);
     PointLightShader.setFloat("Far", far);
+
+    // Light Cube Shader Config
+    glm::mat4 lightcubemodel(1.0f);
+    lightcubemodel = glm::scale(lightcubemodel, glm::vec3(0.4f, 0.4f, 0.4f));
+    lightcubemodel = glm::translate(lightcubemodel, PointLight_Pos);
+    LightCubeShader.Use();
+    LightCubeShader.setMat4("model", lightcubemodel);
+    LightCubeShader.setVec3("light_col", lightcol);
 
     glViewport(0, 0, Shadow_Resolution, Shadow_Resolution);
     glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapfbo);
@@ -491,9 +504,13 @@ int main()
         FloorShader.Use();
         Floor.Draw(&FloorShader);
 
+        // Light Cube
+        LightCubeShader.Use();
+        Cube.Draw(&LightCubeShader);
+
         // Instance Rendering Code Here
-        CubeShader.Use();
-        Cube.DrawbyInstance(&CubeShader, num);
+        // CubeShader.Use();
+        // Cube.DrawbyInstance(&CubeShader, num);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glDisable(GL_DEPTH_TEST);

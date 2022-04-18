@@ -38,7 +38,6 @@ out VS_OUT {
     flat int num_spotlight;
 
     vec4 dirlight_fragPos[OTHER_LIMITATION];
-    float pointlight_far[POINT_LIGHTS_LIMITATION];
 } vs_out;
 
 void main() {

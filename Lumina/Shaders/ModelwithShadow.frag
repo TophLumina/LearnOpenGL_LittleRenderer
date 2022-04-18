@@ -90,14 +90,16 @@ void main() {
     vec3 viewDir = normalize(-fs_in.viewspace_fragPos);
     vec3 result = vec3(0.0, 0.0, 0.0);
 
-    float imp = IsBright(dirlights[0].direction, norm) ? ShadowFactor(dirlights[0], fs_in.dirlight_fragPos[0]) : 0.0;
+    // float imp = IsBright(dirlights[0].direction, norm) ? ShadowFactor(dirlights[0], fs_in.dirlight_fragPos[0]) : 0.0;
+    // float imp = IsBright(pointlights[0].position - fs_in.worldspace_fragpos, norm) ? ShadowFactor(pointlights[0]) : 0.0;
+    float imp = ShadowFactor(pointlights[0]);
     imp = imp * 0.6 + 0.4;
-    
-    // // Shadow Test Code
-    // FragColor = vec4(result + imp, 1.0);
 
     result += vec3(imp * texture(material.texture_diffuse1, fs_in.texCoords));
-    FragColor = vec4(result, 1.0);
+    // FragColor = vec4(result, 1.0);
+
+    // TEST CODE
+    FragColor = vec4(vec3(imp,imp,imp), 1.0);
 }
 
 
@@ -111,7 +113,7 @@ bool IsBright(vec3 lightdir, vec3 norm) {
 }
 
 float DepthAdjustment(vec3 lightdir) {
-    return adjust = max(0.005 * (1.0 - max(dot(normalize(fs_in.normal), normalize(-vec3(mat4(mat3(fs_in.view)) * vec4(lightdir, 1.0)))), 0.0)), 0.001);
+    return max(0.005 * (1.0 - max(dot(normalize(fs_in.normal), normalize(-vec3(mat4(mat3(fs_in.view)) * vec4(lightdir, 1.0)))), 0.0)), 0.001);
 }
 
 float ShadowFactor(Dirlight light, vec4 light_frag_pos) {
@@ -144,15 +146,20 @@ float ShadowFactor(Dirlight light, vec4 light_frag_pos) {
 }
 
 float ShadowFactor(PointLight light) {
-    vec3 Frag2Light = fs_in.worldspace_fragpos - light.position;
+    vec3 Light2Frag = fs_in.worldspace_fragpos - light.position;
 
-    vec3 FragDir = normalize(Frag2Light);
-    float StoppingDepth = texture(light.shadow, FragDir);
+    vec3 FragDir = normalize(Light2Frag);
+    float StoppingDepth = texture(light.shadowmap, FragDir).r;
     StoppingDepth *= light.far;
 
-    float CurrentDepth = length(Frag2Light);
+    float CurrentDepth = length(Light2Frag);
 
-    float adjust = DepthAdjustment(Frag2Light);
+    float adjust = DepthAdjustment(Light2Frag);
 
+    float shadow = CurrentDepth > StoppingDepth + 0.5 ? 1.0 : 0.0;
 
+    if(CurrentDepth > light.far)
+        return 0.0;
+    
+    return 1.0 - shadow;
 }

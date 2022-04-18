@@ -45,6 +45,9 @@
     <Filter Include="Shaders\LightManager">
       <UniqueIdentifier>{fe9b8809-2cbb-40d1-9ba9-7ddd3311ddf4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Shadows">
+      <UniqueIdentifier>{0a119d17-7860-4cab-95ef-dc2f4bdb3512}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -179,10 +182,10 @@
     <ClCompile Include="Render12.cpp">
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
-    <ClCompile Include="Render13.cpp">
+    <ClCompile Include="Render13.1.cpp">
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
-    <ClCompile Include="Render13.1.cpp">
+    <ClCompile Include="Render13_deprecated.cpp">
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
   </ItemGroup>
@@ -460,6 +463,21 @@
     </None>
     <None Include="Shaders\ModelwithShadow.vert">
       <Filter>Shaders\AdvancedShaders</Filter>
+    </None>
+    <None Include="Shaders\CubeDepth.vert">
+      <Filter>Shaders\Shadows</Filter>
+    </None>
+    <None Include="Shaders\CubeDepth.frag">
+      <Filter>Shaders\Shadows</Filter>
+    </None>
+    <None Include="Shaders\CubeDepth.geom">
+      <Filter>Shaders\Shadows</Filter>
+    </None>
+    <None Include="Shaders\LightCube.frag">
+      <Filter>Shaders\Shadows</Filter>
+    </None>
+    <None Include="Shaders\LightCube.vert">
+      <Filter>Shaders\Shadows</Filter>
     </None>
   </ItemGroup>
 </Project>
