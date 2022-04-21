@@ -28,15 +28,21 @@ bool enter = true;
 // MultiSampling
 int multisample = 4;
 
+// Screen
+int ScreenWidth = 1920;
+int ScreenHeight = 1080;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    glViewport(0, 0, width, height);
+    ScreenWidth = width;
+    ScreenHeight = height;
+    glViewport(0, 0, ScreenWidth, ScreenHeight);
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-    static float lastxpos = 400;
-    static float lastypos = 300;
+    static float lastxpos = ScreenWidth / 2;
+    static float lastypos = ScreenHeight / 2;
     if(enter)
     {
         lastxpos = xpos;
@@ -91,8 +97,6 @@ void inputs(GLFWwindow* window)
 int main()
 {
     lazy::glfwCoreEnv(3, 3);
-    int ScreenWidth = 800;
-    int ScreenHeight = 600;
 
     // This Func Should be Called before the Window being Created
     glfwWindowHint(GLFW_SAMPLES, multisample);
@@ -173,7 +177,7 @@ int main()
     glGenBuffers(1, &MatricesBlock);
     glBindBuffer(GL_UNIFORM_BUFFER, MatricesBlock);
     glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
-    glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)ScreenWidth / (float)ScreenWidth, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)ScreenWidth / (float)ScreenWidth, camera.Znear, camera.Zfar);
     glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
@@ -485,11 +489,14 @@ int main()
 
         ImGui::Render();
 
-        glm::mat4 view = camera.GetViewMatrix();
-
         // UniformBlock Data Update
+        // View Matrice
+        glm::mat4 view = camera.GetViewMatrix();
         glBindBuffer(GL_UNIFORM_BUFFER, MatricesBlock);
         glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(view));
+        // Perspective Matrice
+        projection = glm::perspective(glm::radians(camera.Fov), (float)ScreenWidth / (float)ScreenHeight, camera.Znear, camera.Zfar);
+        glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
         glBindFramebuffer(GL_FRAMEBUFFER, usualfb.ID);
@@ -509,8 +516,8 @@ int main()
         Cube.Draw(&LightCubeShader);
 
         // Instance Rendering Code Here
-        // CubeShader.Use();
-        // Cube.DrawbyInstance(&CubeShader, num);
+        CubeShader.Use();
+        Cube.DrawbyInstance(&CubeShader, num);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glDisable(GL_DEPTH_TEST);

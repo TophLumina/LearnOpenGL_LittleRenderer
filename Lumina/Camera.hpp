@@ -20,6 +20,8 @@ const float YAW = -90.0f;
 const float SPEED = 5.0f;
 const float SENSITIVITY = 0.1f;
 const float FOV = 45.0f;
+const float z_near = 0.1f;
+const float z_far = 100.0f;
 
 class Camera {
     public:
@@ -38,8 +40,10 @@ class Camera {
     float MovementSpeed;
     float TurningSensity;
     float Fov;
+    float Znear;
+    float Zfar;
 
-    Camera(glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), TurningSensity(SENSITIVITY), Fov(FOV) {
+    Camera(glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH, float near = z_near, float far = z_far) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), TurningSensity(SENSITIVITY), Fov(FOV), Znear(near), Zfar(far) {
         Position = pos;
         AbsoluteUp = up;
         Pitch = pitch;
