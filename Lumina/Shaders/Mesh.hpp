@@ -11,6 +11,8 @@ struct Vertex {
     glm::vec3 Position;
     glm::vec3 Normal;
     glm::vec2 Texcoords;
+    glm::vec3 Tangent;
+    glm::vec3 BiTangent;
 };
 
 struct Texture {
@@ -91,6 +93,14 @@ private:
         glEnableVertexAttribArray(2);
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, Texcoords));
 
+        // Vertex Tangent
+        glEnableVertexAttribArray(3);
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, Tangent));
+
+        // Vertex BiTangent
+        glEnableVertexAttribArray(4);
+        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, BiTangent));
+
         glBindVertexArray(0);
     }
 
@@ -99,6 +109,7 @@ private:
         // Sample: texture_diffuse1; texture_specular2;
         unsigned int diffuseIndex = 1;
         unsigned int specularIndex = 1;
+        unsigned int normalIndex = 1;
         for (unsigned int i = 0; i < textures.size(); ++i) {
             // before binding the texture we need to make it active first
 
@@ -113,6 +124,8 @@ private:
                 number = std::to_string(diffuseIndex++);
             else if(name == "texture_specular")
                 number = std::to_string(specularIndex++);
+            else if(name == "texture_normal")
+                number = std::to_string(normalIndex++);
 
             shader->setInt(("material." + name + number), 11 + i);
             glBindTexture(GL_TEXTURE_2D, textures[i].id);

@@ -27,14 +27,14 @@ public:
             amesh.Draw(shader);
     }
 
-    void DrawbyInstance(Shader *shader,int num)
+    void DrawbyInstance(Shader *shader, int num)
     {
         for (Mesh amesh : meshes)
             amesh.DrawbyInstance(shader, num);
     }
 
     // Used for Instance Rendering
-    std::vector<Mesh> ServeMeshes() 
+    std::vector<Mesh> ServeMeshes()
     {
         return this->meshes;
     }
@@ -51,7 +51,7 @@ private:
     void loadModel(std::string path)
     {
         Assimp::Importer importer;
-        const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_OptimizeMeshes);
+        const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_OptimizeMeshes | aiProcess_CalcTangentSpace);
 
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
@@ -85,7 +85,7 @@ private:
         for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
         {
             Vertex vertex;
-            // get position, normal, and texcoords
+            // get position, normal, texcoords and tangent
             glm::vec3 position;
             position.x = mesh->mVertices[i].x;
             position.y = mesh->mVertices[i].y;
@@ -107,6 +107,20 @@ private:
                 texcoords.x = mesh->mTextureCoords[0][i].x;
                 texcoords.y = mesh->mTextureCoords[0][i].y;
                 vertex.Texcoords = texcoords;
+
+                // Tangent
+                glm::vec3 tangent;
+                tangent.x = mesh->mTangents[i].x;
+                tangent.y = mesh->mTangents[i].y;
+                tangent.z = mesh->mTangents[i].z;
+                vertex.Tangent = tangent;
+
+                //BiTangent
+                glm::vec3 bitangent;
+                bitangent.x = mesh->mBitangents[i].x;
+                bitangent.y = mesh->mBitangents[i].y;
+                bitangent.z = mesh->mBitangents[i].z;
+                vertex.BiTangent = bitangent;
             }
             else
                 vertex.Texcoords = glm::vec2(0.0f, 0.0f);
@@ -132,6 +146,9 @@ private:
 
             std::vector<Texture> specularMaps = loadMaterialTexture(material, aiTextureType_SPECULAR, "texture_specular", false);
             textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+
+            std::vector<Texture> normalMaps = loadMaterialTexture(material, aiTextureType_NORMALS, "texture_normal", false);
+            textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
         }
 
 #ifdef DEBUG_TEST

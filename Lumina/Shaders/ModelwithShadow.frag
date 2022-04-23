@@ -3,7 +3,10 @@
 struct Material {
     sampler2D texture_diffuse1;
     sampler2D texture_diffuse2;
+
     sampler2D texture_specular1;
+
+    sampler2D texture_normal1;
 };
 
 struct LightAttrib {
@@ -55,7 +58,7 @@ in VS_OUT {
     vec3 worldspace_fragpos;
     vec2 texCoords;
     mat4 view;
-    // vec4 lightspace_fragPos;
+    mat3 TBN;
 
     flat int num_dirlight;
     flat int num_pointlight;
@@ -86,7 +89,8 @@ void main() {
     if(!FragmentVisibility())
         discard;
 
-    vec3 norm = normalize(fs_in.normal);
+    // vec3 norm = normalize(fs_in.normal);
+    vec3 norm = normalize(fs_in.TBN * normalize((texture(material.texture_normal1, fs_in.texCoords).rgb) * 2.0 - 1.0));
     vec3 viewDir = normalize(-fs_in.viewspace_fragPos);
     vec3 result = vec3(0.0, 0.0, 0.0);
 

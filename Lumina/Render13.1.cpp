@@ -156,8 +156,8 @@ int main()
     Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/OffScreen.frag");
 
     // Models and Shaders
-    Model Haku("./Model/Haku/TDA Lacy Haku.pmx");
-    Shader HakuShader("./Shaders/ModelwithShadow.vert", "./Shaders/ModelwithShadow.frag");
+    Model HK416("./Model/Haku/TDA Lacy Haku.pmx");
+    Shader HK416Shader("./Shaders/ModelwithShadow.vert", "./Shaders/ModelwithShadow.frag");
 
     Model Floor("./Model/Floor/floor.fbx");
     Shader FloorShader("./Shaders/ModelwithShadow.vert", "./Shaders/ModelwithShadow.frag");
@@ -167,8 +167,8 @@ int main()
     Shader LightCubeShader("./Shaders/LightCube.vert", "./Shaders/LightCube.frag");
 
     glm::mat4 model(1.0f);
-    HakuShader.Use();
-    HakuShader.setMat4("model", model);
+    HK416Shader.Use();
+    HK416Shader.setMat4("model", model);
     FloorShader.Use();
     FloorShader.setMat4("model", model);
 
@@ -182,9 +182,9 @@ int main()
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
     // Shader UniformBlock Bindings
-    HakuShader.Use();
-    unsigned int HAKU_Matrices_Index = glGetUniformBlockIndex(HakuShader.ID, "Matrices");
-    glUniformBlockBinding(HakuShader.ID, HAKU_Matrices_Index, 0);
+    HK416Shader.Use();
+    unsigned int HAKU_Matrices_Index = glGetUniformBlockIndex(HK416Shader.ID, "Matrices");
+    glUniformBlockBinding(HK416Shader.ID, HAKU_Matrices_Index, 0);
 
     CubeShader.Use();
     unsigned int CUBE_Matrices_Index = glGetUniformBlockIndex(CubeShader.ID, "Matrices");
@@ -367,7 +367,7 @@ int main()
     // Pre-Render
     DirLightShadowShader.Use();
     Floor.Draw(&DirLightShadowShader);
-    Haku.Draw(&DirLightShadowShader);
+    HK416.Draw(&DirLightShadowShader);
 
     // Disable Cube Ring for Testing
     // DirLightShadowShader.setBool("useInstance", true);
@@ -377,7 +377,7 @@ int main()
 
     // Lighting Management and Shadow Shader Config
     LM.dirlights.push_back(DirLight(attrib, lightdir, DirLight_Transform, DirLightShadowMap));
-    LM.ShaderConfig(&HakuShader);
+    LM.ShaderConfig(&HK416Shader);
     LM.ShaderConfig(&FloorShader);
 
     // PointLight ShadowMap
@@ -439,13 +439,13 @@ int main()
 
     // Pre-Rendering
     PointLightShader.Use();
-    Haku.Draw(&PointLightShader);
+    HK416.Draw(&PointLightShader);
     Floor.Draw(&PointLightShader);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     LM.pointlights.push_back(PointLight(attrib, PointLight_Pos, Attenuation(), CubeShadowMap, far));
-    LM.ShaderConfig(&HakuShader);
+    LM.ShaderConfig(&HK416Shader);
     LM.ShaderConfig(&FloorShader);
 
     // Viewport Settings
@@ -505,8 +505,8 @@ int main()
         glClearColor(0.0, 0.0, 0.0, 1.0);
 
         // Render Code
-        HakuShader.Use();
-        Haku.Draw(&HakuShader);
+        HK416Shader.Use();
+        HK416.Draw(&HK416Shader);
 
         FloorShader.Use();
         Floor.Draw(&FloorShader);
