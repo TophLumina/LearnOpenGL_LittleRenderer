@@ -156,7 +156,7 @@ int main()
     Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/OffScreen.frag");
 
     // Models and Shaders
-    Model HK416("./Model/Haku/TDA Lacy Haku.pmx");
+    Model HK416("./Model/Pei_Er/Pei_Er.pmx");
     Shader HK416Shader("./Shaders/ModelwithShadow.vert", "./Shaders/ModelwithShadow.frag");
 
     Model Floor("./Model/Floor/floor.fbx");

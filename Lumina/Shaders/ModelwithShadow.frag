@@ -89,8 +89,10 @@ void main() {
     if(!FragmentVisibility())
         discard;
 
-    // vec3 norm = normalize(fs_in.normal);
-    vec3 norm = normalize(fs_in.TBN * normalize((texture(material.texture_normal1, fs_in.texCoords).rgb) * 2.0 - 1.0));
+    vec3 norm = normalize(fs_in.normal);
+    // Need Debug when Model do not have Normal Maps
+    // vec3 norm = normalize(fs_in.TBN * normalize((texture(material.texture_normal1, fs_in.texCoords).rgb) * 2.0 - 1.0));
+
     vec3 viewDir = normalize(-fs_in.viewspace_fragPos);
     vec3 result = vec3(0.0, 0.0, 0.0);
 
