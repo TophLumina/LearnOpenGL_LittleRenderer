@@ -5,6 +5,8 @@ struct Material {
     sampler2D texture_diffuse2;
 
     sampler2D texture_specular1;
+
+    sampler2D texture_normal1;
 };
 
 struct LightAttrib {
@@ -93,7 +95,7 @@ void main() {
     // vec3 norm = normalize(fs_in.normal);
 
     // External Normal Map Test <Manually Flip UVs>
-    vec3 norm = normalize(fs_in.TBN * normalize(texture(normalmap, vec2(fs_in.texCoords.x, 1.0 - fs_in.texCoords.y)).rgb * 2.0 - 1.0));
+    vec3 norm = normalize(fs_in.TBN * normalize(texture(material.texture_normal1, fs_in.texCoords)).rgb * 2.0 - 1.0);
 
     vec3 viewDir = normalize(-fs_in.viewspace_fragPos);
     vec3 result = vec3(0.0, 0.0, 0.0);
