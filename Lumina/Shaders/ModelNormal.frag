@@ -58,13 +58,14 @@ in VS_OUT {
     vec3 worldspace_fragpos;
     vec2 texCoords;
     mat4 view;
-    mat3 TBN;
 
     flat int num_dirlight;
     flat int num_pointlight;
     flat int num_spotlight;
 
     vec4 dirlight_fragPos[OTHER_LIMITATION];
+
+    mat3 TBN;
 } fs_in;
 
 uniform Material material;
@@ -119,7 +120,7 @@ bool FragmentVisibility() {
 }
 
 bool IsBright(vec3 lightdir, vec3 norm) {
-    vec3 dir = normalize(mat3(fs_in.view) * lightdir);
+    vec3 dir = normalize(mat3(fs_in.view) * lightdir); // View Space
     return dot(norm, dir) > 0;
 }
 

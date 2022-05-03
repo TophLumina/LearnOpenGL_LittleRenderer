@@ -54,17 +54,17 @@ const int OTHER_LIMITATION = 2;
 
 in VS_OUT {
     vec3 normal;
-    vec3 viewspace_fragPos;
-    vec3 worldspace_fragpos;
+    vec3 fragpos;
     vec2 texCoords;
-    mat4 view;
-    mat3 TBN;
+    vec3 viewPos;
 
     flat int num_dirlight;
     flat int num_pointlight;
     flat int num_spotlight;
 
     vec4 dirlight_fragPos[OTHER_LIMITATION];
+
+    mat3 TBN;
 } fs_in;
 
 uniform Material material;
@@ -97,11 +97,11 @@ void main() {
     // External Normal Map Test <Manually Flip UVs>
     vec3 norm = normalize(fs_in.TBN * normalize(texture(material.texture_normal1, fs_in.texCoords).rgb * 2.0 - 1.0));
 
-    vec3 viewDir = normalize(-fs_in.viewspace_fragPos);
+    vec3 viewDir = normalize(fs_in.viewPos -fs_in.fragpos);
     vec3 result = vec3(0.0, 0.0, 0.0);
 
     // float imp = IsBright(-dirlights[0].direction, norm) ? ShadowFactor(dirlights[0], fs_in.dirlight_fragPos[0]) : 0.0;
-    float imp = IsBright(pointlights[0].position - fs_in.worldspace_fragpos, norm) ? ShadowFactor(pointlights[0]) : 0.0;
+    float imp = IsBright(pointlights[0].position - fs_in.fragpos, norm) ? ShadowFactor(pointlights[0]) : 0.0;
     // float imp = ShadowFactor(pointlights[0]);
     // float imp = ShadowFactor(dirlights[0], fs_in.dirlight_fragPos[0]);
     imp = imp * 0.6 + 0.4;
@@ -119,12 +119,12 @@ bool FragmentVisibility() {
 }
 
 bool IsBright(vec3 lightdir, vec3 norm) {
-    vec3 dir = normalize(mat3(fs_in.view) * lightdir);
+    vec3 dir = normalize(lightdir);
     return dot(norm, dir) > 0;
 }
 
 float DepthAdjustment(vec3 lightdir) {
-    return max(0.005 * (1.0 - max(dot(normalize(fs_in.normal), normalize(-vec3(mat4(mat3(fs_in.view)) * vec4(lightdir, 1.0)))), 0.0)), 0.001);
+    return max(0.005 * (1.0 - max(dot(normalize(fs_in.normal), normalize(lightdir)), 0.0)), 0.001);
 }
 
 float ShadowFactor(Dirlight light, vec4 light_frag_pos) {
@@ -134,7 +134,7 @@ float ShadowFactor(Dirlight light, vec4 light_frag_pos) {
     projCoords = projCoords * 0.5 + 0.5;
 
     // Refinements
-    float adjust = DepthAdjustment(light.direction);
+    float adjust = DepthAdjustment(-light.direction);
 
     float CurrentDepth = projCoords.z;
     float shadow = 0.0;
@@ -157,7 +157,7 @@ float ShadowFactor(Dirlight light, vec4 light_frag_pos) {
 }
 
 float ShadowFactor(PointLight light) {
-    vec3 Light2Frag = fs_in.worldspace_fragpos - light.position;
+    vec3 Light2Frag = light.position - fs_in.fragpos;
 
     vec3 FragDir = normalize(Light2Frag);
 

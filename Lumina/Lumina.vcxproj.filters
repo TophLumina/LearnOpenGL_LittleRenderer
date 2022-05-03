@@ -191,6 +191,9 @@
     <ClCompile Include="Render14.cpp">
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
+    <ClCompile Include="Render14.1.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rectangle.hpp">
@@ -486,6 +489,12 @@
       <Filter>Shaders\AdvancedShaders</Filter>
     </None>
     <None Include="Shaders\ModelNormal.vert">
+      <Filter>Shaders\AdvancedShaders</Filter>
+    </None>
+    <None Include="Shaders\Parallax.frag">
+      <Filter>Shaders\AdvancedShaders</Filter>
+    </None>
+    <None Include="Shaders\Parallax.vert">
       <Filter>Shaders\AdvancedShaders</Filter>
     </None>
   </ItemGroup>

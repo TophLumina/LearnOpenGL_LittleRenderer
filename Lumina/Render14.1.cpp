@@ -157,15 +157,19 @@ int main()
 
     // Models and Shaders
     Model Floor("./Model/Floor/floor.fbx");
-    Shader FloorShader("./Shaders/ModelNormal.vert", "./Shaders/ModelNormal.frag");
+    Shader FloorShader("./Shaders/Parallax.vert", "./Shaders/Parallax.frag");
 
     Model Cube("./Model/JustCube/untitled.fbx");
-    Shader CubeShader("./Shaders/instanceCube.vert", "./Shaders/instanceCube.frag");
+    Shader CubeShader("./Shaders/Parallax.vert", "./Shaders/Parallax.frag");
     Shader LightCubeShader("./Shaders/LightCube.vert", "./Shaders/LightCube.frag");
 
     glm::mat4 model(1.0f);
     FloorShader.Use();
     FloorShader.setMat4("model", model);
+    FloorShader.setVec3("viewpos", camera.Position);
+
+    CubeShader.Use();
+    CubeShader.setVec3("viewpos", camera.Position);
 
     // UniformBuffer
     unsigned int MatricesBlock;
@@ -197,7 +201,6 @@ int main()
     glGenFramebuffers(1, &ShadowMapfbo);
 
     // Depth Map Texture Attachment
-    // High Quality Shadow
     const unsigned int Shadow_Resolution = 8192;
 
     // Lighting Manager
@@ -260,10 +263,6 @@ int main()
     // Pre-Render
     DirLightShadowShader.Use();
     Floor.Draw(&DirLightShadowShader);
-
-    // Disable Cube Ring for Testing
-    // DirLightShadowShader.setBool("useInstance", true);
-    // Cube.DrawbyInstance(&DirLightShadowShader, num);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

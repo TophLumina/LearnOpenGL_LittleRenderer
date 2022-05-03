@@ -34,13 +34,14 @@ out VS_OUT {
     vec3 worldspace_fragpos;
     vec2 texCoords;
     mat4 view;
-    mat3 TBN; // for Normal Maps Usage
 
     flat int num_dirlight;
     flat int num_pointlight;
     flat int num_spotlight;
 
     vec4 dirlight_fragPos[OTHER_LIMITATION];
+    
+    mat3 TBN; // for Normal Maps Usage
 } vs_out;
 
 void main() {
