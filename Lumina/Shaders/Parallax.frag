@@ -65,6 +65,7 @@ in VS_OUT {
     vec4 dirlight_fragPos[OTHER_LIMITATION];
 
     mat3 TBN;
+    mat3 iTBN;
 } fs_in;
 
 uniform Material material;
@@ -75,7 +76,8 @@ uniform Dirlight dirlights[OTHER_LIMITATION];
 uniform PointLight pointlights[POINT_LIGHTS_LIMITATION];
 uniform SpotLight spotlights[OTHER_LIMITATION];
 
-bool FragmentVisibility();
+vec2 ParallaxMapping(vec2 coords, vec3 viewdir);    // For ParallaxMapping (of course)
+bool FragmentVisibility(vec2 coords);
 bool IsBright(vec3 lightdir, vec3 norm);
 float DepthAdjustment(vec3 lightdir);
 float ShadowFactor(Dirlight light, vec4 light_frag_pos);
@@ -85,33 +87,47 @@ uniform bool GammaCorrection;
 
 out vec4 FragColor;
 
+uniform sampler2D parallaxmap;
+
 void main() {
-    if(!FragmentVisibility())
+    vec3 viewDir = normalize(fs_in.viewPos -fs_in.fragpos);
+
+    // Parallax Mapping
+    vec2 coord = ParallaxMapping(fs_in.texCoords, viewDir);
+    if(coord.x > 1.0 || coord.x < 0.0 || coord.y > 1.0 || coord.y < 0.0)
         discard;
 
-    vec3 norm = normalize(fs_in.normal);
+    // vec2 coord = fs_in.texCoords
 
-    // External Normal Map Test <Manually Flip UVs>
-    // vec3 norm = normalize(fs_in.TBN * normalize(texture(material.texture_normal1, fs_in.texCoords).rgb * 2.0 - 1.0));
+    if(!FragmentVisibility(coord))
+        discard;
 
-
-    vec3 viewDir = normalize(fs_in.viewPos -fs_in.fragpos);
+    // vec3 norm = normalize(fs_in.normal);
+    vec3 norm = normalize(fs_in.TBN * normalize(texture(material.texture_normal1, coord).rgb * 2.0 - 1.0));
     vec3 result = vec3(0.0, 0.0, 0.0);
 
     // float imp = IsBright(-dirlights[0].direction, norm) ? ShadowFactor(dirlights[0], fs_in.dirlight_fragPos[0]) : 0.0;
     float imp = IsBright(pointlights[0].position - fs_in.fragpos, norm) ? ShadowFactor(pointlights[0]) : 0.0;
     imp = imp * 0.6 + 0.4;
 
-    result += vec3(imp * texture(material.texture_diffuse1, fs_in.texCoords));
+    result += vec3(imp * texture(material.texture_diffuse1, coord));
     // FragColor = vec4(result, 1.0);
 
     // TEST CODE
-    FragColor = vec4(imp * texture(material.texture_diffuse1, fs_in.texCoords).rgb, 1.0);
+    FragColor = vec4(imp * texture(material.texture_diffuse1, coord).rgb, 1.0);
 }
 
 
-bool FragmentVisibility() {
-    return texture(material.texture_diffuse1, fs_in.texCoords).a > 0.05;
+vec2 ParallaxMapping(vec2 coords, vec3 viewdir) {
+    const float f = 0.01;
+    viewdir = normalize(fs_in.iTBN * viewdir);
+    float height = 1.0 - texture(parallaxmap, coords).r;
+    vec2 offset = viewdir.xy / viewdir.z * height * f;
+    return coords - offset;
+}
+
+bool FragmentVisibility(vec2 coords) {
+    return texture(material.texture_diffuse1, coords).a > 0.05;
 }
 
 bool IsBright(vec3 lightdir, vec3 norm) {

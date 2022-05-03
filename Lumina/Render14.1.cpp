@@ -156,7 +156,7 @@ int main()
     Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/OffScreen.frag");
 
     // Models and Shaders
-    Model Floor("./Model/Haku/TDA Lacy Haku.pmx");
+    Model Floor("./Model/Floor/floor.fbx");
     Shader FloorShader("./Shaders/Parallax.vert", "./Shaders/Parallax.frag");
 
     Model Cube("./Model/JustCube/untitled.fbx");
@@ -346,6 +346,15 @@ int main()
     int kernel = 0;
     bool gammacorrection = true;
 
+    // External Parallax Map Test
+    unsigned int externalparallax = TextureFromFile("parallax_mapping_height_map.png", "./Model/Floor", false);
+    FloorShader.Use();
+    glActiveTexture(GL_TEXTURE10);
+    glBindTexture(GL_TEXTURE_2D, externalparallax);
+    FloorShader.setInt("parallaxmap", 10);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
     while(!glfwWindowShouldClose(window))
     {
         inputs(window);
@@ -384,6 +393,7 @@ int main()
         // Perspective Matrice
         projection = glm::perspective(glm::radians(camera.Fov), (float)ScreenWidth / (float)ScreenHeight, camera.Znear, camera.Zfar);
         glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
+        // View Pos
         glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(camera.Position));
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
 

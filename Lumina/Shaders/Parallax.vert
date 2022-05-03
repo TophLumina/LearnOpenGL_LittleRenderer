@@ -43,6 +43,7 @@ out VS_OUT {
 
     // Tangent Space to World Space Transform Matrix
     mat3 TBN;
+    mat3 iTBN;
 } vs_out;
 
 void main() {
@@ -65,7 +66,7 @@ void main() {
     vec3 B = normalize(vec3(model * vec4(aBiTangent, 0.0)));
     vec3 N = normalize(vec3(model * vec4(aNormal, 0.0)));
     vs_out.TBN = mat3(T, B, N);
-
+    vs_out.iTBN = transpose(vs_out.TBN);
 
     gl_Position = projection * view * vec4(vs_out.fragpos, 1.0);
 }
