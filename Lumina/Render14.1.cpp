@@ -156,7 +156,7 @@ int main()
     Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/OffScreen.frag");
 
     // Models and Shaders
-    Model Floor("./Model/Floor/floor.fbx");
+    Model Floor("./Model/Haku/TDA Lacy Haku.pmx");
     Shader FloorShader("./Shaders/Parallax.vert", "./Shaders/Parallax.frag");
 
     Model Cube("./Model/JustCube/untitled.fbx");
@@ -175,9 +175,10 @@ int main()
     unsigned int MatricesBlock;
     glGenBuffers(1, &MatricesBlock);
     glBindBuffer(GL_UNIFORM_BUFFER, MatricesBlock);
-    glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+    glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4) + sizeof(glm::vec3), NULL, GL_STATIC_DRAW);
     glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)ScreenWidth / (float)ScreenWidth, camera.Znear, camera.Zfar);
     glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
+    glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(camera.Position));
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
     // Shader UniformBlock Bindings
@@ -201,7 +202,7 @@ int main()
     glGenFramebuffers(1, &ShadowMapfbo);
 
     // Depth Map Texture Attachment
-    const unsigned int Shadow_Resolution = 8192;
+    const unsigned int Shadow_Resolution = 1024;
 
     // Lighting Manager
     LightManager LM;
@@ -345,16 +346,6 @@ int main()
     int kernel = 0;
     bool gammacorrection = true;
 
-    // External Normal Map Test
-    unsigned int externalnormal = TextureFromFile("brickwall_normal.jpg", "./Model/Floor", false);
-    FloorShader.Use();
-    glActiveTexture(GL_TEXTURE10);
-    glBindTexture(GL_TEXTURE_2D, externalnormal);
-    // Mark
-    FloorShader.setInt("normalmap", 10);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
     while(!glfwWindowShouldClose(window))
     {
         inputs(window);
@@ -393,6 +384,7 @@ int main()
         // Perspective Matrice
         projection = glm::perspective(glm::radians(camera.Fov), (float)ScreenWidth / (float)ScreenHeight, camera.Znear, camera.Zfar);
         glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
+        glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(camera.Position));
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
         glBindFramebuffer(GL_FRAMEBUFFER, usualfb.ID);

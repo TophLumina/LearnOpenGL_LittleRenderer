@@ -347,13 +347,13 @@ int main()
     bool gammacorrection = true;
 
     // External Normal Map Test
-    // unsigned int externalnormal = TextureFromFile("brickwall_normal.jpg", "./Model/Floor", false);
-    // FloorShader.Use();
-    // glActiveTexture(GL_TEXTURE10);
-    // glBindTexture(GL_TEXTURE_2D, externalnormal);
-    // FloorShader.setInt("normalmap", 10);
-    // glActiveTexture(GL_TEXTURE0);
-    // glBindTexture(GL_TEXTURE_2D, 0);
+    unsigned int externalnormal = TextureFromFile("brickwall_normal.jpg", "./Model/Floor", false);
+    FloorShader.Use();
+    glActiveTexture(GL_TEXTURE10);
+    glBindTexture(GL_TEXTURE_2D, externalnormal);
+    FloorShader.setInt("normalmap", 10);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     while(!glfwWindowShouldClose(window))
     {

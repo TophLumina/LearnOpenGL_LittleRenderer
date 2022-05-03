@@ -85,25 +85,21 @@ uniform bool GammaCorrection;
 
 out vec4 FragColor;
 
-// For External Normal Map Test
-uniform sampler2D normalmap;
-
 void main() {
     if(!FragmentVisibility())
         discard;
 
-    // vec3 norm = normalize(fs_in.normal);
+    vec3 norm = normalize(fs_in.normal);
 
     // External Normal Map Test <Manually Flip UVs>
-    vec3 norm = normalize(fs_in.TBN * normalize(texture(material.texture_normal1, fs_in.texCoords).rgb * 2.0 - 1.0));
+    // vec3 norm = normalize(fs_in.TBN * normalize(texture(material.texture_normal1, fs_in.texCoords).rgb * 2.0 - 1.0));
+
 
     vec3 viewDir = normalize(fs_in.viewPos -fs_in.fragpos);
     vec3 result = vec3(0.0, 0.0, 0.0);
 
     // float imp = IsBright(-dirlights[0].direction, norm) ? ShadowFactor(dirlights[0], fs_in.dirlight_fragPos[0]) : 0.0;
     float imp = IsBright(pointlights[0].position - fs_in.fragpos, norm) ? ShadowFactor(pointlights[0]) : 0.0;
-    // float imp = ShadowFactor(pointlights[0]);
-    // float imp = ShadowFactor(dirlights[0], fs_in.dirlight_fragPos[0]);
     imp = imp * 0.6 + 0.4;
 
     result += vec3(imp * texture(material.texture_diffuse1, fs_in.texCoords));

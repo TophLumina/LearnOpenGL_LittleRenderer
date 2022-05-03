@@ -6,11 +6,11 @@ layout(location = 3) in vec3 aTangent;
 layout(location = 4) in vec3 aBiTangent;
 
 uniform mat4 model;
-uniform vec3 viewpos;
 
 layout (std140) uniform Matrices {
     mat4 view;
     mat4 projection;
+    vec3 viewpos;
 };
 
 // Limitations
