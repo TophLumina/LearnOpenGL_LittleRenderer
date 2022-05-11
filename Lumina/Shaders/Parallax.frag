@@ -117,13 +117,38 @@ void main() {
     FragColor = vec4(imp * texture(material.texture_diffuse1, coord).rgb, 1.0);
 }
 
-
 vec2 ParallaxMapping(vec2 coords, vec3 viewdir) {
     const float f = 0.01;
     viewdir = normalize(fs_in.iTBN * viewdir);
-    float height = 1.0 - texture(parallaxmap, coords).r;
-    vec2 offset = viewdir.xy / viewdir.z * height * f;
-    return coords - offset;
+
+    // const int layers = 25;
+    const float minlayers = 8;
+    const float maxlayers = 64;
+    float layers = mix(maxlayers, minlayers, max(dot(vec3(0.0, 0.0, 1.0), viewdir), 0.0));
+
+    float delta_height = 1.0 / layers;
+    vec2 delta_coords = (viewdir.xy / viewdir.z * 1.0 * f) / layers;
+
+    vec2 over_Coords = coords;
+    float over_Height = texture(parallaxmap, coords).r;
+    float over_LayerHeight = 0.0;
+
+    float pre_Height;
+
+    while(over_Height > over_LayerHeight) {
+        pre_Height = texture(parallaxmap, over_Coords).r;
+
+        over_Coords -= delta_coords;
+        over_Height = texture(parallaxmap, over_Coords).r;
+        over_LayerHeight += delta_height;
+    }
+
+    float pre_LayerHeight = over_LayerHeight -= delta_height;
+    vec2 pre_Coords = over_Coords += delta_coords;
+    float weight = (pre_Height - pre_LayerHeight) / delta_height;
+    vec2 finalCoords = mix(pre_Coords, over_Coords, weight);
+
+    return finalCoords;
 }
 
 bool FragmentVisibility(vec2 coords) {
