@@ -435,6 +435,8 @@
     <None Include="Shaders\Explode.vert" />
     <None Include="Shaders\ExternalModel.frag" />
     <None Include="Shaders\ExternalModel.vert" />
+    <None Include="Shaders\HDR.frag" />
+    <None Include="Shaders\HDR.vert" />
     <None Include="Shaders\Instance.frag" />
     <None Include="Shaders\Instance.vert" />
     <None Include="Shaders\InstanceCube.frag" />

@@ -506,5 +506,11 @@
     <None Include="Shaders\ModelShadow2.vert">
       <Filter>Shaders\AdvancedShaders</Filter>
     </None>
+    <None Include="Shaders\HDR.frag">
+      <Filter>Shaders\AdvancedShaders</Filter>
+    </None>
+    <None Include="Shaders\HDR.vert">
+      <Filter>Shaders\AdvancedShaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

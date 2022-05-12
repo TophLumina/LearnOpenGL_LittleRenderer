@@ -197,7 +197,7 @@ int main()
     LightManager LM;
 
     // HDR
-    glm::vec3 lightcol(100.0f, 100.0f, 100.0f);
+    glm::vec3 lightcol(10.0f, 10.0f, 10.0f);
     glm::vec3 lightdir(0.0f, -1.0f, -1.0f);
     LightAttrib attrib(lightcol, lightcol, lightcol);
 
@@ -336,6 +336,8 @@ int main()
     int kernel = 0;
     bool gammacorrection = true;
 
+    float exposure = 1.0;
+
     while(!glfwWindowShouldClose(window))
     {
         inputs(window);
@@ -360,6 +362,8 @@ int main()
             ImGui::Checkbox("Gamma Correction", &gammacorrection);
             ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Kernels Available:\n0::NoEffect\t1::Sharpen\t2::Blur\t3::EdgeDetection");
             ImGui::SliderInt("Kernel Selector", &kernel, 0, 3);
+            ImGui::NewLine();
+            ImGui::SliderFloat("Exposure", &exposure, 0.0f, 100.0f, "%.2f");
 
             ImGui::End();
         }
@@ -402,6 +406,7 @@ int main()
         fbShader.setBool("Inversion", inversion);
         fbShader.setInt("KernelIndex", kernel);
         fbShader.setBool("GammaCorrection", gammacorrection);
+        fbShader.setFloat("exposure", exposure);
 
         fbShader.Use();
 

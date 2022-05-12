@@ -12,6 +12,8 @@ uniform bool Inversion;
 
 uniform int KernelIndex;
 
+uniform float exposure;
+
 vec4 inversion(vec4 color) {
     vec3 temp = color.rgb;
     return vec4(1.0 - temp, 1.0);
@@ -66,6 +68,9 @@ float edgedetectionkernel[9] = float[] (
     1,  1,  1
 );
 
+vec3 Reinhard(vec3 color);
+vec3 ExposureFactor(vec3 color, float exposure);
+
 void main() {
     // vec4 result = texture(ScreenTexture, texCoords);
     vec3 color = vec3(0.0, 0.0, 0.0);
@@ -95,7 +100,7 @@ void main() {
     for(int i = 0; i < 9; ++i)
         color += kernel[i] * vec3(texture(ScreenTexture, fs_in.texCoords + offsets[i]));
 
-    vec4 result = vec4(color, 1.0);
+    vec4 result = vec4(ExposureFactor(color, exposure), 1.0);
 
     if(Inversion)
         result = inversion(result);
@@ -107,4 +112,12 @@ void main() {
     result.rgb = GammaCorrection ? pow(result.rgb, vec3(1.0 / Gamma)) : result.rgb;
     
     FragColor = result;
+}
+
+vec3 Reinhard(vec3 color) {
+    return color / (color + vec3(1.0));
+}
+
+vec3 ExposureFactor(vec3 color, float exposure) {
+    return vec3(1.0) - exp(-color * exposure);
 }
