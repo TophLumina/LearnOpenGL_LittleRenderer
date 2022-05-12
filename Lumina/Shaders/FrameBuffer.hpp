@@ -62,6 +62,17 @@ public:
             return texture_attachments;
     }
 
+    void RenderConfig()
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, ID);
+        std::vector<unsigned int> attachments;
+        for (unsigned int i = 0; i < texturelayers; ++i) {
+            attachments.push_back(GL_COLOR_ATTACHMENT0 + i);
+        }
+
+        glDrawBuffers(texturelayers, attachments.data());
+    }
+
     void Draw(unsigned int texture)
     {
         // Texture[0] is Used for Draw by Default
@@ -211,6 +222,5 @@ private:
 
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        // fin
     }
 };

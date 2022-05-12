@@ -149,7 +149,11 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // FrameBuffer
-    FrameBuffer usualfb(ScreenWidth, ScreenHeight, 8);
+    FrameBuffer usualfb(ScreenWidth, ScreenHeight, 8, 2);
+
+    // Debug
+    std::cout << usualfb.ServeTextures().at(0) << std::endl;
+    std::cout << usualfb.ServeTextures().at(1) << std::endl;
 
     // Test Shader
     // Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/offscreen_ForTesting.frag");
@@ -157,10 +161,10 @@ int main()
 
     // Models and Shaders
     Model Haku("./Model/Haku/TDA Lacy Haku.pmx");
-    Shader HakuShader("./Shaders/ModelShadow2.vert", "./Shaders/ModelShadow2.frag");
+    Shader HakuShader("./Shaders/Bloom.vert", "./Shaders/Bloom.frag");
 
     Model Cube("./Model/JustCube/untitled.fbx");
-    Shader LightCubeShader("./Shaders/LightCube.vert", "./Shaders/LightCube.frag");
+    Shader LightCubeShader("./Shaders/LightCube.vert", "./Shaders/LightCubeBloom.frag");
 
     glm::mat4 model(1.0f);
     HakuShader.Use();
@@ -197,7 +201,7 @@ int main()
     LightManager LM;
 
     // HDR
-    glm::vec3 lightcol(10.0f, 10.0f, 10.0f);
+    glm::vec3 lightcol(20.0f, 20.0f, 20.0f);
     glm::vec3 lightdir(0.0f, -1.0f, -1.0f);
     LightAttrib attrib(lightcol, lightcol, lightcol);
 
@@ -386,6 +390,9 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.0, 0.0, 0.0, 1.0);
 
+        //Render Config
+        usualfb.RenderConfig();
+
         // Render Code
         HakuShader.Use();
         Haku.Draw(&HakuShader);
@@ -408,7 +415,7 @@ int main()
         fbShader.setFloat("exposure", exposure);
 
         fbShader.Use();
-        usualfb.Draw(usualfb.ServeTextures().at(0));
+        usualfb.Draw(usualfb.ServeTextures().at(1));
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);

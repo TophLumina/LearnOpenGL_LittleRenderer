@@ -86,7 +86,9 @@ float Brightness(PointLight light, vec3 frag2light);
 
 uniform bool GammaCorrection;
 
-out vec4 FragColor;
+// MRT
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 BrightColor;
 
 void main() {
     vec3 viewDir = normalize(fs_in.viewPos -fs_in.fragpos);
@@ -103,14 +105,18 @@ void main() {
     imp = imp * Brightness(pointlights[0], (fs_in.fragpos - pointlights[0].position)) * 0.6 + 0.4;
 
     result += vec3(imp * texture(material.texture_diffuse1, coord));
-    // FragColor = vec4(result, 1.0);
 
     // TEST CODE
+    // FragColor = vec4(result, 1.0);
+
     FragColor = vec4(imp * texture(material.texture_diffuse1, coord).rgb, 1.0);
+    float bright = dot(FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+    if (bright > 1.0)
+        BrightColor = vec4(FragColor.rgb, 1.0);
 }
 
 /*
-// for Parallax Occlusion reMapping
+// for Parallax Occlusion Mapping
 vec2 ParallaxMapping(vec2 coords, vec3 viewdir) {
     const float f = 0.01;
     viewdir = normalize(fs_in.iTBN * viewdir);

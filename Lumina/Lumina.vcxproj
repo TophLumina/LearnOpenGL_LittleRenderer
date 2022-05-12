@@ -423,6 +423,8 @@
     <None Include="Shaders\AphlaDiscard.frag" />
     <None Include="Shaders\Blinn_Phong.frag" />
     <None Include="Shaders\Blinn_Phong.vert" />
+    <None Include="Shaders\Bloom.frag" />
+    <None Include="Shaders\Bloom.vert" />
     <None Include="Shaders\BulidinVarsTest.frag" />
     <None Include="Shaders\CubeDepth.frag" />
     <None Include="Shaders\CubeDepth.geom" />
@@ -445,6 +447,7 @@
     <None Include="Shaders\lightComplex.vert" />
     <None Include="Shaders\LightCube.frag" />
     <None Include="Shaders\LightCube.vert" />
+    <None Include="Shaders\LightCubeBloom.frag" />
     <None Include="Shaders\materializedFag.shader" />
     <None Include="Shaders\materializedtexturedFrag.shader" />
     <None Include="Shaders\materializedtexturedVex.shader" />

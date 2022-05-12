@@ -512,5 +512,14 @@
     <None Include="Shaders\HDR.vert">
       <Filter>Shaders\AdvancedShaders</Filter>
     </None>
+    <None Include="Shaders\Bloom.frag">
+      <Filter>Shaders\AdvancedShaders</Filter>
+    </None>
+    <None Include="Shaders\Bloom.vert">
+      <Filter>Shaders\AdvancedShaders</Filter>
+    </None>
+    <None Include="Shaders\LightCubeBloom.frag">
+      <Filter>Shaders\AdvancedShaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
