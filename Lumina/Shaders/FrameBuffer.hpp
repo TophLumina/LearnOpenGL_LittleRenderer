@@ -48,25 +48,25 @@ public:
             glDeleteFramebuffers(1, &tmpfbo);
     };
 
-    // Served Texture for Post Effects and MultiSampling
-    std::vector<unsigned int> MultiSampledTexture2D()
+    std::vector<unsigned int> ServeTextures()
     {
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, ID);
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, tmpfbo);
-        glBlitFramebuffer(0, 0, ScreenWidth, ScreenHeight, 0, 0, ScreenWidth, ScreenHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        if(Samples > 1) {
+            glBindFramebuffer(GL_READ_FRAMEBUFFER, ID);
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, tmpfbo);
+            glBlitFramebuffer(0, 0, ScreenWidth, ScreenHeight, 0, 0, ScreenWidth, ScreenHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        return tmp_texture_attachments;
-    };
+            return tmp_texture_attachments;
+        }
+        else
+            return texture_attachments;
+    }
 
-    void Draw()
+    void Draw(unsigned int texture)
     {
         // Texture[0] is Used for Draw by Default
-        if(Samples > 1)
-            glBindTexture(GL_TEXTURE_2D, MultiSampledTexture2D().at(0));
-        else
-            glBindTexture(GL_TEXTURE_2D, texture_attachments.at(0));
-        
+        glBindTexture(GL_TEXTURE_2D, texture);
+
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 

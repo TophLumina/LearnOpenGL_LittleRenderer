@@ -408,7 +408,7 @@ int main()
         fbShader.setFloat("exposure", exposure);
 
         fbShader.Use();
-        usualfb.Draw();
+        usualfb.Draw(usualfb.ServeTextures().at(0));
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
