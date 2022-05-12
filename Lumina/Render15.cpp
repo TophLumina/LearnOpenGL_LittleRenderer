@@ -238,7 +238,6 @@ int main()
     glm::mat4 DirLight_view = glm::lookAt(DirLight_Pos, DirLight_Pos + lightdir, camup);
     glm::mat4 DirLight_Transform = DirLight_projection * DirLight_view;
 
-
     // Shadow Shader
     Shader DirLightShadowShader("./Shaders/SimpleDepth.vert", "./Shaders/SimpleDepth.frag");
     DirLightShadowShader.Use();

@@ -19,18 +19,21 @@ class FrameBuffer
 public:
     int ScreenWidth;
     int ScreenHeight;
-    int Samples; // Do not change the value of Samples after Init.
+    int Samples; // the value of Samples should not be Changed after Init.
     unsigned int VBO;
     unsigned int VAO;
-    unsigned int texture_attachment;
+    std::vector<unsigned int> texture_attachments;
     unsigned int renderbuffer;
     unsigned int ID;
+    bool MRT;
+    int texturelayers;
 
-    FrameBuffer(int width, int height, int samplesamount = 1)
+    FrameBuffer(int width, int height, int samplesamount = 1, int layers = 1)
     {
         ScreenWidth = width;
         ScreenHeight = height;
         Samples = samplesamount;
+        texturelayers = layers;
 
         build();
     };
@@ -46,22 +49,23 @@ public:
     };
 
     // Served Texture for Post Effects and MultiSampling
-    unsigned int MultiSampledTexture2D()
+    std::vector<unsigned int> MultiSampledTexture2D()
     {
         glBindFramebuffer(GL_READ_FRAMEBUFFER, ID);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, tmpfbo);
         glBlitFramebuffer(0, 0, ScreenWidth, ScreenHeight, 0, 0, ScreenWidth, ScreenHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        return tmp_texture_attachment;
+        return tmp_texture_attachments;
     };
 
     void Draw()
     {
+        // Texture[0] is Used for Draw by Default
         if(Samples > 1)
-            glBindTexture(GL_TEXTURE_2D, MultiSampledTexture2D());
+            glBindTexture(GL_TEXTURE_2D, MultiSampledTexture2D().at(0));
         else
-            glBindTexture(GL_TEXTURE_2D, texture_attachment);
+            glBindTexture(GL_TEXTURE_2D, texture_attachments.at(0));
         
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -73,7 +77,7 @@ public:
 private:
     // Used for MultiSampling and Post Effect
     unsigned int tmpfbo;
-    unsigned int tmp_texture_attachment;
+    std::vector<unsigned int> tmp_texture_attachments;
     unsigned int tmp_render_buffer;
 
     void build()
@@ -82,43 +86,64 @@ private:
         glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
         // Texture_Attachment Settings
-        glGenTextures(1, &texture_attachment);
         glGenRenderbuffers(1, &renderbuffer);
 
         if (Samples == 1)
         {
             // Texture Attachment
-            glBindTexture(GL_TEXTURE_2D, texture_attachment);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, ScreenWidth, ScreenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);    // GL_RGB16 for HDR Usage
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glBindTexture(GL_TEXTURE_2D, 0);
+            for (int i = 0; i < texturelayers; ++i) {
+                //MRT
+                unsigned int texture_attachment;
+                glGenTextures(1, &texture_attachment);
+
+                glBindTexture(GL_TEXTURE_2D, texture_attachment);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, ScreenWidth, ScreenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);    // GL_RGB16 for HDR Usage
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                glBindTexture(GL_TEXTURE_2D, 0);
+
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, texture_attachment, 0);
+
+                texture_attachments.push_back(texture_attachment);
+            }
 
             // RenderBuffer Attachment
             glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
             glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, ScreenWidth, ScreenHeight);
             glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-            // Bindings
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_attachment, 0);
+            // Binding
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderbuffer);
         }
         else
         {
             // TextureAttachment
-            glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, texture_attachment);
-            glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, Samples, GL_RGB16F, ScreenWidth, ScreenHeight, GL_TRUE);
-            glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+            for (int i = 0; i < texturelayers; ++i) {
+                // MRT
+                unsigned int texture_attachment;
+                glGenTextures(1, &texture_attachment);
+
+                glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, texture_attachment);
+                glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, Samples, GL_RGB16F, ScreenWidth, ScreenHeight, GL_TRUE);
+                glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D_MULTISAMPLE, texture_attachment, 0);
+
+                texture_attachments.push_back(texture_attachment);
+            }
 
             // RenderBuffer Attachment
             glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
             glRenderbufferStorageMultisample(GL_RENDERBUFFER, Samples, GL_DEPTH24_STENCIL8, ScreenWidth, ScreenHeight);
             glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-            // Bindings
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, texture_attachment, 0);
+            // Binding
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderbuffer);
 
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -128,20 +153,30 @@ private:
             glGenFramebuffers(1, &tmpfbo);
             glBindFramebuffer(GL_FRAMEBUFFER, tmpfbo);
 
-            glGenTextures(1, &tmp_texture_attachment);
             glGenRenderbuffers(1, &tmp_render_buffer);
 
-            glBindTexture(GL_TEXTURE_2D, tmp_texture_attachment);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, ScreenWidth, ScreenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glBindTexture(GL_TEXTURE_2D, 0);
+            for (int i = 0; i < texturelayers; ++i) {
+                // MRT
+                unsigned int tmp_texture_attachment;
+                glGenTextures(1, &tmp_texture_attachment);
+
+                glBindTexture(GL_TEXTURE_2D, tmp_texture_attachment);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, ScreenWidth, ScreenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                glBindTexture(GL_TEXTURE_2D, 0);
+
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, tmp_texture_attachment, 0);
+
+                tmp_texture_attachments.push_back(tmp_texture_attachment);
+            }
 
             glBindRenderbuffer(GL_RENDERBUFFER, tmp_render_buffer);
             glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, ScreenWidth, ScreenHeight);
             glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tmp_texture_attachment, 0);
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, tmp_render_buffer);
 
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -179,5 +214,3 @@ private:
         // fin
     }
 };
-
-// Need further debug
