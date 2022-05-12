@@ -7,11 +7,10 @@
 
 typedef struct Attenuation
 {
-    Attenuation() : constant(0), linear(0), quadratic(0){};
-    Attenuation(float a, float b, float c) : constant(a), linear(b), quadratic(c){};
+    Attenuation() : constant(0), linear(0){};
+    Attenuation(float a, float b) : constant(a), linear(b){};
     float constant;
     float linear;
-    float quadratic;
 } Attenuation;
 
 typedef struct LightAttrib

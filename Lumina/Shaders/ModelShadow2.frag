@@ -82,6 +82,7 @@ bool IsBright(vec3 lightdir, vec3 norm);
 float DepthAdjustment(vec3 lightdir);
 float ShadowFactor(Dirlight light, vec4 light_frag_pos);
 float ShadowFactor(PointLight light);
+float Brightness(PointLight light, vec3 frag2light);
 
 uniform bool GammaCorrection;
 
@@ -99,7 +100,7 @@ void main() {
 
     // float imp = IsBright(-dirlights[0].direction, world_norm) ? ShadowFactor(dirlights[0], fs_in.dirlight_fragPos[0]) : 0.0;
     float imp = IsBright(pointlights[0].position - fs_in.fragpos, world_norm) ? ShadowFactor(pointlights[0]) : 0.0;
-    imp = imp * 0.6 + 0.4;
+    imp = imp * Brightness(pointlights[0], (fs_in.fragpos - pointlights[0].position)) * 0.6 + 0.4;
 
     result += vec3(imp * texture(material.texture_diffuse1, coord));
     // FragColor = vec4(result, 1.0);
@@ -221,4 +222,8 @@ float ShadowFactor(PointLight light) {
         return 0.0;
     
     return 1.0 - shadow;
+}
+
+float Brightness(PointLight light, vec3 frag2light) {
+    return light.attrib.diffuse.r / (1.0 + light.attenuation.constant + light.attenuation.linear * length(frag2light));
 }

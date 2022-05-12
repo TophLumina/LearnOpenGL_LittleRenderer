@@ -153,7 +153,7 @@ int main()
 
     // Test Shader
     // Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/offscreen_ForTesting.frag");
-    Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/OffScreen.frag");
+    Shader fbShader("./Shaders/HDR.vert", "./Shaders/HDR.frag");
 
     // Models and Shaders
     Model Haku("./Model/Haku/TDA Lacy Haku.pmx");
@@ -196,7 +196,8 @@ int main()
     // Lighting Manager
     LightManager LM;
 
-    glm::vec3 lightcol(1.0f, 1.0f, 1.0f);
+    // HDR
+    glm::vec3 lightcol(100.0f, 100.0f, 100.0f);
     glm::vec3 lightdir(0.0f, -1.0f, -1.0f);
     LightAttrib attrib(lightcol, lightcol, lightcol);
 
@@ -286,7 +287,7 @@ int main()
     float aspect_ratio = 1.0f;
     float near = 1.0f;
     float far = 120.0f;
-    glm::vec3 PointLight_Pos(0.0f, 4.0f, 4.0f);
+    glm::vec3 PointLight_Pos(0.0f, 16.0f, 2.0f);
     glm::mat4 PointLight_projection = glm::perspective(glm::radians(90.0f), aspect_ratio, near, far);
     std::vector<glm::mat4> PointLight_Transform;
     PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(1.0f, 0.0f, 0.0), glm::vec3(0.0f, -1.0f, 0.0f)));
@@ -308,7 +309,7 @@ int main()
     // Light Cube Shader Config
     glm::mat4 lightcubemodel(1.0f);
     lightcubemodel = glm::translate(lightcubemodel, PointLight_Pos);
-    lightcubemodel = glm::scale(lightcubemodel, glm::vec3(0.4f, 0.4f, 0.4f));
+    lightcubemodel = glm::scale(lightcubemodel, glm::vec3(0.2f, 0.2f, 0.2f));
     LightCubeShader.Use();
     LightCubeShader.setMat4("model", lightcubemodel);
     LightCubeShader.setVec3("light_col", lightcol);
@@ -323,7 +324,7 @@ int main()
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    LM.pointlights.push_back(PointLight(attrib, PointLight_Pos, Attenuation(), CubeShadowMap, far));
+    LM.pointlights.push_back(PointLight(attrib, PointLight_Pos, Attenuation(0.7, 1.2), CubeShadowMap, far));
     LM.ShaderConfig(&HakuShader);
 
     // Viewport Settings
