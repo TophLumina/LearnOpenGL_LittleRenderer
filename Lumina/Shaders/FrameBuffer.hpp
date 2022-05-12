@@ -56,6 +56,20 @@ public:
         return tmp_texture_attachment;
     };
 
+    void Draw()
+    {
+        if(Samples > 1)
+            glBindTexture(GL_TEXTURE_2D, MultiSampledTexture2D());
+        else
+            glBindTexture(GL_TEXTURE_2D, texture_attachment);
+        
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindVertexArray(0);
+    }
+
 private:
     // Used for MultiSampling and Post Effect
     unsigned int tmpfbo;

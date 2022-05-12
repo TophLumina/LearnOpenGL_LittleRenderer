@@ -409,12 +409,7 @@ int main()
         fbShader.setFloat("exposure", exposure);
 
         fbShader.Use();
-
-        // Test Texture
-        glBindTexture(GL_TEXTURE_2D, usualfb.MultiSampledTexture2D());
-        // glBindTexture(GL_TEXTURE_2D, DirLightShadowMap);
-        glBindVertexArray(usualfb.VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        usualfb.Draw();
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
