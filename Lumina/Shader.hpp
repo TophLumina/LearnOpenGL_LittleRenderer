@@ -217,4 +217,9 @@ public:
 	void setMat4(std::string name, glm::mat4 value) const {
 		glUniformMatrix4fv(glGetUniformLocation(this->ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
 	}
+
+	void setUniformBlock(std::string block_name, unsigned int block_index) {
+		unsigned int shader_block_index = glGetUniformBlockIndex(this->ID, block_name.c_str());
+		glUniformBlockBinding(this->ID, shader_block_index, block_index);
+	}
 };
