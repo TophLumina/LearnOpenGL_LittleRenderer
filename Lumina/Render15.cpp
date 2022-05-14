@@ -10,6 +10,9 @@
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
 
+// Debug Flag
+// #define _FRAMEBUFFER_DEBUG
+
 #include "lazy.hpp"
 #include "Camera.hpp"
 #include "Shader.hpp"
@@ -26,7 +29,8 @@ Camera camera(campos, camup);
 bool enter = true;
 
 // MultiSampling
-int multisample = 4;
+// Disable MultiSampling for Bloom
+int multisample = 1;
 
 // Screen
 int ScreenWidth = 1920;
@@ -149,11 +153,7 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // FrameBuffer
-    FrameBuffer usualfb(ScreenWidth, ScreenHeight, 8, 2);
-
-    // Debug
-    std::cout << usualfb.ServeTextures().at(0) << std::endl;
-    std::cout << usualfb.ServeTextures().at(1) << std::endl;
+    FrameBuffer usualfb(ScreenWidth, ScreenHeight, multisample, 2);
 
     // Test Shader
     // Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/offscreen_ForTesting.frag");
@@ -201,7 +201,7 @@ int main()
     LightManager LM;
 
     // HDR
-    glm::vec3 lightcol(20.0f, 20.0f, 20.0f);
+    glm::vec3 lightcol(10.0f, 10.0f, 10.0f);
     glm::vec3 lightdir(0.0f, -1.0f, -1.0f);
     LightAttrib attrib(lightcol, lightcol, lightcol);
 

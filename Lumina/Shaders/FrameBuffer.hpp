@@ -25,7 +25,6 @@ public:
     std::vector<unsigned int> texture_attachments;
     unsigned int renderbuffer;
     unsigned int ID;
-    bool MRT;
     int texturelayers;
 
     FrameBuffer(int width, int height, int samplesamount = 1, int layers = 1)
@@ -36,7 +35,26 @@ public:
         texturelayers = layers;
 
         build();
-    };
+
+#ifdef _FRAMEBUFFER_DEBUG
+        std::cout << std::endl;
+        std::cout << "MANUAL_DEBUG::FRAMEBUFFER" << std::endl;
+        std::cout << "MANUAL_DEBUG::FRAMEBUFFER::DATA" << std::endl;
+        std::cout << "ID: " << ID << std::endl;
+        std::cout << "Samples: " << Samples << std::endl;
+        std::cout << "Resolution: " << ScreenWidth << " * " << ScreenHeight << std::endl;
+        std::cout << "TextureAttachments: " << texturelayers << std::endl;
+        std::cout << "\tTextures: " << std::endl;
+        for (int i = 0; i < texture_attachments.size(); ++i)
+            std::cout << "\tSlot: " << i << " || " << texture_attachments.at(i) << std::endl;
+        if(Samples > 1)
+        {
+            std::cout << "Extra Textures for MultiSampling:" << std::endl;
+            for (int i = 0; i < tmp_texture_attachments.size(); ++i)
+                std::cout << "\tSlot: " << i << " || " << tmp_texture_attachments.at(i) << std::endl;
+        }
+#endif
+    }
 
     void Delete()
     {
@@ -46,14 +64,13 @@ public:
 
         if (Samples > 1)
             glDeleteFramebuffers(1, &tmpfbo);
-    };
+    }
 
     std::vector<unsigned int> ServeTextures()
     {
-        if(Samples > 1) {
-            glBindFramebuffer(GL_READ_FRAMEBUFFER, ID);
-            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, tmpfbo);
-            glBlitFramebuffer(0, 0, ScreenWidth, ScreenHeight, 0, 0, ScreenWidth, ScreenHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+        if(Samples > 1)
+        {
+            glBlitNamedFramebuffer(ID, tmpfbo, 0, 0, ScreenWidth, ScreenHeight, 0, 0, ScreenWidth, ScreenHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
             return tmp_texture_attachments;
@@ -75,7 +92,6 @@ public:
 
     void Draw(unsigned int texture)
     {
-        // Texture[0] is Used for Draw by Default
         glBindTexture(GL_TEXTURE_2D, texture);
 
         glBindVertexArray(VAO);

@@ -4,7 +4,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#ifdef DEBUG_TEST
+#ifdef _MODEL_DEBUG
 #include <iostream>
 #endif
 
@@ -151,14 +151,16 @@ private:
             textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
         }
 
-#ifdef DEBUG_TEST
-        std::cout << "DEBUG_TEST::MESH_DATA" << std::endl;
-        std::cout << "DEBUG_TEST::MESH_DATA::VERTEX" << std::endl;
+#ifdef  _MODEL_DEBUG
+        std::cout << std::endl;
+        std::cout << "MANUAL_DEBUG::MESH_DATA" << std::endl;
+        std::cout << "MANUAL_DEBUG::MESH_DATA::VERTEX" << std::endl;
         for (Vertex avertex : vertices)
-            std::cout << '(' << avertex.Position.x << ', ' << avertex.Position.y << ', ' << avertex.Position.z << ')' << std::endl;
+            std::cout << "\tPosition::" << '(' << avertex.Position.x << ', ' << avertex.Position.y << ', ' << avertex.Position.z << ')' << std::endl;
         std::cout << vertices.size() << " Verteices Loaded." << std::endl;
         std::cout << indices.size() << " Indices Loaded." << std::endl;
         std::cout << textures.size() << " Textures Loaded." << std::endl;
+        std::cout << std::endl;
 #endif
 
         return Mesh(vertices, indices, textures);
