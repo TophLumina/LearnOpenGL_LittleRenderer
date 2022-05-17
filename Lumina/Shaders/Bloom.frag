@@ -114,6 +114,8 @@ void main() {
     float bright = dot(FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
     if (bright > 1.0)
         BrightColor = vec4(FragColor.rgb, 1.0);
+    else
+        BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
 }
 
 /*
@@ -214,7 +216,8 @@ float ShadowFactor(PointLight light) {
         vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
     );
 
-    float bias = 0.0001;
+    // Adaptive Bias
+    float bias = (1.0 + length(fs_in.viewPos - fs_in.fragpos)) / 25.0;
 
     float shadow = 0.0;
 

@@ -82,13 +82,12 @@ public:
 
     void RenderConfig()
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, ID);
         std::vector<unsigned int> attachments;
         for (unsigned int i = 0; i < texturelayers; ++i) {
             attachments.push_back(GL_COLOR_ATTACHMENT0 + i);
         }
 
-        glDrawBuffers(texturelayers, attachments.data());
+        glNamedFramebufferDrawBuffers(ID, texturelayers, attachments.data());
     }
 
     void Draw(unsigned int texture)

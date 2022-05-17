@@ -11,7 +11,6 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 // Debug Flag
-#define _FRAMEBUFFER_DEBUG
 
 #include "lazy.hpp"
 #include "Camera.hpp"
@@ -19,6 +18,7 @@
 #include "./Shaders/Model.hpp"
 #include "./Shaders/FrameBuffer.hpp"
 #include "./Lights/LightingManager.hpp"
+#include "./Shaders/BloomTools.hpp"
 
 glm::vec3 campos(0.0, 0.0, 0.0);
 glm::vec3 camup(0.0, 1.0, 0.0);
@@ -141,7 +141,6 @@ int main()
     glfwSetScrollCallback(window, scroll_callback);
 
     // GL_ENABLES
-    glEnable(GL_CULL_FACE);
 
     // Enable by default
     glEnable(GL_DEPTH_TEST);
@@ -333,12 +332,8 @@ int main()
 
     // Bloom
     Shader GaussainBlurShader("./Shaders/GaussainBlur.vert", "./Shaders/GaussainBlur.frag");
-
-    FrameBuffer ping(ScreenWidth, ScreenHeight, multisample, 1);
-    FrameBuffer pong(ScreenWidth, ScreenHeight, multisample, 1);
-
-    int loop = 1;
-    bool first_iteration = true;
+    Shader BloomMixShader("./Shaders/BloomMix.vert", "./Shaders/BloomMix.frag");
+    BloomTool bt(&Orifb, &GaussainBlurShader, &BloomMixShader);
 
     // Vars used for imgui
     bool grayscale = false;
@@ -347,6 +342,9 @@ int main()
     bool gammacorrection = true;
 
     float exposure = 1.0;
+
+    bool bloom = false;
+    int bloomloop = 15;
 
     while(!glfwWindowShouldClose(window))
     {
@@ -374,6 +372,11 @@ int main()
             ImGui::SliderInt("Kernel Selector", &kernel, 0, 3);
             ImGui::NewLine();
             ImGui::SliderFloat("Exposure", &exposure, 0.0f, 100.0f, "%.2f");
+
+            ImGui::NewLine();
+            ImGui::Checkbox("Bloom", &bloom);
+            ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Blur by GaussainBlur");
+            ImGui::SliderInt("Bloom Blur Factor", &bloomloop, 1, 25);
 
             ImGui::End();
         }
@@ -408,6 +411,10 @@ int main()
         LightCubeShader.Use();
         Cube.Draw(&LightCubeShader);
 
+        // Bloom
+        if(bloom)
+            bt.ApplyBloom(bloomloop);
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glDisable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -421,13 +428,9 @@ int main()
         fbShader.setBool("GammaCorrection", gammacorrection);
         fbShader.setFloat("exposure", exposure);
 
-        // fbShader.Use();
+        fbShader.Use();
+        Orifb.Draw(bloom ? bt.tex_finished() : Orifb.ServeTextures().at(0));
         // Orifb.Draw(Orifb.ServeTextures().at(0));
-
-        // Debug
-        GaussainBlurShader.Use();
-        GaussainBlurShader.setBool("horizontal", true);
-        Orifb.Draw(Orifb.ServeTextures().at(1));
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);

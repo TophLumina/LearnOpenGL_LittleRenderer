@@ -304,6 +304,9 @@
     <ClInclude Include="Lights\SpotLight.hpp">
       <Filter>Shaders\LightManager</Filter>
     </ClInclude>
+    <ClInclude Include="Shaders\BloomTools.hpp">
+      <Filter>Shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Lumina.rc">

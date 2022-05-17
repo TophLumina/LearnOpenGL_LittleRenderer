@@ -401,6 +401,7 @@
     <ClInclude Include="Rectangle.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Screen.hpp" />
+    <ClInclude Include="Shaders\BloomTools.hpp" />
     <ClInclude Include="Shaders\ChainShader.hpp" />
     <ClInclude Include="Shaders\FrameBuffer.hpp" />
     <ClInclude Include="Shaders\Mesh.hpp" />

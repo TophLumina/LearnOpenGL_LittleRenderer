@@ -25,7 +25,7 @@ vec4 grayscale(vec4 color) {
 }
 
 // Kernels
-const float offset = 0.0025;
+float offset = 2.0 / (textureSize(ScreenTexture, 0).x + textureSize(ScreenTexture, 0).y);
 
 // Gamma Correction
 const float Gamma = 2.2;
@@ -108,7 +108,7 @@ void main() {
     if(Grayscale)
         result = grayscale(result);
 
-    //Gamma
+    // Gamma
     result.rgb = GammaCorrection ? pow(result.rgb, vec3(1.0 / Gamma)) : result.rgb;
     
     FragColor = result;
