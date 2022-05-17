@@ -104,7 +104,7 @@ int main()
     // This Func Should be Called before the Window being Created
     glfwWindowHint(GLFW_SAMPLES, multisample);
 
-    GLFWwindow *window = glfwCreateWindow(ScreenWidth, ScreenHeight, "Shadow Mapping", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(ScreenWidth, ScreenHeight, "Bloom Blur", NULL, NULL);
     if(window == NULL)
     {
         std::cout << "Failed to Create GLFW window" << std::endl;
