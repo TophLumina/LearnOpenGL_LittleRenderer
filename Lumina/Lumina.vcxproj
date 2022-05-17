@@ -437,6 +437,8 @@
     <None Include="Shaders\Explode.vert" />
     <None Include="Shaders\ExternalModel.frag" />
     <None Include="Shaders\ExternalModel.vert" />
+    <None Include="Shaders\GaussainBlur.frag" />
+    <None Include="Shaders\GaussainBlur.vert" />
     <None Include="Shaders\HDR.frag" />
     <None Include="Shaders\HDR.vert" />
     <None Include="Shaders\Instance.frag" />

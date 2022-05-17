@@ -1,10 +1,11 @@
 #pragma once
 
+#include <vector>
 #include "./glad/glad.h"
 #include "./GLFW/glfw3.h"
 #include <iostream>
 
-float Vertces[] = {
+static float Vertces[] = {
     // pos       //texcoords
     -1.0f, 1.0f, 0.0f, 1.0f,
     -1.0f, -1.0f, 0.0f, 0.0f,

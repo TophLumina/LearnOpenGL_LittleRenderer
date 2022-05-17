@@ -521,5 +521,11 @@
     <None Include="Shaders\LightCubeBloom.frag">
       <Filter>Shaders\AdvancedShaders</Filter>
     </None>
+    <None Include="Shaders\GaussainBlur.frag">
+      <Filter>Shaders\AdvancedShaders</Filter>
+    </None>
+    <None Include="Shaders\GaussainBlur.vert">
+      <Filter>Shaders\AdvancedShaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

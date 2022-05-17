@@ -11,14 +11,13 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 // Debug Flag
-// #define _FRAMEBUFFER_DEBUG
+#define _FRAMEBUFFER_DEBUG
 
 #include "lazy.hpp"
 #include "Camera.hpp"
 #include "Shader.hpp"
 #include "./Shaders/Model.hpp"
 #include "./Shaders/FrameBuffer.hpp"
-
 #include "./Lights/LightingManager.hpp"
 
 glm::vec3 campos(0.0, 0.0, 0.0);
@@ -142,10 +141,9 @@ int main()
     glfwSetScrollCallback(window, scroll_callback);
 
     // GL_ENABLES
+    glEnable(GL_CULL_FACE);
 
     // Enable by default
-    glEnable(GL_MULTISAMPLE);
-
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
@@ -153,10 +151,10 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // FrameBuffer
-    FrameBuffer usualfb(ScreenWidth, ScreenHeight, multisample, 2);
+    FrameBuffer Orifb(ScreenWidth, ScreenHeight, multisample, 2);
+    // Layer 0 = all color
+    // Layer 1 = bright color
 
-    // Test Shader
-    // Shader fbShader("./Shaders/OffScreen.vert", "./Shaders/offscreen_ForTesting.frag");
     Shader fbShader("./Shaders/HDR.vert", "./Shaders/HDR.frag");
 
     // Models and Shaders
@@ -333,6 +331,15 @@ int main()
     // Viewport Settings
     glViewport(0, 0, ScreenWidth, ScreenHeight);
 
+    // Bloom
+    Shader GaussainBlurShader("./Shaders/GaussainBlur.vert", "./Shaders/GaussainBlur.frag");
+
+    FrameBuffer ping(ScreenWidth, ScreenHeight, multisample, 1);
+    FrameBuffer pong(ScreenWidth, ScreenHeight, multisample, 1);
+
+    int loop = 1;
+    bool first_iteration = true;
+
     // Vars used for imgui
     bool grayscale = false;
     bool inversion = false;
@@ -385,13 +392,13 @@ int main()
         glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(camera.Position));
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, usualfb.ID);
+        glBindFramebuffer(GL_FRAMEBUFFER, Orifb.ID);
         glEnable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.0, 0.0, 0.0, 1.0);
 
-        //Render Config
-        usualfb.RenderConfig();
+        // Render Config
+        Orifb.RenderConfig();
 
         // Render Code
         HakuShader.Use();
@@ -414,13 +421,18 @@ int main()
         fbShader.setBool("GammaCorrection", gammacorrection);
         fbShader.setFloat("exposure", exposure);
 
-        fbShader.Use();
-        usualfb.Draw(usualfb.ServeTextures().at(1));
+        // fbShader.Use();
+        // Orifb.Draw(Orifb.ServeTextures().at(0));
+
+        // Debug
+        GaussainBlurShader.Use();
+        GaussainBlurShader.setBool("horizontal", true);
+        Orifb.Draw(Orifb.ServeTextures().at(1));
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
     }
-    usualfb.Delete();
+    Orifb.Delete();
 
     ImGui_ImplGlfw_Shutdown();
     ImGui_ImplOpenGL3_Shutdown();
