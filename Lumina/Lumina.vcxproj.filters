@@ -530,5 +530,11 @@
     <None Include="Shaders\GaussainBlur.vert">
       <Filter>Shaders\AdvancedShaders</Filter>
     </None>
+    <None Include="Shaders\BloomMix.frag">
+      <Filter>Shaders\AdvancedShaders</Filter>
+    </None>
+    <None Include="Shaders\BloomMix.vert">
+      <Filter>Shaders\AdvancedShaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
