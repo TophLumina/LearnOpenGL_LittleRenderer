@@ -28,14 +28,22 @@ public:
     unsigned int ID;
     int texturelayers;
 
-    FrameBuffer(int width, int height, int samplesamount = 1, int layers = 1)
+    // G_Buffer Settings
+    bool Customation;
+
+    FrameBuffer(int width, int height, int samplesamount = 1, int layers = 1, bool customation = false)
     {
         ScreenWidth = width;
         ScreenHeight = height;
         Samples = samplesamount;
         texturelayers = layers;
+        Customation = customation;
 
-        build();
+        // Framebuffer Instance will not be Filled when Customation is Activated <used for G_Buffer>
+        if(!Customation) {
+            build();
+            Check();
+        }
 
 #ifdef _FRAMEBUFFER_DEBUG
         std::cout << std::endl;
@@ -80,7 +88,7 @@ public:
             return texture_attachments;
     }
 
-    void RenderConfig()
+    void MRTRenderConfig()
     {
         std::vector<unsigned int> attachments;
         for (unsigned int i = 0; i < texturelayers; ++i) {
@@ -99,6 +107,24 @@ public:
 
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0);
+    }
+
+    void Check()
+    {
+        // Check the Main Framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, ID);
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            std::cout << "ERROR::FRAMEBUFFER::MAIN:: FrameBuffer is NOT Compelete." << std::endl;
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        // Check the tmp FrameBuffer
+        if (Samples > 1)
+        {
+            glBindFramebuffer(GL_FRAMEBUFFER, tmpfbo);
+            if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+                std::cout << "ERROR::FRAMEBUFFER::MultiSampling:: FrameBuffer is NOT Compelete." << std::endl;
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        }
     }
 
 private:
@@ -209,20 +235,20 @@ private:
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
         }
 
-        // Check the Main Framebuffer
-        glBindFramebuffer(GL_FRAMEBUFFER, ID);
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            std::cout << "ERROR::FRAMEBUFFER::MAIN:: FrameBuffer is NOT Compelete." << std::endl;
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        // // Check the Main Framebuffer
+        // glBindFramebuffer(GL_FRAMEBUFFER, ID);
+        // if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        //     std::cout << "ERROR::FRAMEBUFFER::MAIN:: FrameBuffer is NOT Compelete." << std::endl;
+        // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        // Check the tmp FrameBuffer
-        if (Samples > 1)
-        {
-            glBindFramebuffer(GL_FRAMEBUFFER, tmpfbo);
-            if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-                std::cout << "ERROR::FRAMEBUFFER::MultiSampling:: FrameBuffer is NOT Compelete." << std::endl;
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        }
+        // // Check the tmp FrameBuffer
+        // if (Samples > 1)
+        // {
+        //     glBindFramebuffer(GL_FRAMEBUFFER, tmpfbo);
+        //     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        //         std::cout << "ERROR::FRAMEBUFFER::MultiSampling:: FrameBuffer is NOT Compelete." << std::endl;
+        //     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        // }
 
         // Load VAO and VBO for Screen
         glGenVertexArrays(1, &VAO);
