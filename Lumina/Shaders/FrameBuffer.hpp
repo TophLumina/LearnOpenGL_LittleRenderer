@@ -29,18 +29,20 @@ public:
     int texturelayers;
 
     // G_Buffer Settings
-    bool Customation;
+    bool noInit;
 
-    FrameBuffer(int width, int height, int samplesamount = 1, int layers = 1, bool customation = false)
+    FrameBuffer(int width, int height, int samplesamount = 1, int layers = 1, bool no_init = false)
     {
         ScreenWidth = width;
         ScreenHeight = height;
         Samples = samplesamount;
         texturelayers = layers;
-        Customation = customation;
+        noInit = no_init;
 
-        // Framebuffer Instance will not be Filled when Customation is Activated <used for G_Buffer>
-        if(!Customation) {
+        vao_vbo_config();
+
+        // Framebuffer Instance will not be Filled when noInit is Activated <used for G_Buffer>
+        if(!noInit) {
             build();
             Check();
         }
@@ -234,23 +236,11 @@ private:
 
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
         }
+    }
 
-        // // Check the Main Framebuffer
-        // glBindFramebuffer(GL_FRAMEBUFFER, ID);
-        // if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        //     std::cout << "ERROR::FRAMEBUFFER::MAIN:: FrameBuffer is NOT Compelete." << std::endl;
-        // glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-        // // Check the tmp FrameBuffer
-        // if (Samples > 1)
-        // {
-        //     glBindFramebuffer(GL_FRAMEBUFFER, tmpfbo);
-        //     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        //         std::cout << "ERROR::FRAMEBUFFER::MultiSampling:: FrameBuffer is NOT Compelete." << std::endl;
-        //     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        // }
-
-        // Load VAO and VBO for Screen
+    void vao_vbo_config()
+    {
+                // Load VAO and VBO for Screen
         glGenVertexArrays(1, &VAO);
         glBindVertexArray(VAO);
 
