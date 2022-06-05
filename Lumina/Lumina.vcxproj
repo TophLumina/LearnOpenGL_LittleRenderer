@@ -252,7 +252,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Render15.cpp" />
+    <ClCompile Include="Render15.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render16.cpp" />
     <ClCompile Include="Render2.1.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -404,6 +408,7 @@
     <ClInclude Include="Shaders\BloomTools.hpp" />
     <ClInclude Include="Shaders\ChainShader.hpp" />
     <ClInclude Include="Shaders\FrameBuffer.hpp" />
+    <ClInclude Include="Shaders\GBuffer.hpp" />
     <ClInclude Include="Shaders\Mesh.hpp" />
     <ClInclude Include="Shaders\Model.hpp" />
     <ClInclude Include="Shaders\SimpleShader1.1.hpp" />
@@ -442,6 +447,8 @@
     <None Include="Shaders\ExternalModel.vert" />
     <None Include="Shaders\GaussainBlur.frag" />
     <None Include="Shaders\GaussainBlur.vert" />
+    <None Include="Shaders\GeometryPass.frag" />
+    <None Include="Shaders\GeometryPass.vert" />
     <None Include="Shaders\HDR.frag" />
     <None Include="Shaders\HDR.vert" />
     <None Include="Shaders\Instance.frag" />

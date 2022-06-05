@@ -72,44 +72,44 @@ vec3 Reinhard(vec3 color);
 vec3 ExposureFactor(vec3 color, float exposure);
 
 void main() {
-    // vec4 result = texture(ScreenTexture, texCoords);
-    vec3 color = vec3(0.0, 0.0, 0.0);
-    float kernel[9];
+    vec4 result = vec4(texture(ScreenTexture, texCoords).rgb, 1.0);
+    // vec3 color = vec3(0.0, 0.0, 0.0);
+    // float kernel[9];
 
-    switch(KernelIndex) {
-        case 0:
-            kernel = noeffectkernel;
-        break;
+    // switch(KernelIndex) {
+    //     case 0:
+    //         kernel = noeffectkernel;
+    //     break;
 
-        case 1:
-            kernel = sharpenkernel;
-        break;
+    //     case 1:
+    //         kernel = sharpenkernel;
+    //     break;
 
-        case 2:
-            kernel = blurkernel;
-        break;
+    //     case 2:
+    //         kernel = blurkernel;
+    //     break;
 
-        case 3:
-            kernel = edgedetectionkernel;
-        break;
+    //     case 3:
+    //         kernel = edgedetectionkernel;
+    //     break;
 
-        default:
-            kernel = noeffectkernel;
-    }
+    //     default:
+    //         kernel = noeffectkernel;
+    // }
 
-    for(int i = 0; i < 9; ++i)
-        color += kernel[i] * vec3(texture(ScreenTexture, fs_in.texCoords + offsets[i]));
+    // for(int i = 0; i < 9; ++i)
+    //     color += kernel[i] * vec3(texture(ScreenTexture, fs_in.texCoords + offsets[i]));
 
-    vec4 result = vec4(ExposureFactor(color, exposure), 1.0);
+    // vec4 result = vec4(ExposureFactor(color, exposure), 1.0);
 
-    if(Inversion)
-        result = inversion(result);
+    // if(Inversion)
+    //     result = inversion(result);
 
-    if(Grayscale)
-        result = grayscale(result);
+    // if(Grayscale)
+    //     result = grayscale(result);
 
-    // Gamma
-    result.rgb = GammaCorrection ? pow(result.rgb, vec3(1.0 / Gamma)) : result.rgb;
+    // // Gamma
+    // result.rgb = GammaCorrection ? pow(result.rgb, vec3(1.0 / Gamma)) : result.rgb;
     
     FragColor = result;
 }

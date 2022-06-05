@@ -197,6 +197,9 @@
     <ClCompile Include="Render15.cpp">
       <Filter>Programs\Deactive</Filter>
     </ClCompile>
+    <ClCompile Include="Render16.cpp">
+      <Filter>Programs\Deactive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rectangle.hpp">
@@ -306,6 +309,9 @@
     </ClInclude>
     <ClInclude Include="Shaders\BloomTools.hpp">
       <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\GBuffer.hpp">
+      <Filter>Lazy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -534,6 +540,12 @@
       <Filter>Shaders\AdvancedShaders</Filter>
     </None>
     <None Include="Shaders\BloomMix.vert">
+      <Filter>Shaders\AdvancedShaders</Filter>
+    </None>
+    <None Include="Shaders\GeometryPass.frag">
+      <Filter>Shaders\AdvancedShaders</Filter>
+    </None>
+    <None Include="Shaders\GeometryPass.vert">
       <Filter>Shaders\AdvancedShaders</Filter>
     </None>
   </ItemGroup>

@@ -48,21 +48,23 @@ public:
         }
 
 #ifdef _FRAMEBUFFER_DEBUG
-        std::cout << std::endl;
-        std::cout << "MANUAL_DEBUG::FRAMEBUFFER" << std::endl;
-        std::cout << "MANUAL_DEBUG::FRAMEBUFFER::DATA" << std::endl;
-        std::cout << "ID: " << ID << std::endl;
-        std::cout << "Samples: " << Samples << std::endl;
-        std::cout << "Resolution: " << ScreenWidth << " * " << ScreenHeight << std::endl;
-        std::cout << "TextureAttachments: " << texturelayers << std::endl;
-        std::cout << "\tTextures: " << std::endl;
-        for (int i = 0; i < texture_attachments.size(); ++i)
-            std::cout << "\tSlot: " << i << " || " << texture_attachments.at(i) << std::endl;
-        if(Samples > 1)
-        {
-            std::cout << "Extra Textures for MultiSampling:" << std::endl;
-            for (int i = 0; i < tmp_texture_attachments.size(); ++i)
-                std::cout << "\tSlot: " << i << " || " << tmp_texture_attachments.at(i) << std::endl;
+        if (!no_init) {
+            std::cout << std::endl;
+            std::cout << "MANUAL_DEBUG::FRAMEBUFFER" << std::endl;
+            std::cout << "MANUAL_DEBUG::FRAMEBUFFER::DATA" << std::endl;
+            std::cout << "ID: " << ID << std::endl;
+            std::cout << "Samples: " << Samples << std::endl;
+            std::cout << "Resolution: " << ScreenWidth << " * " << ScreenHeight << std::endl;
+            std::cout << "TextureAttachments: " << texturelayers << std::endl;
+            std::cout << "\tTextures: " << std::endl;
+            for (int i = 0; i < texture_attachments.size(); ++i)
+                std::cout << "\tSlot: " << i << " || " << texture_attachments.at(i) << std::endl;
+            if(Samples > 1)
+            {
+                std::cout << "Extra Textures for MultiSampling:" << std::endl;
+                for (int i = 0; i < tmp_texture_attachments.size(); ++i)
+                    std::cout << "\tSlot: " << i << " || " << tmp_texture_attachments.at(i) << std::endl;
+            }
         }
 #endif
     }

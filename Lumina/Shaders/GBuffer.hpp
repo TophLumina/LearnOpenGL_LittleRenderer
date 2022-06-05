@@ -81,5 +81,17 @@ public:
 
         // Status Check
         GB.Check();
+
+#ifdef _FRAMEBUFFER_DEBUG
+        std::cout << std::endl;
+        std::cout << "MANUAL_DEBUG::G_BUFFER" << std::endl;
+        std::cout << "MANUAL_DEBUG::G_BUFFER::DATA" << std::endl;
+        std::cout << "ID: " << GB.ID << std::endl;
+        std::cout << "Resolution: " << SCRWidth << " * " << SCRHeight << std::endl;
+        std::cout << "TextureAttachments: " << GB.texturelayers << std::endl;
+        std::cout << "\tTextures: " << std::endl;
+        for (int i = 0; i < GB.texture_attachments.size(); ++i)
+            std::cout << "\tSlot: " << i << " || " << GB.texture_attachments.at(i) << std::endl;
+#endif
     }
 };

@@ -1,5 +1,9 @@
 # version 330 core
 
+// MRT
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 BrightColor;
+
 struct Material {
     sampler2D texture_diffuse1;
     sampler2D texture_diffuse2;
@@ -85,10 +89,6 @@ float ShadowFactor(PointLight light);
 float Brightness(PointLight light, vec3 frag2light);
 
 uniform bool GammaCorrection;
-
-// MRT
-layout (location = 0) out vec4 FragColor;
-layout (location = 1) out vec4 BrightColor;
 
 void main() {
     vec3 viewDir = normalize(fs_in.viewPos -fs_in.fragpos);
