@@ -24,5 +24,6 @@ void main() {
     gPosition = fs_in.fragpos;
     gNormal = normalize(fs_in.normal);
     gAlbedoSpec.rgb = texture(material.texture_diffuse1, fs_in.texCoords).rgb;
-    gAlbedoSpec.a = texture(material.texture_specular1, fs_in.texCoords).a;
+    // gAlbedoSpec.a = texture(material.texture_specular1, fs_in.texCoords).r;
+    gAlbedoSpec.a = 1.0;
 }

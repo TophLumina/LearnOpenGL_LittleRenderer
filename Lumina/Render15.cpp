@@ -164,6 +164,7 @@ int main()
     Shader LightCubeShader("./Shaders/LightCube.vert", "./Shaders/LightCubeBloom.frag");
 
     glm::mat4 model(1.0f);
+    model = glm::scale(model, glm::vec3(0.1f));
     HakuShader.Use();
     HakuShader.setMat4("model", model);
 
@@ -287,7 +288,7 @@ int main()
     float aspect_ratio = 1.0f;
     float near = 1.0f;
     float far = 120.0f;
-    glm::vec3 PointLight_Pos(0.0f, 16.0f, 2.0f);
+    glm::vec3 PointLight_Pos(0.0f, 1.6f, 0.2f);
     glm::mat4 PointLight_projection = glm::perspective(glm::radians(90.0f), aspect_ratio, near, far);
     std::vector<glm::mat4> PointLight_Transform;
     PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(1.0f, 0.0f, 0.0), glm::vec3(0.0f, -1.0f, 0.0f)));
@@ -309,7 +310,7 @@ int main()
     // Light Cube Shader Config
     glm::mat4 lightcubemodel(1.0f);
     lightcubemodel = glm::translate(lightcubemodel, PointLight_Pos);
-    lightcubemodel = glm::scale(lightcubemodel, glm::vec3(0.2f, 0.2f, 0.2f));
+    lightcubemodel = glm::scale(lightcubemodel, glm::vec3(0.02f));
     LightCubeShader.Use();
     LightCubeShader.setMat4("model", lightcubemodel);
     LightCubeShader.setVec3("light_col", lightcol);

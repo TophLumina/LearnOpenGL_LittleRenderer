@@ -119,7 +119,6 @@ public:
         glBindFramebuffer(GL_FRAMEBUFFER, ID);
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
             std::cout << "ERROR::FRAMEBUFFER::MAIN:: FrameBuffer is NOT Compelete." << std::endl;
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         // Check the tmp FrameBuffer
         if (Samples > 1)
@@ -127,8 +126,8 @@ public:
             glBindFramebuffer(GL_FRAMEBUFFER, tmpfbo);
             if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
                 std::cout << "ERROR::FRAMEBUFFER::MultiSampling:: FrameBuffer is NOT Compelete." << std::endl;
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
         }
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
 private:

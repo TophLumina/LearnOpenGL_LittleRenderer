@@ -11,6 +11,7 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 // Debug Flag
+#define _FRAMEBUFFER_DEBUG
 
 #include "lazy.hpp"
 #include "Camera.hpp"
@@ -19,6 +20,7 @@
 #include "./Shaders/FrameBuffer.hpp"
 #include "./Lights/LightingManager.hpp"
 #include "./Shaders/BloomTools.hpp"
+#include "./Shaders/GBuffer.hpp"
 
 glm::vec3 campos(0.0, 0.0, 0.0);
 glm::vec3 camup(0.0, 1.0, 0.0);
@@ -150,22 +152,25 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // FrameBuffer
-    FrameBuffer Orifb(ScreenWidth, ScreenHeight, multisample, 2);
+    // FrameBuffer Orifb(ScreenWidth, ScreenHeight, multisample, 2);
     // Layer 0 = all color
     // Layer 1 = bright color
+
+    GBuffer Gfb(ScreenWidth, ScreenHeight);
+    Shader GeoPassShader("./Shaders/GeometryPass.vert", "./Shaders/GeometryPass.frag");
 
     Shader fbShader("./Shaders/HDR.vert", "./Shaders/HDR.frag");
 
     // Models and Shaders
     Model Haku("./Model/Haku/TDA Lacy Haku.pmx");
-    Shader HakuShader("./Shaders/Bloom.vert", "./Shaders/Bloom.frag");
 
     Model Cube("./Model/JustCube/untitled.fbx");
     Shader LightCubeShader("./Shaders/LightCube.vert", "./Shaders/LightCubeBloom.frag");
 
     glm::mat4 model(1.0f);
-    HakuShader.Use();
-    HakuShader.setMat4("model", model);
+    model = glm::scale(model, glm::vec3(0.1f));
+    GeoPassShader.Use();
+    GeoPassShader.setMat4("model", model);
 
     // UniformBuffer
     unsigned int MatricesBlock;
@@ -178,154 +183,157 @@ int main()
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
     // Shader UniformBlock Bindings
-    HakuShader.Use();
-    HakuShader.setUniformBlock("Matrices", 0);
+    GeoPassShader.Use();
+    GeoPassShader.setUniformBlock("Matrices", 0);
 
     LightCubeShader.Use();
     LightCubeShader.setUniformBlock("Matrices", 0);
 
     // UniformbLock Slot Binding
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, MatricesBlock);
+{
+    // // Shadow FrameBuffer
+    // unsigned int ShadowMapfbo;
+    // glGenFramebuffers(1, &ShadowMapfbo);
 
-    // Shadow FrameBuffer
-    unsigned int ShadowMapfbo;
-    glGenFramebuffers(1, &ShadowMapfbo);
+    // // Depth Map Texture Attachment
+    // const unsigned int Shadow_Resolution = 4096;
 
-    // Depth Map Texture Attachment
-    const unsigned int Shadow_Resolution = 4096;
+    // // Lighting Manager
+    // LightManager LM;
 
-    // Lighting Manager
-    LightManager LM;
+    // // HDR
+    // glm::vec3 lightcol(10.0f, 10.0f, 10.0f);
+    // glm::vec3 lightdir(0.0f, -1.0f, -1.0f);
+    // LightAttrib attrib(lightcol, lightcol, lightcol);
 
-    // HDR
-    glm::vec3 lightcol(10.0f, 10.0f, 10.0f);
-    glm::vec3 lightdir(0.0f, -1.0f, -1.0f);
-    LightAttrib attrib(lightcol, lightcol, lightcol);
+    // // DirLight Depth Map Texture
+    // unsigned int DirLightShadowMap;
+    // glGenTextures(1, &DirLightShadowMap);
+    // glBindTexture(GL_TEXTURE_2D, DirLightShadowMap);
 
-    // DirLight Depth Map Texture
-    unsigned int DirLightShadowMap;
-    glGenTextures(1, &DirLightShadowMap);
-    glBindTexture(GL_TEXTURE_2D, DirLightShadowMap);
+    // // Use the Depth Texture as a normal Texture and Sampling it
+    // glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, Shadow_Resolution, Shadow_Resolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    // // Remove overborder samples
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    // float bordercolor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    // glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, bordercolor);
+    // glBindTexture(GL_TEXTURE_2D, 0);
 
-    // Use the Depth Texture as a normal Texture and Sampling it
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, Shadow_Resolution, Shadow_Resolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-    // Remove overborder samples
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    float bordercolor[] = {1.0f, 1.0f, 1.0f, 1.0f};
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, bordercolor);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    // // Binding
+    // glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapfbo);
+    // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, DirLightShadowMap, 0);
 
-    // Binding
-    glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapfbo);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, DirLightShadowMap, 0);
+    // // and we don't need color attachment this time so disable the coloroutput of the framebuffer by setting its read/write buffer to NULL(GL_NONE aka 0)
+    // glDrawBuffer(GL_NONE);
+    // glReadBuffer(GL_NONE);
+    // if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    //     std::cout << "ERROR::FRAMEBUFFER::SHADOWMAPPING:: FrameBuffer is NOT Compelete." << std::endl;
+    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // and we don't need color attachment this time so disable the coloroutput of the framebuffer by setting its read/write buffer to NULL(GL_NONE aka 0)
-    glDrawBuffer(GL_NONE);
-    glReadBuffer(GL_NONE);
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "ERROR::FRAMEBUFFER::SHADOWMAPPING:: FrameBuffer is NOT Compelete." << std::endl;
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // // Matrices for Light Space Transform <only used for DirLight>
+    // // All Objects should be in the Space between far_plane and near_plane <Might need Refinements Here>
+    // float near_plane = 30.0f;
+    // float far_plane = 120.0f;
+    // float OrthoBorder = 10.0f;
+    // glm::mat4 DirLight_projection = glm::ortho(-OrthoBorder, OrthoBorder, -OrthoBorder, OrthoBorder, near_plane, far_plane);
+    // glm::vec3 DirLight_Pos = -25.0f * lightdir + 10.0f * camup;
+    // glm::mat4 DirLight_view = glm::lookAt(DirLight_Pos, DirLight_Pos + lightdir, camup);
+    // glm::mat4 DirLight_Transform = DirLight_projection * DirLight_view;
 
-    // Matrices for Light Space Transform <only used for DirLight>
-    // All Objects should be in the Space between far_plane and near_plane <Might need Refinements Here>
-    float near_plane = 30.0f;
-    float far_plane = 120.0f;
-    float OrthoBorder = 10.0f;
-    glm::mat4 DirLight_projection = glm::ortho(-OrthoBorder, OrthoBorder, -OrthoBorder, OrthoBorder, near_plane, far_plane);
-    glm::vec3 DirLight_Pos = -25.0f * lightdir + 10.0f * camup;
-    glm::mat4 DirLight_view = glm::lookAt(DirLight_Pos, DirLight_Pos + lightdir, camup);
-    glm::mat4 DirLight_Transform = DirLight_projection * DirLight_view;
+    // // Shadow Shader
+    // Shader DirLightShadowShader("./Shaders/SimpleDepth.vert", "./Shaders/SimpleDepth.frag");
+    // DirLightShadowShader.Use();
+    // DirLightShadowShader.setMat4("LightSpaceTransform", DirLight_Transform);
+    // DirLightShadowShader.setMat4("model", model);
+    // DirLightShadowShader.setBool("useInstance", false);
 
-    // Shadow Shader
-    Shader DirLightShadowShader("./Shaders/SimpleDepth.vert", "./Shaders/SimpleDepth.frag");
-    DirLightShadowShader.Use();
-    DirLightShadowShader.setMat4("LightSpaceTransform", DirLight_Transform);
-    DirLightShadowShader.setMat4("model", model);
-    DirLightShadowShader.setBool("useInstance", false);
+    // // Static Lighting's Shadow Mapping
+    // glViewport(0, 0, Shadow_Resolution, Shadow_Resolution); // Shadow Map Resolution
+    // glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapfbo);
+    // glClear(GL_DEPTH_BUFFER_BIT);
 
-    // Static Lighting's Shadow Mapping
-    glViewport(0, 0, Shadow_Resolution, Shadow_Resolution); // Shadow Map Resolution
-    glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapfbo);
-    glClear(GL_DEPTH_BUFFER_BIT);
+    // // Pre-Render
+    // DirLightShadowShader.Use();
+    // Haku.Draw(&DirLightShadowShader);
 
-    // Pre-Render
-    DirLightShadowShader.Use();
-    Haku.Draw(&DirLightShadowShader);
+    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // // Lighting Management and Shadow Shader Config
+    // LM.dirlights.push_back(DirLight(attrib, lightdir, DirLight_Transform, DirLightShadowMap));
 
-    // Lighting Management and Shadow Shader Config
-    LM.dirlights.push_back(DirLight(attrib, lightdir, DirLight_Transform, DirLightShadowMap));
-    LM.ShaderConfig(&HakuShader);
+    // // LM.ShaderConfig(&HakuShader);
 
-    // PointLight ShadowMap
-    unsigned int CubeShadowMap;
-    glGenTextures(1, &CubeShadowMap);
-    glBindTexture(GL_TEXTURE_CUBE_MAP,CubeShadowMap);
-    for (unsigned int i = 0; i < 6; ++i)
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, Shadow_Resolution, Shadow_Resolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    // // PointLight ShadowMap
+    // unsigned int CubeShadowMap;
+    // glGenTextures(1, &CubeShadowMap);
+    // glBindTexture(GL_TEXTURE_CUBE_MAP,CubeShadowMap);
+    // for (unsigned int i = 0; i < 6; ++i)
+    //     glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, Shadow_Resolution, Shadow_Resolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-    // FrameBuffer Config <For PointLight Usage>
-    glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapfbo);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, CubeShadowMap, 0);
-    glDrawBuffer(NULL);
-    glReadBuffer(NULL);
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "ERROR::FRAMEBUFFER::SHADOWMAPPING:: FrameBuffer is NOT Compelete." << std::endl;
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // // FrameBuffer Config <For PointLight Usage>
+    // glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapfbo);
+    // glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, CubeShadowMap, 0);
+    // glDrawBuffer(NULL);
+    // glReadBuffer(NULL);
+    // if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    //     std::cout << "ERROR::FRAMEBUFFER::SHADOWMAPPING:: FrameBuffer is NOT Compelete." << std::endl;
+    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // Matrices and Shaders for CubeDepthMap Usage
-    float aspect_ratio = 1.0f;
-    float near = 1.0f;
-    float far = 120.0f;
-    glm::vec3 PointLight_Pos(0.0f, 16.0f, 2.0f);
-    glm::mat4 PointLight_projection = glm::perspective(glm::radians(90.0f), aspect_ratio, near, far);
-    std::vector<glm::mat4> PointLight_Transform;
-    PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(1.0f, 0.0f, 0.0), glm::vec3(0.0f, -1.0f, 0.0f)));
-    PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(-1.0f, 0.0f, 0.0), glm::vec3(0.0f, -1.0f, 0.0f)));
-    PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, 1.0f, 0.0), glm::vec3(0.0f, 0.0f, 1.0f)));
-    PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, -1.0f, 0.0), glm::vec3(0.0f, 0.0f, -1.0f)));
-    PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, 0.0f, 1.0), glm::vec3(0.0f, -1.0f, 0.0f)));
-    PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, 0.0f, -1.0), glm::vec3(0.0f, -1.0f, 0.0f)));
+    // // Matrices and Shaders for CubeDepthMap Usage
+    // float aspect_ratio = 1.0f;
+    // float near = 1.0f;
+    // float far = 120.0f;
+    // glm::vec3 PointLight_Pos(0.0f, 1.6f, 0.2f);
+    // glm::mat4 PointLight_projection = glm::perspective(glm::radians(90.0f), aspect_ratio, near, far);
+    // std::vector<glm::mat4> PointLight_Transform;
+    // PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(1.0f, 0.0f, 0.0), glm::vec3(0.0f, -1.0f, 0.0f)));
+    // PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(-1.0f, 0.0f, 0.0), glm::vec3(0.0f, -1.0f, 0.0f)));
+    // PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, 1.0f, 0.0), glm::vec3(0.0f, 0.0f, 1.0f)));
+    // PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, -1.0f, 0.0), glm::vec3(0.0f, 0.0f, -1.0f)));
+    // PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, 0.0f, 1.0), glm::vec3(0.0f, -1.0f, 0.0f)));
+    // PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(0.0f, 0.0f, -1.0), glm::vec3(0.0f, -1.0f, 0.0f)));
     
-    // Cube Shadow Map Shader Config
-    Shader PointLightShader("./Shaders/CubeDepth.vert", "./Shaders/CubeDepth.geom", "./Shaders/CubeDepth.frag");
-    PointLightShader.Use();
-    PointLightShader.setMat4("model", model);
-    for (int i = 0; i < PointLight_Transform.size(); ++i)
-        PointLightShader.setMat4("Shadow_Matrices[" + std::to_string(i) + "]", PointLight_Transform.at(i));
-    PointLightShader.setVec3("LightPos", PointLight_Pos);
-    PointLightShader.setFloat("Far", far);
+    // // Cube Shadow Map Shader Config
+    // Shader PointLightShader("./Shaders/CubeDepth.vert", "./Shaders/CubeDepth.geom", "./Shaders/CubeDepth.frag");
+    // PointLightShader.Use();
+    // PointLightShader.setMat4("model", model);
+    // for (int i = 0; i < PointLight_Transform.size(); ++i)
+    //     PointLightShader.setMat4("Shadow_Matrices[" + std::to_string(i) + "]", PointLight_Transform.at(i));
+    // PointLightShader.setVec3("LightPos", PointLight_Pos);
+    // PointLightShader.setFloat("Far", far);
 
-    // Light Cube Shader Config
-    glm::mat4 lightcubemodel(1.0f);
-    lightcubemodel = glm::translate(lightcubemodel, PointLight_Pos);
-    lightcubemodel = glm::scale(lightcubemodel, glm::vec3(0.2f, 0.2f, 0.2f));
-    LightCubeShader.Use();
-    LightCubeShader.setMat4("model", lightcubemodel);
-    LightCubeShader.setVec3("light_col", lightcol);
+    // // Light Cube Shader Config
+    // glm::mat4 lightcubemodel(1.0f);
+    // lightcubemodel = glm::translate(lightcubemodel, PointLight_Pos);
+    // lightcubemodel = glm::scale(lightcubemodel, glm::vec3(0.02f));
+    // LightCubeShader.Use();
+    // LightCubeShader.setMat4("model", lightcubemodel);
+    // LightCubeShader.setVec3("light_col", lightcol);
 
-    glViewport(0, 0, Shadow_Resolution, Shadow_Resolution);
-    glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapfbo);
-    glClear(GL_DEPTH_BUFFER_BIT);
+    // glViewport(0, 0, Shadow_Resolution, Shadow_Resolution);
+    // glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapfbo);
+    // glClear(GL_DEPTH_BUFFER_BIT);
 
-    // Pre-Rendering
-    PointLightShader.Use();
-    Haku.Draw(&PointLightShader);
+    // // Pre-Rendering
+    // PointLightShader.Use();
+    // Haku.Draw(&PointLightShader);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    LM.pointlights.push_back(PointLight(attrib, PointLight_Pos, Attenuation(0.7, 1.2), CubeShadowMap, far));
-    LM.ShaderConfig(&HakuShader);
+    // LM.pointlights.push_back(PointLight(attrib, PointLight_Pos, Attenuation(0.7, 1.2), CubeShadowMap, far));
+
+    // LM.ShaderConfig(&HakuShader);
+}
 
     // Viewport Settings
     glViewport(0, 0, ScreenWidth, ScreenHeight);
@@ -333,7 +341,7 @@ int main()
     // Bloom
     Shader GaussainBlurShader("./Shaders/GaussainBlur.vert", "./Shaders/GaussainBlur.frag");
     Shader BloomMixShader("./Shaders/BloomMix.vert", "./Shaders/BloomMix.frag");
-    BloomTool bt(&Orifb, &GaussainBlurShader, &BloomMixShader);
+    // BloomTool bt(&Orifb, &GaussainBlurShader, &BloomMixShader);
 
     // Vars used for imgui
     bool grayscale = false;
@@ -395,25 +403,35 @@ int main()
         glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(camera.Position));
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, Orifb.ID);
+        // glBindFramebuffer(GL_FRAMEBUFFER, Orifb.ID);
+        // glEnable(GL_DEPTH_TEST);
+        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // glClearColor(0.0, 0.0, 0.0, 1.0);
+
+        // // Render Config
+        // // Orifb.MRTRenderConfig();
+
+        // // Render Code
+        // HakuShader.Use();
+        // Haku.Draw(&HakuShader);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, Gfb.fb.ID);
         glEnable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.0, 0.0, 0.0, 1.0);
 
-        // Render Config
-        Orifb.MRTRenderConfig();
+        Gfb.fb.MRTRenderConfig();
 
-        // Render Code
-        HakuShader.Use();
-        Haku.Draw(&HakuShader);
+        GeoPassShader.Use();
+        Haku.Draw(&GeoPassShader); // data missing?
 
-        // Light Cube
-        LightCubeShader.Use();
-        Cube.Draw(&LightCubeShader);
+        // // Light Cube
+        // LightCubeShader.Use();
+        // Cube.Draw(&LightCubeShader);
 
-        // Bloom
-        if(bloom)
-            bt.ApplyBloom(bloomloop);
+        // // Bloom
+        // if(bloom)
+        //     bt.ApplyBloom(bloomloop);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glDisable(GL_DEPTH_TEST);
@@ -429,13 +447,13 @@ int main()
         fbShader.setFloat("exposure", exposure);
 
         fbShader.Use();
-        Orifb.Draw(bloom ? bt.tex_finished() : Orifb.ServeTextures().at(0));
-        // Orifb.Draw(Orifb.ServeTextures().at(0));
+        // Orifb.Draw(bloom ? bt.tex_finished() : Orifb.ServeTextures().at(0));
+        Gfb.fb.Draw(Gfb.gAlbedoSpec);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
     }
-    Orifb.Delete();
+    // Orifb.Delete();
 
     ImGui_ImplGlfw_Shutdown();
     ImGui_ImplOpenGL3_Shutdown();
