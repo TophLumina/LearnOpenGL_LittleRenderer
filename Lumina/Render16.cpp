@@ -448,7 +448,7 @@ int main()
 
         fbShader.Use();
         // Orifb.Draw(bloom ? bt.tex_finished() : Orifb.ServeTextures().at(0));
-        Gfb.fb.Draw(Gfb.gAlbedoSpec);
+        Gfb.fb.Draw(Gfb.gPosition);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);

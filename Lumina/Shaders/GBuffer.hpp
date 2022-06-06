@@ -28,6 +28,7 @@ public:
         SCRWidth = width;
         SCRHeight = height;
 
+        glGenFramebuffers(1, &fb.ID);
         glBindFramebuffer(GL_FRAMEBUFFER, fb.ID);
 
         // gPosition
