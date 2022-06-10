@@ -114,9 +114,9 @@ private:
             // before binding the texture we need to make it active first
 
             // The order of the Sampler index has changed for Environment Mapping.
-            // GL_TEXTURE1 ~ 10 is reserved for extera textures.
+            // GL_TEXTURE1 ~ 16 is reserved for extera textures.
             // Usually Keep GL_TEXTURE0 reserved.
-            glActiveTexture(GL_TEXTURE11 + i);
+            glActiveTexture(GL_TEXTURE17 + i);
             // then get its Index number
             std::string number;
             std::string name = textures[i].type;

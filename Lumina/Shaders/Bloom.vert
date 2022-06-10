@@ -58,7 +58,7 @@ void main() {
 
     // DirLights
     for (int i = 0; i < lightinfo.num_dirlight; ++i)
-        vs_out.dirlight_fragPos[i] = lightinfo.DirLight_Transform[i] * model * vec4(aPosition, 1.0);
+        vs_out.dirlight_fragPos[i] = lightinfo.DirLight_Transform[i] * vec4(vs_out.fragpos, 1.0);
 
 
     // TBN Matrix <view_space>

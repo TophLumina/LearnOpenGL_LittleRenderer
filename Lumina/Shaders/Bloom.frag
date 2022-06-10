@@ -106,10 +106,7 @@ void main() {
 
     result += vec3(imp * texture(material.texture_diffuse1, coord));
 
-    // TEST CODE
-    // FragColor = vec4(result, 1.0);
-
-    FragColor = vec4(imp * texture(material.texture_diffuse1, coord).rgb, 1.0);
+    FragColor = vec4(result, 1.0);
     
     float bright = dot(FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
     if (bright > 1.0)

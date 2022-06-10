@@ -66,18 +66,19 @@ public:
         }
 
         // Shadow Maps Bindings
+        // GL_TEXTURE7 ~ 16 used for ShadowMapping
         int slot = 0;
         for (int i = 0; i < dirlights.size(); ++i) {
             ++slot;
             shader->setInt("dirlights[" + std::to_string(i) + "].shadowmap", slot);
-            glActiveTexture(GL_TEXTURE0 + slot);
+            glActiveTexture(GL_TEXTURE7 + slot);
             glBindTexture(GL_TEXTURE_2D, dirlights.at(i).depthmap);
         }
         
         for (int i = 0; i < pointlights.size(); ++i) {
             ++slot;
             shader->setInt("pointlights[" + std::to_string(i) + "].shadowmap", slot);
-            glActiveTexture(GL_TEXTURE0 + slot);
+            glActiveTexture(GL_TEXTURE7 + slot);
             glBindTexture(GL_TEXTURE_CUBE_MAP, pointlights.at(i).depthmap);
         }
 

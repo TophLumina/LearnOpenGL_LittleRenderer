@@ -22,7 +22,6 @@ public:
     2||gAlbedoSpec||RBA
     */
 
-
     GBuffer(int width, int height) : fb(width, height, 1, texture_layers, true)
     {
         SCRWidth = width;
@@ -88,5 +87,24 @@ public:
         for (int i = 0; i < fb.texture_attachments.size(); ++i)
             std::cout << "\tSlot: " << i << " || " << fb.texture_attachments.at(i) << std::endl;
 #endif
+    }
+
+    // GL_TEXTURE1 ~ 6 Reserved for Deferred Rendering
+    void Deferred_Rendering_Config(Shader* _lighting_pass_shader)
+    {
+        _lighting_pass_shader->setInt("gbuffertex.gPosition", 1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, gPosition);
+
+        _lighting_pass_shader->setInt("gbuffertex.gNormal", 2);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, gNormal);
+
+        _lighting_pass_shader->setInt("gbuffertex.gAlbedoSpec", 3);
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 };
