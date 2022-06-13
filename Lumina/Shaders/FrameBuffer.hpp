@@ -21,6 +21,7 @@ public:
     int ScreenWidth;
     int ScreenHeight;
     int Samples; // the value of Samples should not be Changed after Init.
+    // what if packing VAO and VBO up and making it static?
     unsigned int VBO;
     unsigned int VAO;
     std::vector<unsigned int> texture_attachments;

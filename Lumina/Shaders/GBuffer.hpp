@@ -2,6 +2,7 @@
 #pragma once
 
 #include "FrameBuffer.hpp"
+#include "../Shader.hpp"
 
 const int texture_layers = 3;
 
