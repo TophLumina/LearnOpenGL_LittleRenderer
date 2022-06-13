@@ -167,7 +167,6 @@ int main()
     Shader LightCubeShader("./Shaders/LightCube.vert", "./Shaders/LightCubeBloom.frag");
 
     glm::mat4 model(1.0f);
-    model = glm::scale(model, glm::vec3(0.1f));
     GeoPassShader.Use();
     GeoPassShader.setMat4("model", model);
 
@@ -296,7 +295,7 @@ int main()
     float aspect_ratio = 1.0f;
     float near = 1.0f;
     float far = 120.0f;
-    glm::vec3 PointLight_Pos(0.0f, 1.6f, 0.2f);
+    glm::vec3 PointLight_Pos(0.0f, 16.0f, 2.0f);
     glm::mat4 PointLight_projection = glm::perspective(glm::radians(90.0f), aspect_ratio, near, far);
     std::vector<glm::mat4> PointLight_Transform;
     PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(1.0f, 0.0f, 0.0), glm::vec3(0.0f, -1.0f, 0.0f)));
@@ -318,7 +317,7 @@ int main()
     // Light Cube Shader Config
     glm::mat4 lightcubemodel(1.0f);
     lightcubemodel = glm::translate(lightcubemodel, PointLight_Pos);
-    lightcubemodel = glm::scale(lightcubemodel, glm::vec3(0.02f));
+    lightcubemodel = glm::scale(lightcubemodel, glm::vec3(0.05f));
     LightCubeShader.Use();
     LightCubeShader.setMat4("model", lightcubemodel);
     LightCubeShader.setVec3("light_col", lightcol);
@@ -333,7 +332,7 @@ int main()
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    LM.pointlights.push_back(PointLight(attrib, PointLight_Pos, Attenuation(0.7, 1.2), CubeShadowMap, far));
+    LM.pointlights.push_back(PointLight(attrib, PointLight_Pos, Attenuation(0.7f, 3.5f), CubeShadowMap, far));
 
     LM.ShaderConfig(&LightingPassShader);
 
@@ -430,13 +429,17 @@ int main()
 
         LightingPassfb.Draw();
 
-        // // Light Cube
-        // LightCubeShader.Use();
-        // Cube.Draw(&LightCubeShader);
+        // Use Depth Data from Geometry_Pass as a Mask for Forward_Rendering after LightingPass
+        glBlitNamedFramebuffer(GeoPassgfb.fb.ID, LightingPassfb.ID, 0, 0, GeoPassgfb.SCRWidth, GeoPassgfb.SCRHeight, 0, 0, LightingPassfb.ScreenWidth, LightingPassfb.ScreenHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+        glEnable(GL_DEPTH_TEST);
 
-        // // Bloom
-        // if(bloom)
-        //     bt.ApplyBloom(bloomloop);
+        // Light Cube
+        LightCubeShader.Use();
+        Cube.Draw(&LightCubeShader);
+
+        // Bloom
+        if(bloom)
+            bt.ApplyBloom(bloomloop);
 
         // PostEffect
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -454,12 +457,11 @@ int main()
 
         PostEffectsShader.Use();
         // Orifb.Draw(bloom ? bt.tex_finished() : Orifb.ServeTextures().at(0));
-        LightingPassfb.Draw(LightingPassfb.ServeTextures().at(0));
+        LightingPassfb.Draw(bloom ? bt.tex_finished() : LightingPassfb.ServeTextures().at(0));
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
     }
-    // Orifb.Delete();
 
     ImGui_ImplGlfw_Shutdown();
     ImGui_ImplOpenGL3_Shutdown();

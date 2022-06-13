@@ -17,7 +17,7 @@ enum CameraDir {
 //default pose of camera
 const float PITCH = 0.0f;
 const float YAW = -90.0f;
-const float SPEED = 1.0f;
+const float SPEED = 6.0f;
 const float SENSITIVITY = 0.1f;
 const float FOV = 45.0f;
 const float z_near = 0.1f;

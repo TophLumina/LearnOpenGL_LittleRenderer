@@ -548,5 +548,11 @@
     <None Include="Shaders\GeometryPass.vert">
       <Filter>Shaders\AdvancedShaders</Filter>
     </None>
+    <None Include="Shaders\LightingPass.frag">
+      <Filter>Shaders\AdvancedShaders</Filter>
+    </None>
+    <None Include="Shaders\LightingPass.vert">
+      <Filter>Shaders\AdvancedShaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

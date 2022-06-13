@@ -463,6 +463,8 @@
     <None Include="Shaders\LightCube.frag" />
     <None Include="Shaders\LightCube.vert" />
     <None Include="Shaders\LightCubeBloom.frag" />
+    <None Include="Shaders\LightingPass.frag" />
+    <None Include="Shaders\LightingPass.vert" />
     <None Include="Shaders\materializedFag.shader" />
     <None Include="Shaders\materializedtexturedFrag.shader" />
     <None Include="Shaders\materializedtexturedVex.shader" />
