@@ -352,7 +352,7 @@ int main()
     int kernel = 0;
     bool gammacorrection = true;
 
-    float exposure = 1.0;
+    float exposure = 0.4;
 
     bool bloom = false;
     int bloomloop = 15;
@@ -428,7 +428,7 @@ int main()
         LightingPassShader.Use();
         GeoPassgfb.Deferred_Rendering_Config(&LightingPassShader);
 
-        LightingPassfb.Draw(0);
+        LightingPassfb.Draw();
 
         // // Light Cube
         // LightCubeShader.Use();
@@ -454,7 +454,7 @@ int main()
 
         PostEffectsShader.Use();
         // Orifb.Draw(bloom ? bt.tex_finished() : Orifb.ServeTextures().at(0));
-        LightingPassfb.Draw(LightingPassfb.texture_attachments[0]);
+        LightingPassfb.Draw(LightingPassfb.ServeTextures().at(0));
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);

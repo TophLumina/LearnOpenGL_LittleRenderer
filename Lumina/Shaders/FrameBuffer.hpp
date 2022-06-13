@@ -102,7 +102,7 @@ public:
         glNamedFramebufferDrawBuffers(ID, texturelayers, attachments.data());
     }
 
-    void Draw(unsigned int texture)
+    void Draw(unsigned int texture = 0)
     {
         glBindTexture(GL_TEXTURE_2D, texture);
 

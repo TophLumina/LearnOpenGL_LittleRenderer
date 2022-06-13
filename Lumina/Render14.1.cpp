@@ -425,7 +425,7 @@ int main()
         fbShader.Use();
 
         // Test Texture
-        glBindTexture(GL_TEXTURE_2D, usualfb.MultiSampledTexture2D());
+        glBindTexture(GL_TEXTURE_2D, usualfb.ServeTextures().at(0));
         // glBindTexture(GL_TEXTURE_2D, DirLightShadowMap);
         glBindVertexArray(usualfb.VAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);

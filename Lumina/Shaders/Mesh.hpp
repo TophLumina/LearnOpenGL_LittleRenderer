@@ -127,7 +127,7 @@ private:
             else if(name == "texture_normal")
                 number = std::to_string(normalIndex++);
 
-            shader->setInt(("material." + name + number), 11 + i);
+            shader->setInt(("material." + name + number), 17 + i);
             glBindTexture(GL_TEXTURE_2D, textures[i].id);
         }
     }

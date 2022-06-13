@@ -68,8 +68,6 @@ uniform Dirlight dirlights[OTHER_LIMITATION];
 uniform PointLight pointlights[POINT_LIGHTS_LIMITATION];
 uniform SpotLight spotlights[OTHER_LIMITATION];
 
-uniform bool GammaCorrection;
-
 bool IsBright(vec3 lightdir, vec3 norm);
 float DepthAdjustment(vec3 lightdir, vec3 norm);
 float ShadowFactor(Dirlight light, vec4 light_frag_pos, vec3 norm);
