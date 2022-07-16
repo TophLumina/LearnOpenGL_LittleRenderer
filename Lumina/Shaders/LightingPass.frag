@@ -96,8 +96,9 @@ void main() {
     // for (int i = 0; i < lightinfo.num_dirlight; ++i)
     //     dirlight_fragPos[i] = lightinfo.DirLight_Transform[i] * vec4(fragpos, 1.0);
     // float imp = IsBright(-dirlights[0].direction, norm) ? ShadowFactor(dirlights[0], dirlight_fragPos[0], norm) : 0.0;
-    float imp = IsBright(pointlights[0].position - fragpos, norm) ? ShadowFactor(pointlights[0], fragpos, norm) : 0.0;
-    imp = imp * Brightness(pointlights[0], (fragpos - pointlights[0].position)) * 0.6 + 0.4;
+    float imp_diff = IsBright(pointlights[0].position - fragpos, norm) ? ShadowFactor(pointlights[0], fragpos, norm) : 0.0;
+    float imp_ambi = 0.4;
+    float imp = imp_diff * Brightness(pointlights[0], (fragpos - pointlights[0].position)) * 0.6 + imp_ambi;
 
     result += imp * albedo;
 
