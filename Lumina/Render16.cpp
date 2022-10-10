@@ -152,8 +152,8 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     GBuffer GeoPassgfb(ScreenWidth, ScreenHeight);
-    // Layer 0 = World_Position
-    // Layer 1 = View_Position
+    // Layer 0 = World_Position(RGB)Depth(A)
+    // Layer 1 = View_Position(RGB)Depth(A)
     // Layer 2 = World_Normal
     // Layer 3 = View_Normal
     // Layer 4 = Albedo(RGB)Specular(A)
