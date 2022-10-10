@@ -12,15 +12,19 @@ public:
     FrameBuffer fb;
     int SCRWidth;
     int SCRHeight;
-    unsigned int gPosition;
-    unsigned int gNormal;
+    unsigned int gPosition_World;
+    unsigned int gPosition_View;
+    unsigned int gNormal_World;
+    unsigned int gNormal_View;
     unsigned int gAlbedoSpec;
 
     /* 
     texture_attachment layout:
-    0||gPostion   ||RBG32F
-    1||gNormal    ||RGB32F
-    2||gAlbedoSpec||RBA
+    0||gPostion_World   ||RBG32F
+    1||gPosition_View   ||RGB32F
+    2||gNormal_World    ||RGB32F
+    1||gNormal_View     ||RGB32F
+    2||gAlbedoSpec      ||RGBA
     */
 
     GBuffer(int width, int height) : fb(width, height, 1, texture_layers, true)
@@ -32,8 +36,8 @@ public:
         glBindFramebuffer(GL_FRAMEBUFFER, fb.ID);
 
         // gPosition
-        glGenTextures(1, &gPosition);
-        glBindTexture(GL_TEXTURE_2D, gPosition);
+        glGenTextures(1, &gPosition_World);
+        glBindTexture(GL_TEXTURE_2D, gPosition_World);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCRWidth, SCRHeight, 0, GL_RGB, GL_FLOAT, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

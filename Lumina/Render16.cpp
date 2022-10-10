@@ -152,11 +152,16 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     GBuffer GeoPassgfb(ScreenWidth, ScreenHeight);
+    // Layer 0 = World_Position
+    // Layer 1 = View_Position
+    // Layer 2 = World_Normal
+    // Layer 3 = View_Normal
+    // Layer 4 = Albedo(RGB)Specular(A)
     Shader GeoPassShader("./Shaders/GeometryPass.vert", "./Shaders/GeometryPass.frag");
     FrameBuffer LightingPassfb(ScreenWidth, ScreenHeight, 1, 2);
-    Shader LightingPassShader("./Shaders/LightingPass.vert", "./Shaders/LightingPass.frag");
     // Layer 0 = all color
     // Layer 1 = bright color
+    Shader LightingPassShader("./Shaders/LightingPass.vert", "./Shaders/LightingPass.frag");
 
     Shader PostEffectsShader("./Shaders/HDR.vert", "./Shaders/HDR.frag");
 
