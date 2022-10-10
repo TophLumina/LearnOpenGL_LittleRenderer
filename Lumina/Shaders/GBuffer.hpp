@@ -20,11 +20,11 @@ public:
 
     /* 
     texture_attachment layout:
-    0||gPostion_World   ||RBG32F
-    1||gPosition_View   ||RGB32F
-    2||gNormal_World    ||RGB32F
-    3||gNormal_View     ||RGB32F
-    4||gAlbedoSpec      ||RGBA
+    0||gPostion_World(RGB)linearized_depth(A)   ||RBGA
+    1||gPosition_View(RGB)linearized_depth(A)   ||RGBA
+    2||gNormal_World                            ||RGB32F
+    3||gNormal_View                             ||RGB32F
+    4||gAlbedo(RGB)Specular(A)                  ||RGBA
     */
 
     GBuffer(int width, int height) : fb(width, height, 1, texture_layers, true)
