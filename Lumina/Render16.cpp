@@ -174,6 +174,8 @@ int main()
     glm::mat4 model(1.0f);
     GeoPassShader.Use();
     GeoPassShader.setMat4("model", model);
+    GeoPassShader.setFloat("z_near", camera.Znear);
+    GeoPassShader.setFloat("z_far", camera.Zfar);
 
     // UniformBuffer
     unsigned int MatricesBlock;

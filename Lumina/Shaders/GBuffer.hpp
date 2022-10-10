@@ -38,7 +38,7 @@ public:
         // gPosition_World
         glGenTextures(1, &gPosition_World);
         glBindTexture(GL_TEXTURE_2D, gPosition_World);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCRWidth, SCRHeight, 0, GL_RGB, GL_FLOAT, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCRWidth, SCRHeight, 0, GL_RGB, GL_FLOAT, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glBindTexture(GL_TEXTURE_2D,0);
@@ -49,7 +49,7 @@ public:
         // gPosition_View
         glGenTextures(1, &gPosition_View);
         glBindTexture(GL_TEXTURE_2D, gPosition_View);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCRWidth, SCRHeight, 0, GL_RGB, GL_FLOAT, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCRWidth, SCRHeight, 0, GL_RGB, GL_FLOAT, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glBindTexture(GL_TEXTURE_2D,0);
@@ -60,7 +60,7 @@ public:
         // gNormal_World
         glGenTextures(1, &gNormal_World);
         glBindTexture(GL_TEXTURE_2D, gNormal_World);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCRWidth, SCRHeight, 0, GL_RGB, GL_FLOAT, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCRWidth, SCRHeight, 0, GL_RGB, GL_FLOAT, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -71,7 +71,7 @@ public:
         // gNormal_View
         glGenTextures(1, &gNormal_View);
         glBindTexture(GL_TEXTURE_2D, gNormal_View);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCRWidth, SCRHeight, 0, GL_RGB, GL_FLOAT, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCRWidth, SCRHeight, 0, GL_RGB, GL_FLOAT, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glBindTexture(GL_TEXTURE_2D, 0);
