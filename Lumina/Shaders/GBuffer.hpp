@@ -4,7 +4,7 @@
 #include "FrameBuffer.hpp"
 #include "../Shader.hpp"
 
-const int texture_layers = 3;
+const int texture_layers = 5;
 
 class GBuffer
 {
@@ -23,8 +23,8 @@ public:
     0||gPostion_World   ||RBG32F
     1||gPosition_View   ||RGB32F
     2||gNormal_World    ||RGB32F
-    1||gNormal_View     ||RGB32F
-    2||gAlbedoSpec      ||RGBA
+    3||gNormal_View     ||RGB32F
+    4||gAlbedoSpec      ||RGBA
     */
 
     GBuffer(int width, int height) : fb(width, height, 1, texture_layers, true)
@@ -35,7 +35,7 @@ public:
         glGenFramebuffers(1, &fb.ID);
         glBindFramebuffer(GL_FRAMEBUFFER, fb.ID);
 
-        // gPosition
+        // gPosition_World
         glGenTextures(1, &gPosition_World);
         glBindTexture(GL_TEXTURE_2D, gPosition_World);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCRWidth, SCRHeight, 0, GL_RGB, GL_FLOAT, NULL);
@@ -43,19 +43,41 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glBindTexture(GL_TEXTURE_2D,0);
 
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
-        fb.texture_attachments.push_back(gPosition);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition_World, 0);
+        fb.texture_attachments.push_back(gPosition_World);
 
-        // gNormal
-        glGenTextures(1, &gNormal);
-        glBindTexture(GL_TEXTURE_2D, gNormal);
+        // gPosition_View
+        glGenTextures(1, &gPosition_View);
+        glBindTexture(GL_TEXTURE_2D, gPosition_View);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCRWidth, SCRHeight, 0, GL_RGB, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glBindTexture(GL_TEXTURE_2D,0);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + 1, GL_TEXTURE_2D, gPosition_View, 0);
+        fb.texture_attachments.push_back(gPosition_View);
+
+        // gNormal_World
+        glGenTextures(1, &gNormal_World);
+        glBindTexture(GL_TEXTURE_2D, gNormal_World);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCRWidth, SCRHeight, 0, GL_RGB, GL_FLOAT, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glBindTexture(GL_TEXTURE_2D, 0);
 
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + 1, GL_TEXTURE_2D, gNormal, 0);
-        fb.texture_attachments.push_back(gNormal);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + 2, GL_TEXTURE_2D, gNormal_World, 0);
+        fb.texture_attachments.push_back(gNormal_World);
+
+        // gNormal_View
+        glGenTextures(1, &gNormal_View);
+        glBindTexture(GL_TEXTURE_2D, gNormal_View);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCRWidth, SCRHeight, 0, GL_RGB, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + 3, GL_TEXTURE_2D, gNormal_View, 0);
+        fb.texture_attachments.push_back(gNormal_View);
 
         // gAlbedoSpec
         glGenTextures(1, &gAlbedoSpec);
@@ -65,7 +87,7 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glBindTexture(GL_TEXTURE_2D,0);
 
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + 2, GL_TEXTURE_2D, gAlbedoSpec, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + 4, GL_TEXTURE_2D, gAlbedoSpec, 0);
         fb.texture_attachments.push_back(gAlbedoSpec);
 
         //RBO Config
@@ -97,16 +119,24 @@ public:
     // GL_TEXTURE1 ~ 6 Reserved for Deferred Rendering
     void Deferred_Rendering_Config(Shader* _lighting_pass_shader)
     {
-        _lighting_pass_shader->setInt("gbuffertex.gPosition", 1);
+        _lighting_pass_shader->setInt("gbuffertex.gPosition_World", 1);
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, gPosition);
+        glBindTexture(GL_TEXTURE_2D, gPosition_World);
 
-        _lighting_pass_shader->setInt("gbuffertex.gNormal", 2);
+        _lighting_pass_shader->setInt("gbuffertex.gPosition_View", 2);
         glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, gNormal);
+        glBindTexture(GL_TEXTURE_2D, gPosition_View);
 
-        _lighting_pass_shader->setInt("gbuffertex.gAlbedoSpec", 3);
+        _lighting_pass_shader->setInt("gbuffertex.gNormal_World", 3);
         glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, gNormal_World);
+
+        _lighting_pass_shader->setInt("gbuffertex.gNormal_View", 4);
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_2D, gNormal_View);
+
+        _lighting_pass_shader->setInt("gbuffertex.gAlbedoSpec", 5);
+        glActiveTexture(GL_TEXTURE5);
         glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
 
         glActiveTexture(GL_TEXTURE0);

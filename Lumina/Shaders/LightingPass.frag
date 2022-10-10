@@ -75,16 +75,18 @@ float ShadowFactor(PointLight light, vec3 fragpos, vec3 norm);
 float Brightness(PointLight light, vec3 frag2light);
 
 struct GBufferTex {
-    sampler2D gPosition;
-    sampler2D gNormal;
+    sampler2D gPosition_World;
+    sampler2D gPosition_View;
+    sampler2D gNormal_World;
+    sampler2D gNormal_View;
     sampler2D gAlbedoSpec;
 };
 
 uniform GBufferTex gbuffertex;
 
 void main() {
-    vec3 fragpos = texture(gbuffertex.gPosition, fs_in.texCoords).rgb;
-    vec3 normal = texture(gbuffertex.gNormal, fs_in.texCoords).rgb;
+    vec3 fragpos = texture(gbuffertex.gPosition_World, fs_in.texCoords).rgb;
+    vec3 normal = texture(gbuffertex.gNormal_World, fs_in.texCoords).rgb;
     vec3 albedo = texture(gbuffertex.gAlbedoSpec, fs_in.texCoords).rgb;
     float specular = texture(gbuffertex.gAlbedoSpec, fs_in.texCoords).a;
 
