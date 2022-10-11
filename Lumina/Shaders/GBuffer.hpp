@@ -20,10 +20,10 @@ public:
 
     /* 
     texture_attachment layout:
-    0||gPostion_World(RGB)linearized_depth(A)   ||RBGA
-    1||gPosition_View(RGB)linearized_depth(A)   ||RGBA
-    2||gNormal_World                            ||RGB32F
-    3||gNormal_View                             ||RGB32F
+    0||gPostion_World(RGB)linearized_depth(A)   ||RBGA16F
+    1||gPosition_View(RGB)linearized_depth(A)   ||RGBA16F
+    2||gNormal_World                            ||RGBA16F
+    3||gNormal_View                             ||RGBA16F
     4||gAlbedo(RGB)Specular(A)                  ||RGBA
     */
 

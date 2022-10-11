@@ -33,17 +33,4 @@ void main() {
     vs_out.texCoords = aTexCoords;
 
     gl_Position = projection * temp;
-
-    // vec4 fragpos_world = model * vec4(aPosition, 1.0);
-    // vec4 fragpos_view = view * model * vec4(aPosition, 1.0);
-    // vec4 normal = transpose(inverse(model)) * vec4(aNormal, 1.0);
-    // vec4 normal_view = transpose(inverse(view * model)) *vec4(aNormal, 1.0);
-
-    // vs_out.fragpos_world = vec3(fragpos_world);
-    // vs_out.fragpos_view = vec3(fragpos_view);
-    // vs_out.normal = vec3(normal);
-    // vs_out.normal_view = vec3(normal_view);
-    // vs_out.texCoords = aTexCoords;
-
-    // gl_Position = projection * fragpos_view;
 }

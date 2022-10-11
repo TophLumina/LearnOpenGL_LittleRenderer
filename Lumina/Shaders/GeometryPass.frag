@@ -33,11 +33,7 @@ float linearize_depth(float depth) {
 
 void main() {
     gPosition_World = vec4(fs_in.fragpos_world, linearize_depth(gl_FragCoord.z));
-    // gPosition_World = vec4(vec3(gl_FragCoord.z > 1.0 ? 0.0 : gl_FragCoord.z),1.0);
-    // gPosition_World = vec4(fs_in.fragpos_world, 5.5);
     gPosition_View = vec4(fs_in.fragpos_view, linearize_depth(gl_FragCoord.z));
-    // gPosition_World = vec4(fs_in.fragpos_world, 1.0);
-    // gPosition_View = vec4(fs_in.fragpos_view, 1.0);
     gNormal_World = vec4(normalize(fs_in.normal), 1.0);
     gNormal_View = vec4(normalize(fs_in.normal_view), 1.0);
     gAlbedoSpec.rgb = texture(material.texture_diffuse1, fs_in.texCoords).rgb;
