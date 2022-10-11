@@ -1,6 +1,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+// SSAO
+#include <cmath>
+#include <random>
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -347,63 +350,66 @@ int main()
     // Viewport Settings
     glViewport(0, 0, ScreenWidth, ScreenHeight);
 
-    // SSAO
-    #include <random>
-    int SSAOkernalsize = 64;
-    std::uniform_real_distribution<float> distributor(0.0f, 1.0f);
-    std::default_random_engine generator;
-    std::vector<glm::vec3> SSAOkernel;
+    // // SSAO
+    // int SSAOkernalsize = 64;
+    // std::uniform_real_distribution<float> distributor(0.0f, 1.0f);
+    // std::default_random_engine generator;
+    // std::vector<glm::vec3> SSAOkernel;
 
-    // Sampler Generator
-    for (int i = 0; i < SSAOkernalsize; ++i) {
-        glm::vec3 sampler(
-            (distributor(generator) * 2.0f - 1.0f),
-            (distributor(generator) * 2.0f - 1.0f),
-            distributor(generator));
-        sampler = glm::normalize(sampler);
-        sampler = sampler * distributor(generator);
-        float scale = float(i) / SSAOkernalsize;
-        scale = std::lerp(0.1f, 1.0f, scale * scale);
-        sampler = sampler * scale;
-        SSAOkernel.push_back(sampler);
-    }
+    // // Sampler Generator
+    // for (int i = 0; i < SSAOkernalsize; ++i) {
+    //     glm::vec3 sampler(
+    //         (distributor(generator) * 2.0f - 1.0f),
+    //         (distributor(generator) * 2.0f - 1.0f),
+    //         distributor(generator));
+    //     sampler = glm::normalize(sampler);
+    //     sampler = sampler * distributor(generator);
+    //     float scale = float(i) / SSAOkernalsize;
+    //     scale = std::lerp(0.1f, 1.0f, scale * scale);
+    //     sampler = sampler * scale;
+    //     SSAOkernel.push_back(sampler);
+    // }
 
-    // SSAO Rotation Noise Texture(4*4)
-    int noise_size = 4;
-    std::vector<glm::vec3> SSAOnoise;
-    for (int i = 0; i < noise_size * noise_size; ++i) {
-        glm::vec3 noise(
-            distributor(generator) * 2.0f - 1.0f,
-            distributor(generator) * 2.0f - 1.0f,
-            0.0f);
-        SSAOnoise.push_back(noise);
-    }
+    // // SSAO Rotation Noise Texture(4*4)
+    // int noise_size = 4;
+    // std::vector<glm::vec3> SSAOnoise;
+    // for (int i = 0; i < noise_size * noise_size; ++i) {
+    //     glm::vec3 noise(
+    //         distributor(generator) * 2.0f - 1.0f,
+    //         distributor(generator) * 2.0f - 1.0f,
+    //         0.0f);
+    //     SSAOnoise.push_back(noise);
+    //     std::cout << noise.r + '\n' + noise.g + '\n' + noise.b + '\n' << std::endl;
+    // }
 
-    unsigned int SSAONoiseTexture;
-    glGenTextures(1, &SSAONoiseTexture);
-    glBindTexture(GL_TEXTURE_2D,SSAONoiseTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SSAOkernalsize, SSAOkernalsize, 0, GL_RGB, GL_FLOAT, SSAOnoise.data());//may have problems here
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    // unsigned int SSAONoiseTexture;
+    // glGenTextures(1, &SSAONoiseTexture);
+    // glBindTexture(GL_TEXTURE_2D,SSAONoiseTexture);
+    // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SSAOkernalsize, SSAOkernalsize, 0, GL_RGB, GL_FLOAT, &SSAOnoise[0]);//may have problems here
+    // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
+    // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
+    // glBindTexture(GL_TEXTURE_2D, 0);
 
-    // FrameBUffer
-    FrameBuffer SSAOfb(ScreenWidth, ScreenHeight, 1, 1, true);
-    glGenFramebuffers(1, &SSAOfb.ID);
-    glBindFramebuffer(GL_FRAMEBUFFER, SSAOfb.ID);
+    // // FrameBUffer
+    // FrameBuffer SSAOfb(ScreenWidth, ScreenHeight, 1, 1, true);
+    // glGenFramebuffers(1, &SSAOfb.ID);
+    // glBindFramebuffer(GL_FRAMEBUFFER, SSAOfb.ID);
 
-    // TextureBuffer
-    unsigned int ssaofbTexture;
-    glGenTextures(1,&ssaofbTexture);
-    glBindTexture(GL_TEXTURE_2D, ssaofbTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ScreenWidth, ScreenHeight, 0, GL_RGB, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaofbTexture, 0);
-    SSAOfb.texture_attachments.push_back(ssaofbTexture);
-    
+    // // TextureBuffer
+    // unsigned int ssaofbTexture;
+    // glGenTextures(1,&ssaofbTexture);
+    // glBindTexture(GL_TEXTURE_2D, ssaofbTexture);
+    // glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ScreenWidth, ScreenHeight, 0, GL_RGB, GL_FLOAT, NULL);
+    // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaofbTexture, 0);
+    // SSAOfb.texture_attachments.push_back(ssaofbTexture);
+    // glBindTexture(GL_TEXTURE_2D, 0);
+    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // SSAOfb.Check();
+
     // Bloom
     Shader GaussainBlurShader("./Shaders/GaussainBlur.vert", "./Shaders/GaussainBlur.frag");
     Shader BloomMixShader("./Shaders/BloomMix.vert", "./Shaders/BloomMix.frag");
