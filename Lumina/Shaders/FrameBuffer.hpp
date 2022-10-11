@@ -242,7 +242,7 @@ private:
 
     void vao_vbo_config()
     {
-        // Load VAO and VBO for Screen
+                // Load VAO and VBO for Screen
         glGenVertexArrays(1, &VAO);
         glBindVertexArray(VAO);
 

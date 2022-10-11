@@ -151,6 +151,7 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
+    // to Store DEPTH used for SSAO (USUALLY LINEARIZED AND BIGGER THAN 1.0) Blend should be OFF to Avoid Color Problems
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -305,7 +306,7 @@ int main()
     float aspect_ratio = 1.0f;
     float near = 1.0f;
     float far = 120.0f;
-    glm::vec3 PointLight_Pos(0.0f, 2.0f, 18.0f);
+    glm::vec3 PointLight_Pos(0.0f, 16.0f, 2.0f);
     glm::mat4 PointLight_projection = glm::perspective(glm::radians(90.0f), aspect_ratio, near, far);
     std::vector<glm::mat4> PointLight_Transform;
     PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(1.0f, 0.0f, 0.0), glm::vec3(0.0f, -1.0f, 0.0f)));
@@ -483,8 +484,14 @@ int main()
 
         GeoPassgfb.fb.MRTRenderConfig();
 
+        // to Store DEPTH used for SSAO (USUALLY LINEARIZED AND BIGGER THAN 1.0) Blend should be OFF to Avoid Color Problems
+        glDisable(GL_BLEND);
+
         GeoPassShader.Use();
         Haku.Draw(&GeoPassShader);
+
+        // when Blend is on Opengl can't pass a color which has aphla that > 1.0
+        glEnable(GL_BLEND);
 
         // LightingPass
         glBindFramebuffer(GL_FRAMEBUFFER, LightingPassfb.ID);
@@ -526,8 +533,8 @@ int main()
         PostEffectsShader.setFloat("exposure", exposure);
 
         PostEffectsShader.Use();
-        // Orifb.Draw(bloom ? bt.tex_finished() : Orifb.ServeTextures().at(0));
         LightingPassfb.Draw(bloom ? bt.tex_finished() : LightingPassfb.ServeTextures().at(0));
+        // LightingPassfb.Draw(GeoPassgfb.fb.ServeTextures().at(0));
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);

@@ -104,6 +104,7 @@ void main() {
 
     result += imp * albedo;
 
+    // FragColor = vec4(result, 1.0);
     FragColor = vec4(result, 1.0);
 
     float bright = dot(FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
