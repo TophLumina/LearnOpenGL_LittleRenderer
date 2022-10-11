@@ -167,6 +167,8 @@ int main()
     // Layer 1 = bright color
     Shader LightingPassShader("./Shaders/LightingPass.vert", "./Shaders/LightingPass.frag");
 
+    Shader SSAOPassShader("./Shaders/HDR.vert", "./Shaders/SSAO.frag");
+
     Shader PostEffectsShader("./Shaders/HDR.vert", "./Shaders/HDR.frag");
 
     // Models and Shaders
@@ -200,6 +202,9 @@ int main()
 
     LightCubeShader.Use();
     LightCubeShader.setUniformBlock("Matrices", 0);
+
+    SSAOPassShader.Use();
+    SSAOPassShader.setUniformBlock("Matrices", 0);
 
     // UniformbLock Slot Binding
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, MatricesBlock);
@@ -351,65 +356,74 @@ int main()
     // Viewport Settings
     glViewport(0, 0, ScreenWidth, ScreenHeight);
 
-    // // SSAO
-    // int SSAOkernalsize = 64;
-    // std::uniform_real_distribution<float> distributor(0.0f, 1.0f);
-    // std::default_random_engine generator;
-    // std::vector<glm::vec3> SSAOkernel;
+    // SSAO
+    int SSAOkernalsize = 64;
+    std::uniform_real_distribution<float> distributor(0.0f, 1.0f);
+    std::default_random_engine generator;
+    std::vector<glm::vec3> SSAOkernel;
 
-    // // Sampler Generator
-    // for (int i = 0; i < SSAOkernalsize; ++i) {
-    //     glm::vec3 sampler(
-    //         (distributor(generator) * 2.0f - 1.0f),
-    //         (distributor(generator) * 2.0f - 1.0f),
-    //         distributor(generator));
-    //     sampler = glm::normalize(sampler);
-    //     sampler = sampler * distributor(generator);
-    //     float scale = float(i) / SSAOkernalsize;
-    //     scale = std::lerp(0.1f, 1.0f, scale * scale);
-    //     sampler = sampler * scale;
-    //     SSAOkernel.push_back(sampler);
-    // }
+    // Sampler Generator
+    for (int i = 0; i < SSAOkernalsize; ++i) {
+        glm::vec3 sampler(
+            (distributor(generator) * 2.0f - 1.0f),
+            (distributor(generator) * 2.0f - 1.0f),
+            distributor(generator));
+        sampler = glm::normalize(sampler);
+        sampler = sampler * distributor(generator);
+        float scale = float(i) / SSAOkernalsize;
+        scale = std::lerp(0.1f, 1.0f, scale * scale);
+        sampler = sampler * scale;
+        SSAOkernel.push_back(sampler);
+    }
 
-    // // SSAO Rotation Noise Texture(4*4)
-    // int noise_size = 4;
-    // std::vector<glm::vec3> SSAOnoise;
-    // for (int i = 0; i < noise_size * noise_size; ++i) {
-    //     glm::vec3 noise(
-    //         distributor(generator) * 2.0f - 1.0f,
-    //         distributor(generator) * 2.0f - 1.0f,
-    //         0.0f);
-    //     SSAOnoise.push_back(noise);
-    //     std::cout << noise.r + '\n' + noise.g + '\n' + noise.b + '\n' << std::endl;
-    // }
+    SSAOPassShader.Use();
+    for (int i = 0; i < SSAOkernalsize; ++i)
+        SSAOPassShader.setVec3("samplers[" + std::to_string(i) + "]", SSAOkernel[i]);
 
-    // unsigned int SSAONoiseTexture;
-    // glGenTextures(1, &SSAONoiseTexture);
-    // glBindTexture(GL_TEXTURE_2D,SSAONoiseTexture);
-    // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SSAOkernalsize, SSAOkernalsize, 0, GL_RGB, GL_FLOAT, &SSAOnoise[0]);//may have problems here
-    // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-    // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-    // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
-    // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
-    // glBindTexture(GL_TEXTURE_2D, 0);
+    // SSAO Rotation Noise Texture(4*4)
+    int noise_size = 4;
+    std::vector<glm::vec3> SSAOnoise;
+    for (int i = 0; i < noise_size * noise_size; ++i) {
+        glm::vec3 noise(
+            distributor(generator) * 2.0f - 1.0f,
+            distributor(generator) * 2.0f - 1.0f,
+            0.0f);
+        SSAOnoise.push_back(noise);
+    }
 
-    // // FrameBUffer
-    // FrameBuffer SSAOfb(ScreenWidth, ScreenHeight, 1, 1, true);
-    // glGenFramebuffers(1, &SSAOfb.ID);
-    // glBindFramebuffer(GL_FRAMEBUFFER, SSAOfb.ID);
+    unsigned int SSAONoiseTexture;
+    glGenTextures(1, &SSAONoiseTexture);
+    glBindTexture(GL_TEXTURE_2D,SSAONoiseTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, noise_size, noise_size, 0, GL_RGB, GL_FLOAT, &SSAOnoise[0]);//may have problems here
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
-    // // TextureBuffer
-    // unsigned int ssaofbTexture;
-    // glGenTextures(1,&ssaofbTexture);
-    // glBindTexture(GL_TEXTURE_2D, ssaofbTexture);
-    // glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ScreenWidth, ScreenHeight, 0, GL_RGB, GL_FLOAT, NULL);
-    // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-    // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-    // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaofbTexture, 0);
-    // SSAOfb.texture_attachments.push_back(ssaofbTexture);
-    // glBindTexture(GL_TEXTURE_2D, 0);
-    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    // SSAOfb.Check();
+    // FrameBUffer
+    FrameBuffer SSAOfb(ScreenWidth, ScreenHeight, 1, 1, true);
+    glGenFramebuffers(1, &SSAOfb.ID);
+    glBindFramebuffer(GL_FRAMEBUFFER, SSAOfb.ID);
+
+    // TextureBuffer
+    unsigned int ssaofbTexture;
+    glGenTextures(1,&ssaofbTexture);
+    glBindTexture(GL_TEXTURE_2D, ssaofbTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ScreenWidth, ScreenHeight, 0, GL_RGB, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaofbTexture, 0);
+    SSAOfb.texture_attachments.push_back(ssaofbTexture);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    SSAOfb.Check();
+
+    SSAOPassShader.Use();
+    SSAOPassShader.setInt("SRC_Width", ScreenWidth);
+    SSAOPassShader.setInt("SRC_Height", ScreenHeight);
+
+
 
     // Bloom
     Shader GaussainBlurShader("./Shaders/GaussainBlur.vert", "./Shaders/GaussainBlur.frag");
@@ -426,6 +440,8 @@ int main()
 
     bool bloom = false;
     int bloomloop = 15;
+    bool SSAO = false;
+    bool SSAOBlur = false;
 
     while(!glfwWindowShouldClose(window))
     {
@@ -490,6 +506,27 @@ int main()
         GeoPassShader.Use();
         Haku.Draw(&GeoPassShader);
 
+        // SSAO Pass
+        SSAOPassShader.Use();
+        SSAOPassShader.setInt("SSAONoise", 1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, SSAONoiseTexture);
+
+        SSAOPassShader.setInt("gPosition_View", 2);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, GeoPassgfb.gPosition_View);
+
+        SSAOPassShader.setInt("gNormal_View", 3);
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, GeoPassgfb.gNormal_View);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, SSAOfb.ID);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        SSAOfb.Draw();
+
         // when Blend is on Opengl can't pass a color which has aphla that > 1.0
         glEnable(GL_BLEND);
 
@@ -533,8 +570,8 @@ int main()
         PostEffectsShader.setFloat("exposure", exposure);
 
         PostEffectsShader.Use();
-        LightingPassfb.Draw(bloom ? bt.tex_finished() : LightingPassfb.ServeTextures().at(0));
-        // LightingPassfb.Draw(GeoPassgfb.fb.ServeTextures().at(0));
+        // LightingPassfb.Draw(bloom ? bt.tex_finished() : LightingPassfb.ServeTextures().at(0));
+        LightingPassfb.Draw(ssaofbTexture);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);

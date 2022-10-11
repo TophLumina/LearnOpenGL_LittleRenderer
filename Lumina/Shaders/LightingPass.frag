@@ -82,6 +82,11 @@ struct GBufferTex {
     sampler2D gAlbedoSpec;
 };
 
+struct SSAO_Compoent {
+    bool apply_SSAO;
+    sampler2D SSAOTexture;
+};
+
 uniform GBufferTex gbuffertex;
 
 void main() {
