@@ -304,8 +304,8 @@ int main()
     // Matrices and Shaders for CubeDepthMap Usage
     float aspect_ratio = 1.0f;
     float near = 1.0f;
-    float far = 150.0f;
-    glm::vec3 PointLight_Pos(0.0f, 16.0f, 2.0f);
+    float far = 120.0f;
+    glm::vec3 PointLight_Pos(0.0f, 0.0f, 5.0f);
     glm::mat4 PointLight_projection = glm::perspective(glm::radians(90.0f), aspect_ratio, near, far);
     std::vector<glm::mat4> PointLight_Transform;
     PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(1.0f, 0.0f, 0.0), glm::vec3(0.0f, -1.0f, 0.0f)));
