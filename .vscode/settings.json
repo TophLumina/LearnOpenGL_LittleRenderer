@@ -2,6 +2,7 @@
     "files.associations": {
         "*.rh": "cpp",
         "string": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "random": "cpp"
     }
 }
