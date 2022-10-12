@@ -75,19 +75,20 @@ float ShadowFactor(PointLight light, vec3 fragpos, vec3 norm);
 float Brightness(PointLight light, vec3 frag2light);
 
 struct GBufferTex {
-    sampler2D gPosition_World;
-    sampler2D gPosition_View;
-    sampler2D gNormal_World;
-    sampler2D gNormal_View;
-    sampler2D gAlbedoSpec;
+    sampler2D gPosition_World;  // layer 1
+    sampler2D gPosition_View;   // layer 2
+    sampler2D gNormal_World;    // layer 3
+    sampler2D gNormal_View;     // layer 4
+    sampler2D gAlbedoSpec;      // layer 5
 };
 
 struct SSAO_Compoent {
     bool apply_SSAO;
-    sampler2D SSAOTexture;
+    sampler2D SSAOTexture;      // layer 6
 };
 
 uniform GBufferTex gbuffertex;
+uniform SSAO_Compoent ssao_compoent;
 
 void main() {
     vec3 fragpos = texture(gbuffertex.gPosition_World, fs_in.texCoords).rgb;
@@ -104,8 +105,10 @@ void main() {
     //     dirlight_fragPos[i] = lightinfo.DirLight_Transform[i] * vec4(fragpos, 1.0);
     // float imp = IsBright(-dirlights[0].direction, norm) ? ShadowFactor(dirlights[0], dirlight_fragPos[0], norm) : 0.0;
     float imp_diff = IsBright(pointlights[0].position - fragpos, norm) ? ShadowFactor(pointlights[0], fragpos, norm) : 0.0;
-    float imp_ambi = 0.4;
-    float imp = imp_diff * Brightness(pointlights[0], (fragpos - pointlights[0].position)) * 0.6 + imp_ambi;
+    float ambient_occlusion = texture(ssao_compoent.SSAOTexture, fs_in.texCoords).r;
+    float imp_ambi = 1.0 * (ssao_compoent.apply_SSAO ? ambient_occlusion : 1.0);
+    float imp = imp_diff * Brightness(pointlights[0], (fragpos - pointlights[0].position)) * 0 + imp_ambi;
+    // float imp = imp_diff * Brightness(pointlights[0], (fragpos - pointlights[0].position)) * 0.6 + imp_ambi;
 
     result += imp * albedo;
 

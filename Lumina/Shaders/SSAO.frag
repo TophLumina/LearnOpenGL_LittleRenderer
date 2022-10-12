@@ -3,7 +3,7 @@
 // <--IMPORTANT--> Usually Unchaged
 const int SSAO_KERNAL_SIZE = 64;
 const int SSAO_NOISE_SIZE = 4;
-const float SAMPLE_RADIUS_OFFSET = 1.5;
+const float SAMPLE_RADIUS_OFFSET = 1.35;
 
 in VS_OUT {
     vec2 texCoords;
@@ -49,7 +49,7 @@ void main() {
         float sample_depth = texture(gPosition_View, sample_coords.xy).w;
         float smooth_occlusion_factor = smoothstep(0.0, 1.0, abs(SAMPLE_RADIUS_OFFSET - sample_depth / sample_coords.w));
         occlusion += sample_depth >= sample_coords.w ? smooth_occlusion_factor : 0.0;
-        // occlusion -= sample_coords.w == 0 ? 1.0 : 0.0;
+        occlusion -= sample_coords.w == 0 ? 1.0 : 0.0;
     }
 
     occlusion /= SSAO_KERNAL_SIZE;

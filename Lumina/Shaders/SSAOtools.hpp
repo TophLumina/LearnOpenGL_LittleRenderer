@@ -11,12 +11,19 @@ class SSAOtools
 {
 public:
     FrameBuffer SSAOfb;
-    unsigned int SSAOfbTexture;
-    GBuffer* gBuffer;   // remember to check when apply SSAO
+    GBuffer* gBuffer;
     Shader* SSAOPassShader;
+    
+    // Blur
+    FrameBuffer SSAOBlurfb;
+    unsigned int BlurTexture;
+    unsigned int SSAOfbTexture;
+    Shader Blurshader;
 
-
-    SSAOtools(int width, int height, GBuffer* gbuffer, Shader* shader, int _kernal_size = 64, int _noise_size = 4) : SSAOfb(width, height, 1, 1, true)
+    SSAOtools(int width, int height, GBuffer* gbuffer, Shader* shader, int _kernal_size = 64, int _noise_size = 4) :
+    SSAOfb(width, height, 1, 1, true),
+    SSAOBlurfb(width, height, 1, 1, true),
+    Blurshader("./Shaders/HDR.vert","./Shaders/SSAOBlur.frag")
     {
         SRCWidth = width;
         SRCHeight = height;
@@ -26,22 +33,30 @@ public:
         SSAOnoisesize = _noise_size;
 
         buildSSAOkernal_SSAOnoise();
-        buildSSAOframebuffer();
+        buildSSAOframebuffers();
     }
 
     // Caution: This Func will NOT Set uniform_block of the Shader
     void ShaderConfig()
     {
-        SSAOPassShader->Use();
         SSAOPassShader->setInt("SRC_Width", SRCWidth);
         SSAOPassShader->setInt("SRC_Height", SRCHeight);
         for (int i = 0; i < SSAOkernalsize; ++i)
             SSAOPassShader->setVec3("samplers[" + std::to_string(i) + "]", SSAOkernal[i]);
     }
 
-    void Render()
+    void LightingPass_Shader_Config(Shader* _lighting_pass_shader, bool _apply_bulr)
     {
-        SSAOPassShader->Use();
+        _lighting_pass_shader->setInt("ssao_compoent.SSAOTexture", 6);
+        glActiveTexture(GL_TEXTURE6);
+        glBindTexture(GL_TEXTURE_2D, _apply_bulr ? BlurTexture : SSAOfbTexture);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    void Draw()
+    {
         SSAOPassShader->setInt("SSAONoise", 1);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, SSAONoiseTexture);
@@ -62,6 +77,16 @@ public:
         SSAOfb.Draw();
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        // Blur
+        Blurshader.Use();
+
+        glBindFramebuffer(GL_FRAMEBUFFER, SSAOBlurfb.ID);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        SSAOBlurfb.Draw(SSAOfbTexture);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
 private:
@@ -117,7 +142,7 @@ private:
     }
 
     // SSAOframebuffer builder
-    void buildSSAOframebuffer()
+    void buildSSAOframebuffers()
     {
         glGenFramebuffers(1, &SSAOfb.ID);
         glBindFramebuffer(GL_FRAMEBUFFER, SSAOfb.ID);
@@ -133,5 +158,20 @@ private:
         glBindTexture(GL_TEXTURE_2D,0);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         SSAOfb.Check();
+
+        glGenFramebuffers(1, &SSAOBlurfb.ID);
+        glBindFramebuffer(GL_FRAMEBUFFER, SSAOBlurfb.ID);
+
+        glGenTextures(1, &BlurTexture);
+        glBindTexture(GL_TEXTURE_2D, BlurTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SRCWidth, SRCHeight, 0, GL_RGB, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, BlurTexture, 0);
+        SSAOBlurfb.texture_attachments.push_back(BlurTexture);
+
+        glBindTexture(GL_TEXTURE_2D,0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        SSAOBlurfb.Check();
     }
 };

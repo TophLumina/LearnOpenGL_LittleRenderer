@@ -356,6 +356,7 @@ int main()
 
     // SSAO Tools
     SSAOtools st(ScreenWidth, ScreenHeight, &GeoPassgfb, &SSAOPassShader);
+    SSAOPassShader.Use();
     st.ShaderConfig();
 
     // Bloom
@@ -373,8 +374,8 @@ int main()
 
     bool bloom = false;
     int bloomloop = 15;
-    bool SSAO = false;
-    bool SSAOBlur = false;
+    bool SSAO = true;
+    bool SSAOBlur = true;
 
     while(!glfwWindowShouldClose(window))
     {
@@ -402,6 +403,10 @@ int main()
             ImGui::SliderInt("Kernel Selector", &kernel, 0, 3);
             ImGui::NewLine();
             ImGui::SliderFloat("Exposure", &exposure, 0.0f, 100.0f, "%.2f");
+
+            ImGui::NewLine();
+            ImGui::Checkbox("SSAO", &SSAO);
+            ImGui::Checkbox("SSAOBlur", &SSAOBlur);
 
             ImGui::NewLine();
             ImGui::Checkbox("Bloom", &bloom);
@@ -440,7 +445,8 @@ int main()
         Haku.Draw(&GeoPassShader);
 
         // SSAO Pass
-        st.Render();
+        SSAOPassShader.Use();
+        st.Draw();
 
         // when Blend is on Opengl can't pass a color which has aphla that > 1.0
         glEnable(GL_BLEND);
@@ -455,6 +461,9 @@ int main()
 
         LightingPassShader.Use();
         GeoPassgfb.Deferred_Rendering_Config(&LightingPassShader);
+        // SSAO Vars by Gui used for LightingPass
+        st.LightingPass_Shader_Config(&LightingPassShader, SSAOBlur);
+        LightingPassShader.setBool("ssao_compoent.apply_SSAO", SSAO);
 
         LightingPassfb.Draw();
 
@@ -485,8 +494,7 @@ int main()
         PostEffectsShader.setFloat("exposure", exposure);
 
         PostEffectsShader.Use();
-        // LightingPassfb.Draw(bloom ? bt.tex_finished() : LightingPassfb.ServeTextures().at(0));
-        LightingPassfb.Draw(st.SSAOfbTexture);
+        LightingPassfb.Draw(bloom ? bt.tex_finished() : LightingPassfb.ServeTextures().at(0));
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
