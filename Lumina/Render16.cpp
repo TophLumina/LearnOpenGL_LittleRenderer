@@ -1,9 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-// SSAO
-#include <cmath>
-#include <random>
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -24,6 +21,7 @@
 #include "./Lights/LightingManager.hpp"
 #include "./Shaders/BloomTools.hpp"
 #include "./Shaders/GBuffer.hpp"
+#include "./Shaders/SSAOtools.hpp"
 
 glm::vec3 campos(0.0, 0.0, 0.0);
 glm::vec3 camup(0.0, 1.0, 0.0);
@@ -356,74 +354,9 @@ int main()
     // Viewport Settings
     glViewport(0, 0, ScreenWidth, ScreenHeight);
 
-    // SSAO
-    int SSAOkernalsize = 64;
-    std::uniform_real_distribution<float> distributor(0.0f, 1.0f);
-    std::default_random_engine generator;
-    std::vector<glm::vec3> SSAOkernel;
-
-    // Sampler Generator
-    for (int i = 0; i < SSAOkernalsize; ++i) {
-        glm::vec3 sampler(
-            (distributor(generator) * 2.0f - 1.0f),
-            (distributor(generator) * 2.0f - 1.0f),
-            distributor(generator));
-        sampler = glm::normalize(sampler);
-        sampler = sampler * distributor(generator);
-        float scale = float(i) / SSAOkernalsize;
-        scale = std::lerp(0.1f, 1.0f, scale * scale);
-        sampler = sampler * scale;
-        SSAOkernel.push_back(sampler);
-    }
-
-    SSAOPassShader.Use();
-    for (int i = 0; i < SSAOkernalsize; ++i)
-        SSAOPassShader.setVec3("samplers[" + std::to_string(i) + "]", SSAOkernel[i]);
-
-    // SSAO Rotation Noise Texture(4*4)
-    int noise_size = 4;
-    std::vector<glm::vec3> SSAOnoise;
-    for (int i = 0; i < noise_size * noise_size; ++i) {
-        glm::vec3 noise(
-            distributor(generator) * 2.0f - 1.0f,
-            distributor(generator) * 2.0f - 1.0f,
-            0.0f);
-        SSAOnoise.push_back(noise);
-    }
-
-    unsigned int SSAONoiseTexture;
-    glGenTextures(1, &SSAONoiseTexture);
-    glBindTexture(GL_TEXTURE_2D,SSAONoiseTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, noise_size, noise_size, 0, GL_RGB, GL_FLOAT, &SSAOnoise[0]);//may have problems here
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    // FrameBUffer
-    FrameBuffer SSAOfb(ScreenWidth, ScreenHeight, 1, 1, true);
-    glGenFramebuffers(1, &SSAOfb.ID);
-    glBindFramebuffer(GL_FRAMEBUFFER, SSAOfb.ID);
-
-    // TextureBuffer
-    unsigned int ssaofbTexture;
-    glGenTextures(1,&ssaofbTexture);
-    glBindTexture(GL_TEXTURE_2D, ssaofbTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ScreenWidth, ScreenHeight, 0, GL_RGB, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaofbTexture, 0);
-    SSAOfb.texture_attachments.push_back(ssaofbTexture);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    SSAOfb.Check();
-
-    SSAOPassShader.Use();
-    SSAOPassShader.setInt("SRC_Width", ScreenWidth);
-    SSAOPassShader.setInt("SRC_Height", ScreenHeight);
-
-
+    // SSAO Tools
+    SSAOtools st(ScreenWidth, ScreenHeight, &GeoPassgfb, &SSAOPassShader);
+    st.ShaderConfig();
 
     // Bloom
     Shader GaussainBlurShader("./Shaders/GaussainBlur.vert", "./Shaders/GaussainBlur.frag");
@@ -507,25 +440,7 @@ int main()
         Haku.Draw(&GeoPassShader);
 
         // SSAO Pass
-        SSAOPassShader.Use();
-        SSAOPassShader.setInt("SSAONoise", 1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, SSAONoiseTexture);
-
-        SSAOPassShader.setInt("gPosition_View", 2);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, GeoPassgfb.gPosition_View);
-
-        SSAOPassShader.setInt("gNormal_View", 3);
-        glActiveTexture(GL_TEXTURE3);
-        glBindTexture(GL_TEXTURE_2D, GeoPassgfb.gNormal_View);
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, 0);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, SSAOfb.ID);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        SSAOfb.Draw();
+        st.Render();
 
         // when Blend is on Opengl can't pass a color which has aphla that > 1.0
         glEnable(GL_BLEND);
@@ -571,7 +486,7 @@ int main()
 
         PostEffectsShader.Use();
         // LightingPassfb.Draw(bloom ? bt.tex_finished() : LightingPassfb.ServeTextures().at(0));
-        LightingPassfb.Draw(ssaofbTexture);
+        LightingPassfb.Draw(st.SSAOfbTexture);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
