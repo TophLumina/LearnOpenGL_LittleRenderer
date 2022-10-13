@@ -10,16 +10,6 @@
 class SSAOtools
 {
 public:
-    FrameBuffer SSAOfb;
-    GBuffer* gBuffer;
-    Shader* SSAOPassShader;
-    
-    // Blur
-    FrameBuffer SSAOBlurfb;
-    unsigned int BlurTexture;
-    unsigned int SSAOfbTexture;
-    Shader Blurshader;
-
     SSAOtools(int width, int height, GBuffer* gbuffer, Shader* shader, int _kernal_size = 64, int _noise_size = 4) :
     SSAOfb(width, height, 1, 1, true),
     SSAOBlurfb(width, height, 1, 1, true),
@@ -97,6 +87,15 @@ private:
 
     std::vector<glm::vec3> SSAOkernal;
     std::vector<glm::vec3> SSAOnoise;
+    FrameBuffer SSAOfb;
+    GBuffer* gBuffer;
+    Shader* SSAOPassShader;
+    
+    Shader Blurshader;
+    FrameBuffer SSAOBlurfb;
+
+    unsigned int BlurTexture;
+    unsigned int SSAOfbTexture;
     unsigned int SSAONoiseTexture;
 
     void buildSSAOnoisetexture()
