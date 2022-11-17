@@ -1,4 +1,4 @@
-# Lumina_LearnOpenGL
+# LearnOpenGL_LittleRenderer
 
 ### a small project on opengl learning
 
