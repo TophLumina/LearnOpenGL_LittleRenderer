@@ -1,4 +1,4 @@
-# version 330 core
+#version 330 core
 
 // <--IMPORTANT--> Usually Unchaged
 const int SSAO_KERNAL_SIZE = 64;

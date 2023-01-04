@@ -1,4 +1,4 @@
-# version 330 core
+#version 330 core
 // This Requires all Other Shader should set their Position Attrib Layer to ZERO!
 layout (location = 0) in vec3 aPosition;
 layout (location = 3) in mat4 instanceMatrices;

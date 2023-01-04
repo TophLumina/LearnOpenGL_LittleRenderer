@@ -1,4 +1,4 @@
-# version 330 core
+#version 330 core
 
 const float Gamma = 2.2;
 

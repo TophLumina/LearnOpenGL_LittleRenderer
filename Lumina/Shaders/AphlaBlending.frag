@@ -1,4 +1,4 @@
-# version 330 core
+#version 330 core
 
 // const int Diffuse_MAX = 4;
 // const int Specular_MAX = 2;

@@ -1,4 +1,4 @@
-# version 330 core
+#version 330 core
 
 uniform vec3 lightColor;
 uniform vec3 objectColor;

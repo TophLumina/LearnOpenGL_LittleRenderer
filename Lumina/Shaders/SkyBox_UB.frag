@@ -1,4 +1,4 @@
-# version 330 core
+#version 330 core
 
  in VS_OUT {
      vec3 textureDir;
