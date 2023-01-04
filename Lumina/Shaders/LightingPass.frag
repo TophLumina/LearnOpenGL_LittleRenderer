@@ -201,3 +201,7 @@ float ShadowFactor(PointLight light, vec3 fragpos, vec3 norm) {
 float Brightness(PointLight light, vec3 frag2light) {
     return light.attrib.diffuse.r / (1.0 + light.attenuation.constant + light.attenuation.linear * length(frag2light));
 }
+
+float Frenel(vec3 norm, vec3 view_dir) {
+    return pow(1.0 - dot(norm, view_dir), 4.0);
+}

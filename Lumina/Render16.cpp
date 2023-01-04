@@ -170,7 +170,7 @@ int main()
     Shader PostEffectsShader("./Shaders/HDR.vert", "./Shaders/HDR.frag");
 
     // Models and Shaders
-    Model Haku("./Model/Haku/TDA Lacy Haku.pmx");
+    Model Pier("./Model/Pei_Er/Pei_Er.pmx");
 
     Model Cube("./Model/JustCube/untitled.fbx");
     Shader LightCubeShader("./Shaders/LightCube.vert", "./Shaders/LightCubeBloom.frag");
@@ -273,7 +273,7 @@ int main()
 
     // Pre-Render
     DirLightShadowShader.Use();
-    Haku.Draw(&DirLightShadowShader);
+    Pier.Draw(&DirLightShadowShader);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -342,7 +342,7 @@ int main()
 
     // Pre-Rendering
     PointLightShader.Use();
-    Haku.Draw(&PointLightShader);
+    Pier.Draw(&PointLightShader);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -442,7 +442,7 @@ int main()
         glDisable(GL_BLEND);
 
         GeoPassShader.Use();
-        Haku.Draw(&GeoPassShader);
+        Pier.Draw(&GeoPassShader);
 
         // SSAO Pass
         SSAOPassShader.Use();
@@ -471,9 +471,9 @@ int main()
         glBlitNamedFramebuffer(GeoPassgfb.fb.ID, LightingPassfb.ID, 0, 0, GeoPassgfb.SCRWidth, GeoPassgfb.SCRHeight, 0, 0, LightingPassfb.ScreenWidth, LightingPassfb.ScreenHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
         glEnable(GL_DEPTH_TEST);
 
-        // Light Cube
-        LightCubeShader.Use();
-        Cube.Draw(&LightCubeShader);
+        // // Light Cube
+        // LightCubeShader.Use();
+        // Cube.Draw(&LightCubeShader);
 
         // Bloom
         if(bloom)
@@ -483,7 +483,7 @@ int main()
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glDisable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT);
-        glClearColor(0.0, 0.0, 0.0, 1.0);
+        glClearColor(0.3, 0.3, 0.3, 1.0);
 
         // Imgui Post Effects Dynamics
         PostEffectsShader.Use();
