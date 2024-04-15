@@ -171,6 +171,7 @@ int main()
 
     // Models and Shaders
     Model Pier("./Model/Pei_Er/Pei_Er.pmx");
+    Model Floor("./Model/Floor/draft_floor.fbx");
 
     Model Cube("./Model/JustCube/untitled.fbx");
     Shader LightCubeShader("./Shaders/LightCube.vert", "./Shaders/LightCubeBloom.frag");
@@ -274,13 +275,12 @@ int main()
     // Pre-Render
     DirLightShadowShader.Use();
     Pier.Draw(&DirLightShadowShader);
+    Floor.Draw(&DirLightShadowShader);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // Lighting Management and Shadow Shader Config
     LM.dirlights.push_back(DirLight(attrib, lightdir, DirLight_Transform, DirLightShadowMap));
-
-    // LM.ShaderConfig(&LightingProcessShader);
     LM.ShaderConfig(&LightingPassShader);
 
     // PointLight ShadowMap
@@ -309,7 +309,7 @@ int main()
     float aspect_ratio = 1.0f;
     float near = 1.0f;
     float far = 120.0f;
-    glm::vec3 PointLight_Pos(0.0f, 16.0f, 2.0f);
+    glm::vec3 PointLight_Pos(0.0f, 2.0f, 2.0f);
     glm::mat4 PointLight_projection = glm::perspective(glm::radians(90.0f), aspect_ratio, near, far);
     std::vector<glm::mat4> PointLight_Transform;
     PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(1.0f, 0.0f, 0.0), glm::vec3(0.0f, -1.0f, 0.0f)));
@@ -343,13 +343,13 @@ int main()
     // Pre-Rendering
     PointLightShader.Use();
     Pier.Draw(&PointLightShader);
+    Floor.Draw(&PointLightShader);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     LM.pointlights.push_back(PointLight(attrib, PointLight_Pos, Attenuation(0.7f, 3.5f), CubeShadowMap, far));
 
     LM.ShaderConfig(&LightingPassShader);
-
 
     // Viewport Settings
     glViewport(0, 0, ScreenWidth, ScreenHeight);
@@ -443,6 +443,7 @@ int main()
 
         GeoPassShader.Use();
         Pier.Draw(&GeoPassShader);
+        Floor.Draw(&GeoPassShader);
 
         // SSAO Pass
         SSAOPassShader.Use();
@@ -472,8 +473,8 @@ int main()
         glEnable(GL_DEPTH_TEST);
 
         // // Light Cube
-        // LightCubeShader.Use();
-        // Cube.Draw(&LightCubeShader);
+        LightCubeShader.Use();
+        Cube.Draw(&LightCubeShader);
 
         // Bloom
         if(bloom)

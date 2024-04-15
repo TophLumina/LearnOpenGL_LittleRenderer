@@ -39,6 +39,7 @@ out VS_OUT {
     flat int num_pointlight;
     flat int num_spotlight;
 
+    // frag position in light space
     vec4 dirlight_fragPos[OTHER_LIMITATION];
 
     // Tangent Space to World Space Transform Matrix

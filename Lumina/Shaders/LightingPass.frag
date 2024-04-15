@@ -102,17 +102,22 @@ void main() {
     vec3 result = vec3(0.0, 0.0, 0.0);
 
     // for (int i = 0; i < lightinfo.num_dirlight; ++i)
+    // {
     //     dirlight_fragPos[i] = lightinfo.DirLight_Transform[i] * vec4(fragpos, 1.0);
+    // }
+    vec4 dirlight_fragPos = lightinfo.DirLight_Transform * vec4(fragpos, 1.0);
+
+    float imp = IsBright(-dirlights[0].direction, norm) ? ShadowFactor(dirlights[0], dirlight_fragPos, norm) : 0.0;
     // float imp = IsBright(-dirlights[0].direction, norm) ? ShadowFactor(dirlights[0], dirlight_fragPos[0], norm) : 0.0;
-    float imp_diff = IsBright(pointlights[0].position - fragpos, norm) ? ShadowFactor(pointlights[0], fragpos, norm) : 0.0;
-    float ambient_occlusion = texture(ssao_compoent.SSAOTexture, fs_in.texCoords).r;
-    float imp_ambi = 1.0 * (ssao_compoent.apply_SSAO ? ambient_occlusion : 1.0);
-    float imp = imp_diff * Brightness(pointlights[0], (fragpos - pointlights[0].position)) * 0 + imp_ambi;
-    // float imp = imp_diff * Brightness(pointlights[0], (fragpos - pointlights[0].position)) * 0.6 + imp_ambi;
+    // float imp_diff = IsBright(pointlights[0].position - fragpos, norm) ? ShadowFactor(pointlights[0], fragpos, norm) : 0.0;
+    // float ambient_occlusion = texture(ssao_compoent.SSAOTexture, fs_in.texCoords).r;
+    // float imp_ambi = 1.0 * (ssao_compoent.apply_SSAO ? ambient_occlusion : 1.0);
+    // float imp = imp_diff * Brightness(pointlights[0], (fragpos - pointlights[0].position)) * 0 + imp_ambi;
+    // float imp = imp_diff * Brightness(pointlights[0], (fragpos - pointlights[0].position)) * 0.75 + imp_ambi * 0.25;
+    // float imp = imp_diff;
 
     result += imp * albedo;
 
-    // FragColor = vec4(result, 1.0);
     FragColor = vec4(result, 1.0);
 
     float bright = dot(FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
@@ -199,9 +204,5 @@ float ShadowFactor(PointLight light, vec3 fragpos, vec3 norm) {
 }
 
 float Brightness(PointLight light, vec3 frag2light) {
-    return light.attrib.diffuse.r / (1.0 + light.attenuation.constant + light.attenuation.linear * length(frag2light));
-}
-
-float Frenel(vec3 norm, vec3 view_dir) {
-    return pow(1.0 - dot(norm, view_dir), 4.0);
+    return light.attrib.diffuse.r / (light.attenuation.constant + light.attenuation.linear * length(frag2light));
 }

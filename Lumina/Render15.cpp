@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <random>
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -157,8 +158,11 @@ int main()
     Shader fbShader("./Shaders/HDR.vert", "./Shaders/HDR.frag");
 
     // Models and Shaders
-    Model Haku("./Model/Haku/TDA Lacy Haku.pmx");
+    Model Haku("./Model/Pei_Er/Pei_Er.pmx");
     Shader HakuShader("./Shaders/Bloom.vert", "./Shaders/Bloom.frag");
+
+    Model Floor("./Model/Floor/draft_floor.fbx");
+    Shader FloorShader("./Shaders/Bloom.vert", "./Shaders/Bloom.frag");
 
     Model Cube("./Model/JustCube/untitled.fbx");
     Shader LightCubeShader("./Shaders/LightCube.vert", "./Shaders/LightCubeBloom.frag");
@@ -167,6 +171,9 @@ int main()
     model = glm::scale(model, glm::vec3(0.1f));
     HakuShader.Use();
     HakuShader.setMat4("model", model);
+
+    FloorShader.Use();
+    FloorShader.setMat4("model", glm::mat4(1.0f));
 
     // UniformBuffer
     unsigned int MatricesBlock;
@@ -181,6 +188,9 @@ int main()
     // Shader UniformBlock Bindings
     HakuShader.Use();
     HakuShader.setUniformBlock("Matrices", 0);
+
+    FloorShader.Use();
+    FloorShader.setUniformBlock("Matrices", 0);
 
     LightCubeShader.Use();
     LightCubeShader.setUniformBlock("Matrices", 0);
@@ -256,11 +266,15 @@ int main()
     DirLightShadowShader.Use();
     Haku.Draw(&DirLightShadowShader);
 
+    FloorShader.Use();
+    Floor.Draw(&FloorShader);
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // Lighting Management and Shadow Shader Config
     LM.dirlights.push_back(DirLight(attrib, lightdir, DirLight_Transform, DirLightShadowMap));
     LM.ShaderConfig(&HakuShader);
+    LM.ShaderConfig(&FloorShader);
 
     // PointLight ShadowMap
     unsigned int CubeShadowMap;
@@ -288,7 +302,7 @@ int main()
     float aspect_ratio = 1.0f;
     float near = 1.0f;
     float far = 120.0f;
-    glm::vec3 PointLight_Pos(0.0f, 1.6f, 0.2f);
+    glm::vec3 PointLight_Pos(0.0f, 0.2f, 0.2f);
     glm::mat4 PointLight_projection = glm::perspective(glm::radians(90.0f), aspect_ratio, near, far);
     std::vector<glm::mat4> PointLight_Transform;
     PointLight_Transform.push_back(PointLight_projection * glm::lookAt(PointLight_Pos, PointLight_Pos + glm::vec3(1.0f, 0.0f, 0.0), glm::vec3(0.0f, -1.0f, 0.0f)));
@@ -323,10 +337,14 @@ int main()
     PointLightShader.Use();
     Haku.Draw(&PointLightShader);
 
+    FloorShader.Use();
+    Floor.Draw(&FloorShader);
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     LM.pointlights.push_back(PointLight(attrib, PointLight_Pos, Attenuation(0.7, 1.2), CubeShadowMap, far));
     LM.ShaderConfig(&HakuShader);
+    LM.ShaderConfig(&FloorShader);
 
     // Viewport Settings
     glViewport(0, 0, ScreenWidth, ScreenHeight);
@@ -407,6 +425,9 @@ int main()
         // Render Code
         HakuShader.Use();
         Haku.Draw(&HakuShader);
+
+        FloorShader.Use();
+        Floor.Draw(&FloorShader);
 
         // Light Cube
         LightCubeShader.Use();
