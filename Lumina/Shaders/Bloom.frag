@@ -84,9 +84,6 @@ uniform SpotLight spotlights[OTHER_LIMITATION];
 vec2 ParallaxMapping(vec2 coords, vec3 viewdir);    // For ParallaxMapping (of course)
 bool FragmentVisibility(vec2 coords);
 bool IsBright(vec3 lightdir, vec3 norm);
-float DepthAdjustment(vec3 lightdir);
-float ShadowFactor(Dirlight light, vec4 light_frag_pos);
-float ShadowFactor(PointLight light);
 float Brightness(PointLight light, vec3 frag2light);
 
 uniform bool GammaCorrection;
@@ -148,8 +145,12 @@ void uniformDiskSamples(vec2 seed) {
 
 const float shadowMapRes = 512.0;
 
+float DepthAdjustment(vec3 lightdir) {
+    vec3 norm = normalize(fs_in.normal);
+    const float standard = 0.01;
+    return standard * (1.0 - abs(dot(norm, normalize(lightdir))));
+}
 
-// FIXME:: blocker depth on model is reversed
 float findBlocker(sampler2D shadowmap, vec4 light_coord, vec3 lightDir) {
     uniformDiskSamples(light_coord.xy);
 
@@ -209,23 +210,21 @@ void main() {
 
     vec3 result = vec3(0.0, 0.0, 0.0);
 
-    // float imp = IsBright(-dirlights[0].direction, world_norm) ? ShadowFactor(dirlights[0], fs_in.dirlight_fragPos[0]) : 0.0;
-    // float imp = IsBright(pointlights[0].position - fs_in.fragpos, world_norm) ? ShadowFactor(pointlights[0]) : 0.0;
-    // imp = imp * Brightness(pointlights[0], (fs_in.fragpos - pointlights[0].position)) * 0.6 + 0.4;
-
     // PCSS
     vec4 light_coord = fs_in.dirlight_fragPos[0];
     // remap to [0, 1]
     light_coord = light_coord / light_coord.w * 0.5 + 0.5;
     float imp = PCSS(dirlights[0].shadowmap, light_coord, -dirlights[0].direction);
 
+    // float imp = dot(normalize(-dirlights[0].direction), world_norm) > 0 ? 1.0: 0.2;
+
     result += vec3(imp * texture(material.texture_diffuse1, coord));
 
-    // FragColor = vec4(result, 1.0);
+    FragColor = vec4(result, 1.0);
 
     // visualize blocker depth
-    float BlockerDep = findBlocker(dirlights[0].shadowmap, light_coord, -dirlights[0].direction);
-    FragColor = vec4(vec3(BlockerDep, BlockerDep, BlockerDep), 1.0);
+    // float BlockerDep = findBlocker(dirlights[0].shadowmap, light_coord, -dirlights[0].direction);
+    // FragColor = vec4(vec3(BlockerDep, BlockerDep, BlockerDep), 1.0);
     
     // Brightness for Bloom
     float bright = dot(FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
@@ -279,79 +278,6 @@ bool FragmentVisibility(vec2 coords) {
 bool IsBright(vec3 lightdir, vec3 norm) {
     vec3 dir = normalize(lightdir);
     return dot(norm, dir) > 0;
-}
-
-float DepthAdjustment(vec3 lightdir) {
-    vec3 norm = normalize(fs_in.normal);
-    const float standard = 0.1;
-    return standard * (1.0 - abs(dot(norm, lightdir)));
-}
-
-float ShadowFactor(Dirlight light, vec4 light_frag_pos) {
-    // Perspective Projection
-    vec3 projCoords = light_frag_pos.xyz / light_frag_pos.w;
-    // Depth start from 0 to 1
-    projCoords = projCoords * 0.5 + 0.5;
-
-    // Refinements
-    float adjust = DepthAdjustment(-light.direction);
-
-    float CurrentDepth = projCoords.z;
-    float shadow = 0.0;
-
-    // 25 * Multi Sampling
-    vec2 pixeloffset = 0.3 / textureSize(light.shadowmap, 0);
-    for (int x = -2; x <= 2; ++x) {
-        for (int y = -2; y <= 2; ++y) {
-            float subdepth = texture(light.shadowmap, projCoords.xy + pixeloffset * vec2(x, y)).r;
-            shadow += CurrentDepth > subdepth + adjust ? 1.0 : 0.0;
-        }
-    }
-
-    shadow /= 25;
-
-    if(CurrentDepth > 1.0)
-        return 1.0;
-
-    return 1.0 - shadow;
-}
-
-float ShadowFactor(PointLight light) {
-    vec3 Light2Frag = light.position - fs_in.fragpos;
-
-    vec3 FragDir = normalize(Light2Frag);
-
-    float CurrentDepth = length(Light2Frag);
-
-    float adjust = DepthAdjustment(Light2Frag);
-
-    const int samples = 20;
-
-    vec3 offsets[samples] = vec3[] (
-        vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
-        vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
-        vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
-        vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
-        vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
-    );
-
-    // Adaptive Bias
-    float bias = (1.0 + length(fs_in.viewPos - fs_in.fragpos)) / 25.0;
-
-    float shadow = 0.0;
-
-    for (int i = 0; i < samples; ++i) {
-        float subStoppingDepth = texture(light.shadowmap, FragDir + offsets[i] * bias).r;
-        subStoppingDepth *= light.far;
-        shadow += CurrentDepth > subStoppingDepth + adjust ? 1.0 : 0.0;
-    }
-
-    shadow /= samples;
-
-    if(CurrentDepth > light.far)
-        return 0.0;
-    
-    return 1.0 - shadow;
 }
 
 float Brightness(PointLight light, vec3 frag2light) {

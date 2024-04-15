@@ -158,7 +158,7 @@ int main()
     Shader fbShader("./Shaders/HDR.vert", "./Shaders/HDR.frag");
 
     // Models and Shaders
-    Model Haku("./Model/Pei_Er/Pei_Er.pmx");
+    Model Haku("./Model/nanosuit/nanosuit.obj");
     Shader HakuShader("./Shaders/Bloom.vert", "./Shaders/Bloom.frag");
 
     Model Floor("./Model/Floor/draft_floor.fbx");
@@ -242,11 +242,11 @@ int main()
 
     // Matrices for Light Space Transform <only used for DirLight>
     // All Objects should be in the Space between far_plane and near_plane <Might need Refinements Here>
-    float near_plane = 30.0f;
-    float far_plane = 120.0f;
-    float OrthoBorder = 10.0f;
+    float near_plane = 0.1f;
+    float far_plane = 5.0f;
+    float OrthoBorder = 2.0f;
     glm::mat4 DirLight_projection = glm::ortho(-OrthoBorder, OrthoBorder, -OrthoBorder, OrthoBorder, near_plane, far_plane);
-    glm::vec3 DirLight_Pos = -25.0f * lightdir + 10.0f * camup;
+    glm::vec3 DirLight_Pos = -1.0f * lightdir + 1.0f * camup;
     glm::mat4 DirLight_view = glm::lookAt(DirLight_Pos, DirLight_Pos + lightdir, camup);
     glm::mat4 DirLight_Transform = DirLight_projection * DirLight_view;
 
@@ -256,6 +256,14 @@ int main()
     DirLightShadowShader.setMat4("LightSpaceTransform", DirLight_Transform);
     DirLightShadowShader.setMat4("model", model);
     DirLightShadowShader.setBool("useInstance", false);
+
+    // Light Cube Shader Config
+    glm::mat4 lightcubemodel(1.0f);
+    lightcubemodel = glm::translate(lightcubemodel, DirLight_Pos);
+    lightcubemodel = glm::scale(lightcubemodel, glm::vec3(0.02f));
+    LightCubeShader.Use();
+    LightCubeShader.setMat4("model", lightcubemodel);
+    LightCubeShader.setVec3("light_col", lightcol);
 
     // Static Lighting's Shadow Mapping
     glViewport(0, 0, Shadow_Resolution, Shadow_Resolution); // Shadow Map Resolution
@@ -267,7 +275,7 @@ int main()
     Haku.Draw(&DirLightShadowShader);
 
     FloorShader.Use();
-    Floor.Draw(&FloorShader);
+    Floor.Draw(&DirLightShadowShader);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -321,14 +329,6 @@ int main()
     PointLightShader.setVec3("LightPos", PointLight_Pos);
     PointLightShader.setFloat("Far", far);
 
-    // Light Cube Shader Config
-    glm::mat4 lightcubemodel(1.0f);
-    lightcubemodel = glm::translate(lightcubemodel, PointLight_Pos);
-    lightcubemodel = glm::scale(lightcubemodel, glm::vec3(0.02f));
-    LightCubeShader.Use();
-    LightCubeShader.setMat4("model", lightcubemodel);
-    LightCubeShader.setVec3("light_col", lightcol);
-
     glViewport(0, 0, Shadow_Resolution, Shadow_Resolution);
     glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapfbo);
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -338,7 +338,7 @@ int main()
     Haku.Draw(&PointLightShader);
 
     FloorShader.Use();
-    Floor.Draw(&FloorShader);
+    Floor.Draw(&PointLightShader);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
