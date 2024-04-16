@@ -214,7 +214,7 @@ void main() {
     vec4 light_coord = fs_in.dirlight_fragPos[0];
     // remap to [0, 1]
     light_coord = light_coord / light_coord.w * 0.5 + 0.5;
-    float imp = PCSS(dirlights[0].shadowmap, light_coord, -dirlights[0].direction);
+    float imp = PCSS(dirlights[0].shadowmap, light_coord, -dirlights[0].direction) * 0.95 + 0.05;
 
     // float imp = dot(normalize(-dirlights[0].direction), world_norm) > 0 ? 1.0: 0.2;
 
